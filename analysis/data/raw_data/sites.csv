@@ -1,0 +1,144 @@
+name,askeladden_id,museum_id,municipality,investigated,radiocarbon,rcarb_cor,multiphase,reference
+Krøgenesåsen 1,159967,C60371,Arendal,t,t,f,f,Nielsen 2017
+Krøgenesåsen 2,159968,C60372,Arendal,t,f,,f,Nielsen 2017
+Øytangen,108467,C57694,Arendal,t,f,,f,Berge & Loftsgarden 2012
+Marisberg,112382,C59093,Arendal,t,f,,f,Mansrud & Carrasco 2018
+Dybdalshei 1,108338,C60097,Arendal,t,t,t,t,Granum & Schülke 2018
+Dybdalshei 2,108339,C60098,Arendal,t,t,t,f,Granum & Schülke 2018
+Dybdalshei 4,108341,C60099,Arendal,t,f,,f,Granum & Schülke 2018
+Sagene B2,171070,C59675,Arendal,t,t,f,f,Darmark 2018
+Sagene B4,171073,C59677,Arendal,t,f,,f,Darmark 2018b
+Sagene B6,176196,C59679,Arendal,t,t,f,f,Darmark 2018b
+Sagene B1,161300,C59674,Arendal,t,t,f,f,Viken 2018
+Kvastad A9,172657,C59673,Arendal,t,t,f,f,Darmark 2018c
+Kvastad A1,172344,C59665,Arendal,t,t,t,f,Stokke et al. 2018
+Kvastad A4,172345,C59668,Arendal,t,t,f,f,Darmark et al. 2018
+Kvastad A5-6,"17666, 17667",C59669,Arendal,t,f,,f,Viken 2018b
+Hesthag C4,170190,C59685,Arendal,t,t,t,f,Viken 2018c
+Hesthag C2,170172,C59683,Arendal,t,t,t,t,Viken 2018d
+Krøgenes D2,159966,"C59689, C60093",Arendal,t,t,t,f,Mansrud et al. 2018
+Krøgenes D7,159965,C59694,Arendal,t,f,,f,Stokke & Reitan 2018
+Krøgenes D10,161275,C59697,Arendal,t,f,,f,Stokke & Reitan 2018
+Krøgenes D1,160617,C59688,Arendal,t,t,t,t,Reitan & Solberg 2018
+Krøgenes D5,159969,C59692,Arendal,t,f,,f,Reitan & Solberg 2018b
+Mørland D11,172500,C59698,Arendal,t,f,,f,Darmark 2018d
+Kvastad A2,172664,C59666,Arendal,t,t,t,t,Stokke & Reitan 2018b
+Hovland 5,150578,C58448,Larvik,t,t,t,f,Mansrud & Koxvold 2013
+Hovland 2,120470,C58327,Larvik,t,f,,f,Koxvold 2013
+Nordby 1 (Bommestad-Sky),119409,C57991,Larvik,t,t,f,f,Færø Olsen 2013
+Nordby 2 (Bommestad-Sky),119410,C57993,Larvik,t,t,f,t,Koxvold 2013b
+Hovland 4,119407,C58328,Larvik,t,t,t,f,Mansrud 2013
+Hovland 1,119401,C57992,Larvik,t,t,t,f,Færø Olsen 2013b
+Hovland 3,119408,C58236,Larvik,t,t,t,f,Solheim & Færø Olsen 2013
+Torstvet,119404,C57995,Larvik,t,t,t,f,Mansrud 2013b
+Nedre Hobekk 2,115976,C58367,Larvik,t,t,f,t,Eigeland 2014
+Solum 1,116021,C58369,Larvik,t,f,,f,Fossum 2014
+Nedre Hobekk 1,115978,C58366,Larvik,t,f,,f,Eigeland 2014b
+Nedre Hobekk 3,115977,C58368,Larvik,t,f,,f,Fossum 2014b
+Sundsaasen 1,136590,C58011,Porsgrunn,t,f,,f,Eggen 2014
+Gunnarsrød 7,"136600, 136602",C58007,Porsgrunn,t,t,f,f,Fossum 2014c
+Prestemoen 1,136598,C58364,Porsgrunn,t,t,t,f,Persson 2014
+Gunnarsrød 8,136589,C58364,Porsgrunn,t,f,,f,Fossum 2014d
+Langangen Vestgård 1,128960,C57601,Porsgrunn,t,t,t,f,Melvold & Eigeland 2014
+Gunnarsrød 6a,128961,C58006,Porsgrunn,t,t,f,f,Carrasco et al. 2014
+Gunnarsrød 6b,128964,C58006,Porsgrunn,t,t,f,f,Carrasco et al. 2014
+Gunnarsrød 10,52038,C58010,Porsgrunn,t,t,f,f,Reitan & Fossum 2014
+Vallermyrene 4a,150594,C58010,Porsgrunn,t,t,t,f,Eigeland & Fossum 2014
+Vallermyrene 4b,150614,C58010,Porsgrunn,t,t,t,f,Eigeland & Fossum 2014
+Vallermyrene 1a,136595,C58361,Porsgrunn,t,t,t,f,Reitan 2014
+Vallermyrene 1b,136595,C58361,Porsgrunn,t,t,t,f,Reitan 2014
+Langangen Vestgård 3,136594,C57603,Porsgrunn,t,t,t,f,Eggen 2014b
+Sundsaasen 2,"136599, 136604",C58012,Porsgrunn,t,f,,f,Melvold & Persson 2014
+Langangen Vestgård 5,136588,C58012,Porsgrunn,t,t,t,t,Reitan 2014b
+Langangen Vestgård 6,136597,C57606,Porsgrunn,t,t,t,f,Reitan 2014c
+Gunnarsrød 5,"128956, 128959",C58005,Porsgrunn,t,t,t,t,Reitan 2014d
+Solum 2,116019,C58370,Larvik,t,f,,f,Fossum 2014e
+Solum 3,116144,C58371,Larvik,t,t,t,f,Fossum 2014e
+Vallermyrene 2,136591,C58362,Porsgrunn,t,t,t,t,Reitan 2014e
+Gunnarsrød 3,128954,C58003,Porsgrunn,t,f,,f,Reitan 2014f
+Gunnarsrød 2,128953,C58002,Porsgrunn,t,f,,f,Reitan & Fossum 2014b
+Langangen Vestgård 2,"136601, 136605",C57602,Porsgrunn,t,f,,f,Eggen 2014c
+Langangen Vestgård 4,136593,C57604,Porsgrunn,t,f,,f,Reitan 2014g
+Vallermyrene 3,128952,C58363,Porsgrunn,t,f,,f,Reitan 2014h
+Langangen Vestgård 7,172899,C57607,Porsgrunn,t,t,t,f,Reitan 2014i
+Gunnarsrød 4,"128962, 128957",C58004,Porsgrunn,t,t,t,f,Reitan 2014j
+Prestemoen 2,109934,C58365,Porsgrunn,t,f,,f,Persson 2014b
+Tinderholt 3,138151,C59985,Bamble,t,f,,f,Koxvold 2017
+Tinderholt 2,146871,C59984,Bamble,t,f,,f,Koxvold 2017b
+Dørdal,146146,C59987,Bamble,t,t,f,f,Solheim et al. 2017
+Tinderholt 1,145410,C59983,Bamble,t,f,,f,Koxvold 2017c
+Skeid,145173,C59986,Bamble,t,f,,f,Nielsen & Solheim 2017
+Hydal 3,138175,C59655,Bamble,t,t,f,f,Koxvold 2017d
+Hydal 4,138171,C59656,Bamble,t,t,f,f,Koxvold 2017e
+Hydal 7,138148,C59660,Bamble,t,t,f,f,Koxvold 2017f
+Hydal 8,138170,C59661,Bamble,t,t,f,f,Koxvold 2017g
+Hegna vest 2,138262,C59652,Bamble,t,t,t,t,Fossum 2017
+Hegna vest 1,138264,C59651,Bamble,t,t,t,t,Fossum 2017b
+Hegna vest 3,138263,C59653,Bamble,t,t,t,f,Eigeland & Fossum 2017
+Hegna øst 6,138160,C59649,Bamble,t,f,,f,Havstein 2017
+Hegna vest 4,145400,C59654,Bamble,t,f,,f,Eigeland & Fossum 2017b
+Hegna øst 5,138163,C59648,Bamble,t,t,f,t,Havstein 2017b
+Hegna øst 7,146129,C59650,Bamble,t,f,,f,Koxvold et al. 2017
+Stokke/Polland 3,116727,C59058,Bamble,t,t,f,f,Fossum 2017c
+Stokke/Polland 8,116720,C59062,Bamble,t,t,t,f,Fossum 2017d
+Hegna Øst 2,145397,C59645,Bamble,t,t,t,f,Solheim & Havstein 2017
+Stokke/Polland 5,"116722, 116728",C59060,Bamble,t,t,t,f,Mansrud 2017
+Stokke/Polland 9,116724,C59063,Bamble,t,f,,f,Fossum 2017e
+Stokke/Polland 1,138156,C59057,Bamble,t,t,t,t,Koxvold 2017h
+Stokke/Polland 7,116730,C59061,Bamble,t,f,,f,Koxvold & Solheim 2017
+Stokke/Polland 4,116721,C59059,Bamble,t,f,,f,Mansrud 2016
+Pauler 1,97782,C56286,Larvik,t,t,f,f,Schaller Åhrberg 2012
+Pauler 2,97791,C56287,Larvik,t,t,f,f,Nyland 2012
+Pauler 3,97805,C56288,Larvik,t,t,f,f,Amundsen 2012
+Pauler 5,97747,C56290,Larvik,t,f,,f,Amundsen 2012b
+Pauler 4,97803,C56289,Larvik,t,t,f,f,Nyland 2012b
+Pauler 6,97794,C56291,Larvik,t,f,,f,Jaksland 2012
+Pauler 7,97796,C56292,Larvik,t,f,,f,Jaksland 2012b
+Sky 1,97826,C56293,Larvik,t,f,,f,Amundsen 2012c
+Sky 2,97811,C56294,Larvik,t,f,,f,Schaller Åhrberg 2012b
+Bakke,97832,C56295,Larvik,t,t,f,f,Nyland & Amundsen 2012
+Nøklegård 1,97863,C56296,Porsgrunn,t,t,f,f,Jaksland & Kræmer 2012
+Brunstad 24,139824,C59135,Sandefjord,t,t,f,f,Danielsen et al. 2018
+Brunstad 26,139826,C59339,Sandefjord,t,f,,f,Danielsen et al. 2018
+Brunstad 25,139825,C59338,Sandefjord,t,t,t,f,Reitan & Schülke 2018
+Kjørholt,222438,C60794,Porsgrunn,t,t,f,f,Koxvold 2020
+Langemyr,144308,C60049,Larvik,t,t,t,f,Koxvold 2018
+Danebuåsen,171003,C60327,Sandefjord,t,t,f,f,Koxvold 2018b
+Roverud 1,158101,C60795,Bamble,t,f,,f,Koxvold 2020b
+Roverud 2,158114,C60796,Bamble,t,f,,f,Koxvold 2020b
+Rødbøl 54,112781,C55094,Larvik,t,t,t,f,Mansrud 2008
+Ragnhildrød,100322,C57646,Stokke,t,t,f,t,Mjærum 2012
+Lågerød,169715,C58916,Stokke,t,t,f,f,Eymundsson 2012
+Skutvikåsen 3,110390,C57930,Skien,t,f,,f,Ekstrand 2013
+Skutvikåsen 4,110311,C57931,Skien,t,f,,f,Ekstrand 2013
+Skutvikåsen 5,110312,C57931,Skien,t,f,,f,Ekstrand 2013
+Trondalen,170401,C59637,Risør,t,t,t,f,Mansrud 2018
+Skljelsø 1,120283,C57209,Risør,t,f,,f,Damlien 2009
+Skljelsø 2,121218,C57383,Risør,t,f,,f,Damlien 2009
+Tangvall nedre 1,113521,C60617,Bamble,t,f,,f,Stokke 2017
+Tangvall nedre 2,113522,C60618,Bamble,t,f,,f,Stokke 2017
+Lunaveien,117534,C57312,Sandefjord,t,t,t,t,Reitan 2010
+Marum mellom 4,89476,C55260,Sandefjord,t,f,,t,Knutsen & Skogsfjord 2009
+Førstad store 1,89481,C55257,Sandefjord,t,t,t,t,Knutsen & Skogsfjord 2009
+Pjonkerød R1,89537,C58994,Horten,t,t,t,f,Carrasco 2015
+Pjonkerød R2,89538,C58995,Horten,t,f,,f,Carrasco 2015
+Pjonkerød R3,89539,C58996,Horten,t,f,,f,Carrasco 2015
+Sandvigen 1,,,Sande,t,t,t,f,Bjørkli 2001
+Hegna øst 3,145397,C59646,Bamble,t,f,,f,Koxvold & Solheim 2017b
+Nauen A,231092,C53328,Tønsberg,t,t,t,t,Persson 2008
+Nauen B,236294,C53329,Tønsberg,t,f,,f,Persson 2008
+Nauen C,231112,C53330,Tønsberg,t,t,t,f,Persson 2008
+Nordby 52,112779,C53332,Larvik,t,t,t,t,Gjerpe & Bukkemoen 2008
+Nordby 1,112755,C55533-C55536,Larvik,t,t,t,t,Gjerpe & Bukkemoen 2008b
+Anvik,119055,C58917,Larvik,t,t,t,f,Eymundsson 2014
+Øysang,,C52079,Risør,t,f,,f,Tørhaug 2000
+Tverdal,41667,C57343,Arendal,t,t,t,f,Berge 2017
+Frebergsvik A,12346,,Horten,t,t,f,f,Mikkelsen 1975
+Frebergsvik B,12346,,Horten,t,t,f,f,Mikkelsen 1975
+Frebergsvik C,12346,,Horten,t,t,f,f,Mikkelsen 1975
+Hegna øst 4,147457,C59647,Bamble,t,f,,f,Koxvold et al. 2016
+Nordby 3 (Bommestad-Sky),119398,C57994,Larvik,t,t,f,f,Mansrud 2013c
+Hydal 6,138155,C59659,Bamble,t,f,,f,Koxvold 2017i
+Hydal 5,138159,C59658,Bamble,t,t,f,f,Koxvold 2016
+Sandtrahelleren,77378,"C38230, C39196",Larvik,t,f,,f,Østmo 1993
+Rognlien,11534,FC29637,Porsgrunn,t,t,t,t,Ingstad 1970

@@ -1,0 +1,14 @@
+Mangler C14 fra kvadranter/ruter Hovland 3 (fikset, men lokalt koordinatsystem)
+Vestffoldbaneprosjektet, Lågerød(åsen) er ikke Intrasis v.3 (fikset vestfoldbaneprosjektet)
+Rugtvedt-Dørdal ser ikke ut til å ha lag 1 inkludert i Intrasis 
+Skljelsø 1 & 2 ser ikke ut til å Intrasis-prosjekter
+
+C14-dateringer fra kvadranter fra Kjørholt og ned må lages manuelt
+
+Sjekk to registreringsdateringer Krøgenes D1
+
+\\lagringshotell.uio.no\khm-kart\Kartavlevering\Avlevert_2010\Vestfoldbaneprosjektet_08_22814
+
+
+
+Marum mellom 4 og Førstad store 1: Det var ingen .prj fil med disse dataene. Etter litt prøving og feiling har jeg kommet frem til CRSen må være NGO_1948_Norway_Zone_3
