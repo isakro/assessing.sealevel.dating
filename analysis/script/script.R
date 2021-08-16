@@ -28,6 +28,7 @@ rcarbon <- rcarbon %>%  mutate(askeladden_id = ifelse(is.na(askeladden_id), 0, a
 
 rcarb_features <- left_join(rcarbon, sitesf, by = c("site_name", "context" = "name", "askeladden_id" = "ask_id"))
 
+
 rcarb_features %>%  filter(is.na(st_dimension(rcarb_features$geom)) == TRUE) %>%
   select(- geom) %>%
  left_join(sitesl, by = c("site_name", "askeladden_id" = "ask_id")) %>% View()
