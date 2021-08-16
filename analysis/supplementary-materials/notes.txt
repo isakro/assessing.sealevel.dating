@@ -1,4 +1,3 @@
-Mangler C14 fra kvadranter/ruter Hovland 3 (fikset, men lokalt koordinatsystem)
 Vestffoldbaneprosjektet, Lågerød(åsen) er ikke Intrasis v.3 (fikset vestfoldbaneprosjektet)
 Rugtvedt-Dørdal ser ikke ut til å ha lag 1 inkludert i Intrasis 
 Skljelsø 1 & 2 ser ikke ut til å Intrasis-prosjekter
@@ -12,3 +11,35 @@ Sjekk to registreringsdateringer Krøgenes D1
 
 
 Marum mellom 4 og Førstad store 1: Det var ingen .prj fil med disse dataene. Etter litt prøving og feiling har jeg kommet frem til CRSen må være NGO_1948_Norway_Zone_3
+
+Missing spatial:
+
+Førstad Store, post hole (ID 47)
+Hovland 3, Undefined feature (ID 23)
+Pjonkerød R1, Quadrant (
+
+
+Hei igjen Anders,
+
+Håper sommeren har vært fin. Jeg har kikket litt på kart i det siste, og tenkte jeg kunne sende over det jeg har kommet frem til foreløpig.
+
+Jeg har lagt ved et kart som viser vannene og deres omtrentlige høyde. I tillegg er det en gpkg-fil med disse som punktdata, samt en tilhørende tabell. Jeg har markert de fleste vannene jeg har kommet over, uavhengig av høyde, som jeg synes så interessante ut i området vi diskuterte. Men nå ble vi vel enige om å fokusere på høyder opp mot MG i denne omgang, så spesielt vannene nord for Søndre Trollvann vil vel være de mest aktuelle. (Torsmosen på c. 210 moh ligger vel muligens litt høyt). Jeg har forsøkt å gjøre et par notater med tanke på tilkomst, i tillegg har jeg forsøkt å se litt på lidar-data etter forstyrrelser - men det er ikke en øvelse jeg er så dreven på. Det ligger i hvertfall et par kommentarer til hvert av vannene i filene.
+
+Jeg fortsetter forøvrig å kikke litt mer mellom slagene. 
+
+Mvh Isak
+
+
+
+Tretjerna	 over MG	
+Olavsmyr	 over MG	
+Stormyr	 over MG	
+Veslevannet	 over MG	
+		
+
+
+
+		
+		
+Nymølldammen	38.4	259733.83, 6627264.1
+
