@@ -1,4 +1,4 @@
-site_name,askeladden_id,rcarb_cor,context,material,lab_code,c14_bp,error,delta_c13
+site_name,ask_id,rcarb_cor,context,material,lab_code,c14_bp,error,delta_c13
 Krøgenesåsen 1,159967,f,Fireplace (ID 1103),Willow (Salix),Ua-55175,1756,27,-26.3
 Krøgenesåsen 1,159967,f,Fireplace (ID 1103),Aspen/willow (Populus/Salix),Ua-55176,1779,28,-26.6
 Krøgenesåsen 1,159967,f,Fireplace (ID 1103),"Alder/hazel (Alnus/Corylus), nutshell",Ua-55178,1853,28,-28
@@ -460,3 +460,8 @@ Tverdal,41667,f,"Cultural layer, quadrant (16x10ySW)",Yew (Taxus),TRa-446,2475,4
 Tverdal,41667,t,"Cultural layer, quadrant (16x10y)",Dog (Canis familiaris),Ua-47406,4536,131,-26.1
 Tverdal,41667,t,"Cultural layer, quadrant (16x10y)",Boar (Sus scrofa),Ua-47407,4622,48,-23.4
 Tverdal,41667,t,"Cultural layer, quadrant (16x10y)",Mammal (Mammalia),Ua-47408,4401,36,-26.1
+Torsrød,,f,Fireplace (ID 3),Charcoal,T-1493,2550,60,
+Torsrød,,t,Fireplace (ID 4),Charcoal,T-1425,5350,70,
+Rugtvedt,81294,t,Fireplace,Charcoal,Ua-3667,5950,60,
+Rugtvedt,81294,t,Fireplace,Charcoal,Ua-3669,5860,75,
+Rugtvedt,81294,t,Fireplace,Charcoal,Ua-3668,5505,65,

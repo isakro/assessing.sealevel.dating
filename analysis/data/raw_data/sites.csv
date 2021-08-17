@@ -1,4 +1,4 @@
-name,askeladden_id,museum_id,municipality,investigated,radiocarbon,rcarb_cor,multiphase,reference
+name,ask_id,museum_id,municipality,investigated,radiocarbon,rcarb_cor,multiphase,reference
 Krøgenesåsen 1,159967,C60371,Arendal,t,t,f,f,Nielsen 2017
 Krøgenesåsen 2,159968,C60372,Arendal,t,f,,f,Nielsen 2017
 Øytangen,108467,C57694,Arendal,t,f,,f,Berge & Loftsgarden 2012
@@ -81,7 +81,7 @@ Hegna øst 5,138163,C59648,Bamble,t,t,f,t,Havstein 2017b
 Hegna øst 7,146129,C59650,Bamble,t,f,,f,Koxvold et al. 2017
 Stokke/Polland 3,116727,C59058,Bamble,t,t,f,f,Fossum 2017c
 Stokke/Polland 8,116720,C59062,Bamble,t,t,t,f,Fossum 2017d
-Hegna Øst 2,145397,C59645,Bamble,t,t,t,f,Solheim & Havstein 2017
+Hegna øst 2,145397,C59645,Bamble,t,t,t,f,Solheim & Havstein 2017
 Stokke/Polland 5,"116722, 116728",C59060,Bamble,t,t,t,f,Mansrud 2017
 Stokke/Polland 9,116724,C59063,Bamble,t,f,,f,Fossum 2017e
 Stokke/Polland 1,138156,C59057,Bamble,t,t,t,t,Koxvold 2017h
@@ -142,3 +142,5 @@ Hydal 6,138155,C59659,Bamble,t,f,,f,Koxvold 2017i
 Hydal 5,138159,C59658,Bamble,t,t,f,f,Koxvold 2016
 Sandtrahelleren,77378,"C38230, C39196",Larvik,t,f,,f,Østmo 1993
 Rognlien,11534,FC29637,Porsgrunn,t,t,t,t,Ingstad 1970
+Torsrød,,,Larvik,t,t,t,f,Østmo 1976
+Rugtvedt,81294,,Bamble,t,t,t,f,Odgaard 1994
