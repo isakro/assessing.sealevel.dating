@@ -14,9 +14,7 @@ Marum mellom 4 og Førstad store 1: Det var ingen .prj fil med disse dataene. Et
 
 Missing spatial:
 
-Førstad Store, post hole (ID 47)
-Hovland 3, Undefined feature (ID 23)
-Pjonkerød R1, Quadrant (
+Hegna øst 2, stripped
 
 
 
@@ -27,5 +25,11 @@ Stormyr	 over MG
 Veslevannet	 over MG			
 		
 		
+
 Nymølldammen	38.4	259733.83, 6627264.1
+
+
+
+Strålende! Om det er et poeng å ha Tretjerna i bakhånd så kan jeg godt sjekke det ut, ja. Men om Tretjerna utgår til fordel for Olavsmyr så virker ingen av de nevnte vannene å ligge i vernet område.
+(Altså Smørholet, Sølvdobla, Søndre Trollvann, Sprengtjern og Olavsmyr).
 
