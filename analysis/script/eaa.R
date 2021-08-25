@@ -117,7 +117,7 @@ locationarea[locationarea <= 0] <- NA
 tm_shape(locationarea) +
   tm_raster(palette = grey.colors(10), style = "cont")
 
-samps <- 1000
+samps <- 100
 output <- list(length = samps)
 seapolygons <- list(length = samps)
 topopaths <- list(length = samps)
@@ -196,8 +196,14 @@ for(i in 1:samps){
   topopaths[[i]] <- do.call(rbind, tpaths)
 }
 
+output <- list(length = samps)
+seapol <- do.call(rbind, seapolygons)
+topop <- do.call(rbind, topopaths)
 
-
+tm_shape(seapol) +
+  tm_fill(colour = "lightgrey", alpha = 0.005) +
+  tm_shape(sitel) +
+  tm_borders()
 
 # tm_shape(locationarea, unit = "m") +
 #   tm_raster(palette = ,
