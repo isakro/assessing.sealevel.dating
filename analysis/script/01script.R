@@ -40,7 +40,7 @@ rcarb_features <- rcarb_features %>%  left_join(sitesl,
                                       by = c("site_name", "ask_id")) %>%
   mutate(geom = ifelse(is.na(st_dimension(geom.x)), geom.y, geom.x),
          .keep = "unused") %>%
-  select(-name) %>% st_as_sf()
+  dplyr::select(-name) %>% st_as_sf(crs = st_crs(sitesf))
 
 # Calibrate radiocarbon dates and exclude dates that do not overlap with the
 # Stone Age at two sigma.
@@ -54,7 +54,7 @@ rcarb_features <- rcarb_features %>%
   mutate(sig_2_start_bc = map(caldates, ~ min(.x$sigma_ranges$two_sigma$start)),
          sig_2_end_bc = map(caldates, ~ max(.x$sigma_ranges$two_sigma$end)))
 
-# Exclude dater ranges falling outside the Stone Age
+# Exclude date ranges falling outside the Stone Age
 rcarb_sa <- rcarb_features %>%  filter(sig_2_end_bc < -1700)
 
 # Use the above to retrieve overview of sites with radiocarbon dates to the
@@ -63,4 +63,4 @@ sites_sa <- site_limits %>% filter(name %in% unique(rcarb_sa$site_name))
 
 
 save(caldates, rcarb_sa, sites_sa,
-     file = here::here("analysis/data/derived_data/data.RData"))
+     file = here::here("analysis/data/derived_data/01data.RData"))
