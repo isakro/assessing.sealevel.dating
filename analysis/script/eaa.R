@@ -112,12 +112,11 @@ ggplot(dispcurves, aes(x = years, col = name)) +
 
 location_bbox <- bboxpoly(sitel, 250)
 locationarea <- terra::crop(dtm, location_bbox)
-locationarea[locationarea <= 0] <- NA
 
 tm_shape(locationarea) +
   tm_raster(palette = grey.colors(10), style = "cont")
 
-samps <- 100
+samps <- 1000
 output <- list(length = samps)
 seapolygons <- list(length = samps)
 topopaths <- list(length = samps)
@@ -196,14 +195,33 @@ for(i in 1:samps){
   topopaths[[i]] <- do.call(rbind, tpaths)
 }
 
-output <- list(length = samps)
+output <- do.call(rbind, results)
 seapol <- do.call(rbind, seapolygons)
 topop <- do.call(rbind, topopaths)
 
-tm_shape(seapol) +
-  tm_fill(colour = "lightgrey", alpha = 0.005) +
-  tm_shape(sitel) +
-  tm_borders()
+# Save output here in case of crash in the following data handling and
+# visualisation.
+save(output, seapol, topop, locationarea,
+     file = here::here("analysis/data/derived_data/eaa.RData"))
+
+grid <- st_make_grid(locationarea,
+                   cellsize = c(res(locationarea)[1], res(locationarea)[2]),
+                   n = c(ncol(locationarea), nrow(locationarea)))
+
+grid_intersects <- st_intersects(tst, seapol)
+overlaps <- sapply(grid_intersects, length)
+overlapgrid <- data.frame(grid, overlaps) %>%
+  st_as_sf()
+
+tm_shape(overlapgrid) + tm_fill(col = "overlaps") +
+  tm_shape(sitel) + tm_borders(lwd = 1.5) +
+  tm_legend(legend.outside = TRUE)
+
+plot(tst, colour = overlaps)
+
+tm_shape(overlapgrid, unit = "m") + tm_fill(col = "overlaps", title = "") +
+  tm_shape(sitel) + tm_borders(col = "black", lwd = 1) +
+  tm_legend(legend.outside = TRUE) + tm_scale_bar(text.size = 0.8)
 
 # tm_shape(locationarea, unit = "m") +
 #   tm_raster(palette = ,
