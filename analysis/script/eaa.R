@@ -16,6 +16,8 @@ load(here::here("analysis/data/derived_data/02data.RData"))
 
 dtm <- rast("/home/isak/phd/eaa_presentation/dtm1/dtm1_33_120_109.tif")
 
+start_time <- Sys.time()
+
 # Example site
 sitename <- "Langangen Vestgård 1"
 
@@ -108,13 +110,8 @@ ggplot(dispcurves, aes(x = years, col = name)) +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.direction = "horizontal")
 
-
-
 location_bbox <- bboxpoly(sitel, 250)
 locationarea <- terra::crop(dtm, location_bbox)
-
-tm_shape(locationarea) +
-  tm_raster(palette = grey.colors(10), style = "cont")
 
 samps <- 1000
 output <- list(length = samps)
@@ -203,6 +200,9 @@ topop <- do.call(rbind, topopaths)
 # visualisation.
 save(output, seapol, topop, locationarea,
      file = here::here("analysis/data/derived_data/eaa.RData"))
+
+end_time <- Sys.time()
+end_time - start_time
 
 grid <- st_make_grid(locationarea,
                    cellsize = c(res(locationarea)[1], res(locationarea)[2]),
