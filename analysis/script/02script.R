@@ -136,6 +136,19 @@ iso_map <- tmap_grob(
 
 plot_grid(isocurves_plot, iso_map)
 
+# Spøit study area into a series of polygons to assign correct displacement
+# curve to sites to be analysed
+# First find study area outline and make this a polygon
+outline <- st_as_sf(st_as_sfc(centpts_bb))
+# Then split this by the isobases
+isopolys <- st_collection_extract(lwgeom::st_split(outline, isobases))
+# Then assign isobasenames to the polygons and the direction (in case of ne of
+# both).
+isopolys$isobase1 <- c("Arendal", "Tvedestrand", "Larvik", "Halden", "Halden")
+isopolys$isobase2 <- c("Tvedestrand", "Arendal", "Tvedestrand", "Larvik",
+                       "Larvik")
+isopolys$dir_rel_1 <- c("sw", "sw", "sw", "sw", "nw")
+
 # Define function to interpolate displacement curve for a given location,
 # based on distance to curves on two provided isobases on the
 # north-east to south-west axis perpendicular to the isobases.
@@ -178,79 +191,7 @@ interpolate_curve <- function(years, isobase1, isobase2, target, dispdat,
   return(values)
 }
 
-# Define function to identify the two closest displacement curves, based on the
-# distance to their isobase, and the direction (This seems like it should have
-# a better solution than a series of ifelses, but I couldnt find a simple
-# solution to identify the bearing from point to line). This will throw an error
-# if the point is precisely on an isobase, but that is very unlikely to occur.
-closest_isobases <- function(feature, isobases){
-  # Find distance between all the isobases
-  isodists <- data.frame(st_distance(isobases, isobases))
-  names(isodists)  <- isobases$name
-  rownames(isodists) <- isobases$name
-
-  # Find distance from point to all the isobases, ordered from closest
-  nearest <- order(st_distance(feature, isobases))
-  # Retrieve the name of the two closest
-  isonames <- st_drop_geometry(isobases)[nearest[1:2], "name"]
-
-  # Find the distance to the two closest
-  distances <- st_distance(feature, isobases[nearest[1:2],],
-                         by_element = TRUE)
-
-  # Combine name and distance
-  pdists <- data.frame(isonames, distances)
-
-
-  if(pdists$isonames[1] == "Halden"){
-    if(pdists[2]$dist < isodists["Halden", "Larvik"]){
-      print("Feature is southwest of Halden, and northeast of Larvik")
-      isobase1 <- "Halden"
-      isobase2 <- "Larvik"
-      dir_to_1 <- "sw"
-    } else{
-      print("Feature is northeast of both Halden and Larvik")
-      isobase1 <- "Halden"
-      isobase2 <- "Larvik"
-      dir_to_1 <- "ne"
-    }
-  } else if(pdists$isonames[1] == "Larvik" && pdists$isonames[2] == "Halden"){
-    print("Feature is southwest of Halden, and northeast of Larvik")
-    isobase1 <- "Halden"
-    isobase2 <- "Larvik"
-    dir_to_1 <- "sw"
-  } else if(pdists$isonames[1] == "Larvik" &&
-            pdists$isonames[2] == "Tvedestrand" |
-            pdists$isonames[1] == "Tvedestrand" &&
-            pdists$isonames[2] == "Larvik"){
-    print("Feature is southwest of Larvik, and northeast of Tvedestrand")
-    isobase1 <- "Larvik"
-    isobase2 <- "Tvedestrand"
-    dir_to_1 <- "sw"
-  } else if(pdists$isonames[1] == "Tvedestrand" &&
-            pdists$isonames[2] == "Arendal"){
-    print("Feature is southwest of Tvedestrand, and northeast of Arendal")
-    isobase1 <- "Tvedestrand"
-    isobase2 <- "Arendal"
-    dir_to_1 <- "sw"
-  } else if(pdists$isonames[1] == "Arendal"){
-     if(pdists[2]$dist < isodists["Arendal", "Tvedestrand"]){
-       print("Feature is southwest of Tvedestrand, and northeast of Arendal")
-       isobase1 <- "Tvedestrand"
-       isobase2 <- "Arendal"
-       dir_to_1 <- "sw"
-     } else{
-       print("Feature is southwest of both Tvedestrand and Arendal")
-       isobase1 <- "Arendal"
-       isobase2 <- "Tvedestrand"
-       dir_to_1 <- "sw"
-     }
-  }
-  return(cbind(isobase1 = isobase1, isobase2 = isobase2, dir_to_1 = dir_to_1))
-}
-
-
-
-save(displacement_curves, isobases, xvals,
+# Save required data
+save(displacement_curves, isobases, isopolys, xvals,
      file = here::here("analysis/data/derived_data/02data.RData"))
 
