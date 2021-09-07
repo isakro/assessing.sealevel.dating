@@ -219,8 +219,6 @@ posteriorprobs <- data.frame(
   date_grid = oxcal_data$Sum$posterior_probabilities$dates,
   site = siter$site_name[1])
 
-plot(oxcal_data_dates)
-
 prior <- get_raw_probabilities(oxcal_data)
 names(prior) <- paste0(get_name(oxcal_data))
 prior <- prior[!(names(prior) %in% c("Sum", "End", "Start",
@@ -345,7 +343,7 @@ ggplot(masls, aes(x, y)) +
         axis.ticks.y = element_blank())
 
 
-location_bbox <- bboxpoly(sitel, 500)
+location_bbox <- bboxpoly(sitel, 250)
 sitearea <- terra::crop(dtm2, location_bbox)
 
 sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
@@ -452,15 +450,15 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
 # Function returns a list holding numerical results, polygons representing sea,
 # and
-output <- sample_shoreline(10, sitel, sitecurve, sitearea, posteriorprobs)
-
-seapol <- output$seapol
-topopath <- output$topop
+output <- sample_shoreline(1000, sitel, sitecurve, sitearea, posteriorprobs)
 
 # Save output here in case of crash in the following data handling and
 # visualisation.
 save(output,
      file = here::here("analysis/data/derived_data/sp1.RData"))
+
+seapol <- output$seapol
+topopath <- output$topop
 
 end_time <- Sys.time()
 end_time - start_time
