@@ -18,10 +18,11 @@ load(here::here("analysis/data/derived_data/02data.RData"))
 dtm1 <- rast("/home/isak/phd/eaa_presentation/dtm1/dtm1_33_120_109.tif") # LV1
 dtm2 <- rast("/home/isak/phd/eaa_presentation/dtm1/dtm1_33_119_108.tif")
 dtm3 <- rast("/home/isak/phd/eaa_presentation/dtm1/dtm_33_115_116_105.tif")
-dtm2[dtm2 <= 0] <- NA
+dtm1[dtm1 <= 0] <- NA
 
 # Trondal, Sandvigen 1, Langangen Vestgård 1, Hesthag C2,
 # Stokke/Polland 1 (partly highway), Stokke/Polland 5 (highway)
+# Vallermyrene 1a
 
 countries <- st_read(here::here('analysis/data/raw_data/naturalearth_countries.gpkg'))
 
@@ -155,7 +156,7 @@ plot_grid(isomap, isocurves_plot)
 start_time <- Sys.time()
 
 # Example site
-sitename <- "Stokke/Polland 1"
+sitename <- "Vallermyrene 1a"
 
 sitel <- filter(sites_sa, name == sitename)
 siter <- filter(rcarb_sa, site_name == sitename)
@@ -179,7 +180,7 @@ bboxpoly <- function(feature, xy_adjustment) {
 location_bbox <- bboxpoly(sitel, 10)
 
 # Plot site with features
-lv1map <- tmap_grob(tm_shape(location_bbox, unit = "m") +
+sitmap <- tmap_grob(tm_shape(location_bbox, unit = "m") +
                       tm_borders() +
                       tm_shape(sitel) +
                       tm_borders() +
@@ -236,7 +237,7 @@ posterior <- mutate(posterior, class = ifelse(name == "Sum", "Posterior sum", cl
 
 datedat <- rbind(prior, posterior)
 
-lv1dat <- datedat %>% filter(!(name %in% c("Start", "End"))) %>%
+sitdat <- datedat %>% filter(!(name %in% c("Start", "End"))) %>%
   arrange(class) %>%
   ggplot() +
   ggridges::geom_ridgeline(aes(x = dates, y = name, height = probabilities * 100, fill = class, alpha = class)) +
@@ -244,7 +245,7 @@ lv1dat <- datedat %>% filter(!(name %in% c("Start", "End"))) %>%
   scale_alpha_manual(values = c("Posterior sum" = 1, "aprior" = 0.1, "bposterior" = 0.7)) +
   labs(title = sitename, y = "", x = "Cal. BCE") + theme_bw() + theme(legend.position = "none")
 
-plot_grid(lv1dat, lv1map)
+plot_grid(sitdat, sitmap)
 
 # Interpolate displacement curve
 sitecurve <- interpolate_curve(years = xvals,
@@ -344,7 +345,7 @@ ggplot(masls, aes(x, y)) +
 
 
 location_bbox <- bboxpoly(sitel, 250)
-sitearea <- terra::crop(dtm2, location_bbox)
+sitearea <- terra::crop(dtm1, location_bbox)
 
 sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
@@ -441,21 +442,31 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       topopaths[[i]] <- st_as_sf(topodist[[2]])
     }
   }
-  return(list(
-    results = results,
-    seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)), crs = st_crs(sitel)),
-    topop = do.call(rbind, topopaths)
-  ))
+  # If there are no topopaths at all, do not try to return these
+  if(any(!(summary(topopaths)[,2]) %in% c("-none-", "sf"))){
+    return(list(
+      results = results,
+      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+                        crs = st_crs(sitel)),
+      topop = st_as_sf(st_sfc(do.call(rbind, topopaths)),
+                       crs = st_crs(sitel))
+    ))
+  } else
+    return(list(
+      results = results,
+      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+                        crs = st_crs(sitel))))
 }
 
 # Function returns a list holding numerical results, polygons representing sea,
 # and
-output <- sample_shoreline(1000, sitel, sitecurve, sitearea, posteriorprobs)
+output <- sample_shoreline(samps = 1000, sitel = sitel, sitecurve = sitecurve,
+                           sitearea = sitearea, posteriorprobs = posteriorprobs)
 
 # Save output here in case of crash in the following data handling and
 # visualisation.
 save(output,
-     file = here::here("analysis/data/derived_data/sp1.RData"))
+     file = here::here("analysis/data/derived_data/lv1.RData"))
 
 seapol <- output$seapol
 topopath <- output$topop
@@ -472,10 +483,18 @@ overlaps <- sapply(grid_intersects, length)
 overlapgrid <- data.frame(grid, overlaps) %>%
   st_as_sf()
 
-tm_shape(overlapgrid, unit = "m") + tm_fill(col = "overlaps", title = "") +
+shoremaplv1 <- tmap_grob(tm_shape(overlapgrid, unit = "m") + tm_fill(col = "overlaps", title = "", palette = "Greys", alpha = 0.5, legend.show = FALSE) +
   tm_shape(sitel) + tm_borders(col = "black", lwd = 1) +
   #tm_shape(topopath) + tm_lines() +
-  tm_legend(legend.outside = TRUE) + tm_scale_bar(text.size = 0.8)
+  tm_legend(legend.outside = TRUE) + tm_scale_bar(text.size = 0.8))
+
+distplotlv1 <- ggplot() + geom_boxplot(aes(x = "Vertical distance", y = output$results$vertdist)) +
+  geom_boxplot(aes(x = "Horisontal distance", y = output$results$hordist)) +
+  geom_boxplot(aes(x = "Topographic distance", y = output$results$topodist)) +
+  labs(y = "Distance from shoreline (m)", x = "") +
+  theme_bw()
+
+lv1plot <- plot_grid(lv1dat, shoremaplv1, distplotlv1, nrow = 1)
 
 # tm_shape(locationarea, unit = "m") +
 #   tm_raster(palette = ,
