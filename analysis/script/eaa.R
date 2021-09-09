@@ -1,5 +1,6 @@
 library(tidyverse)
 library(sf)
+library(ggridges)
 library(tmap)
 library(tmaptools)
 library(cowplot)
@@ -8,26 +9,29 @@ library(oxcAAR)
 library(topoDistance)
 quickSetupOxcal()
 
-# Check github page for installation of gdalio:
-# https://github.com/hypertidy/gdalio
+# This script is an absolute mess and will not run. The main components are
+# available in the other scripts and defintion of relevant functions mainly in
+# 03script.R
 
 source(here::here("analysis/script/02script.R"))
 load(here::here("analysis/data/derived_data/01data.RData"))
 load(here::here("analysis/data/derived_data/02data.RData"))
+load(here::here("analysis/data/derived_data/sp1.RData"))
 
 dtm1 <- rast("/home/isak/phd/eaa_presentation/dtm1/dtm1_33_120_109.tif") # LV1
 dtm2 <- rast("/home/isak/phd/eaa_presentation/dtm1/dtm1_33_119_108.tif")
 dtm3 <- rast("/home/isak/phd/eaa_presentation/dtm1/dtm_33_115_116_105.tif")
+dtm4 <- rast("/home/isak/phd/eaa_presentation/dtm1/vm1/dtm1_33_119_109.tif")
+dtm5 <- rast("/home/isak/phd/eaa_presentation/dtm1/trondal/trondal.tif")
 dtm1[dtm1 <= 0] <- NA
 
-# Trondal, Sandvigen 1, Langangen Vestgård 1, Hesthag C2,
+# Tverdal, Sandvigen 1, Langangen Vestgård 1, Hesthag C2,
 # Stokke/Polland 1 (partly highway), Stokke/Polland 5 (highway)
 # Vallermyrene 1a
 
 countries <- st_read(here::here('analysis/data/raw_data/naturalearth_countries.gpkg'))
 
-# assign isobases to sites (using st_centroid so that sites crossing isobase
-# only get a single occurence)
+# assign isobases to sites
 sites_sa <- st_join(st_make_valid(sites_sa), isopolys, join = st_intersects, largest = TRUE)
 site_pts <- st_centroid(sites_sa)
 
@@ -156,7 +160,7 @@ plot_grid(isomap, isocurves_plot)
 start_time <- Sys.time()
 
 # Example site
-sitename <- "Vallermyrene 1a"
+sitename <- "Langangen Vestgård 1"
 
 sitel <- filter(sites_sa, name == sitename)
 siter <- filter(rcarb_sa, site_name == sitename)
@@ -179,17 +183,42 @@ bboxpoly <- function(feature, xy_adjustment) {
 # Create bounding box with 10 meter clearing around site limit
 location_bbox <- bboxpoly(sitel, 10)
 
+sitmap1 <- ggplot() +
+  geom_sf(data = count_reproj2, fill = "grey", colour = NA) +
+  geom_sf(data = isobases, aes(colour = name)) +
+  geom_sf(data = st_centroid(sitel), size = 3, shape = 21, fill = "red",
+          colour = "black") +
+  scale_colour_manual(values = c("Arendal" = "black",
+                                 "Larvik" = "darkgreen",
+                                 "Tvedestrand" = "blue",
+                                 "Halden" = 'red')) +
+  ggsn::scalebar(data = site_pts, dist = 20, dist_unit = "km",
+                 transform = FALSE, st.size = 4, height = 0.02,
+                 border.size = 0.1, st.dist = 0.03,
+                 anchor = c(x = anc[2] - 15500, y = anc[1]) + 8000) +
+  coord_sf(xlim = c(sitbbox2[1], sitbbox2[3]),
+           ylim = c(sitbbox2[2], sitbbox2[4]),
+           expand = FALSE) +
+  theme_bw() + theme(axis.title=element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.text.x = element_blank(),
+                     rect = element_rect(),
+                     axis.ticks = element_blank(),
+                     panel.grid.major = element_blank(),
+                     legend.position = "none")
+
 # Plot site with features
-sitmap <- tmap_grob(tm_shape(location_bbox, unit = "m") +
-                      tm_borders() +
+sitmap <- tmap_grob(tm_shape(sitearea, unit = "m") +
+                      tm_raster(title = "Elevation (m)", palette = terrain.colors(252)) +
                       tm_shape(sitel) +
-                      tm_borders() +
+                      tm_fill(col = "red") +
                       tm_shape(siter) +
-                      tm_fill(col = "black") +
-                      tm_scale_bar(breaks = c(0, 10, 20), text.size = 0.8) +
-                      tm_layout(legend.outside = TRUE))
+                      tm_dots(col = "black") +
+                      tm_scale_bar(breaks = c(0, 100, 200), text.size = 0.8))
 
 # siter[class(st_geometry(siter) == "sfc_POINT"]
+
+tst <- model_dates(siter)
 
 # Calibrating and modelling radiocarbon dates
 dates <- R_Date(siter$lab_code, siter$c14_bp, siter$error)
@@ -237,15 +266,17 @@ posterior <- mutate(posterior, class = ifelse(name == "Sum", "Posterior sum", cl
 
 datedat <- rbind(prior, posterior)
 
+plot_dates(tst, sitename)
+
 sitdat <- datedat %>% filter(!(name %in% c("Start", "End"))) %>%
   arrange(class) %>%
   ggplot() +
   ggridges::geom_ridgeline(aes(x = dates, y = name, height = probabilities * 100, fill = class, alpha = class)) +
   scale_fill_manual(values = c("Posterior sum" = "grey35", "aprior" = "white", "bposterior" = "grey")) +
   scale_alpha_manual(values = c("Posterior sum" = 1, "aprior" = 0.1, "bposterior" = 0.7)) +
-  labs(title = sitename, y = "", x = "Cal. BCE") + theme_bw() + theme(legend.position = "none")
+  labs(title = sitename, y = "", x = "cal BCE") + theme_bw() + theme(legend.position = "none")
 
-plot_grid(sitdat, sitmap)
+plot_grid(sitdat, sitmap, sitmap1, nrow = 1)
 
 # Interpolate displacement curve
 sitecurve <- interpolate_curve(years = xvals,
@@ -264,7 +295,7 @@ dispcurves <- displacement_curves %>%
 ggplot(dispcurves, aes(x = years, col = name)) +
   geom_line(aes(y =  upperelev)) +
   geom_line(aes(y = lowerelev)) +
-  ggridges::geom_ridgeline(data = filter(datedat, name == "Posterior sum"), aes(x = dates, y = min(siteelev[1:nrow(siteelev),]), height = probabilities * 150))
+  ggridges::geom_ridgeline(data = filter(datedat, name == "Posterior sum"), aes(x = dates, y = min(siteelev[1:nrow(siteelev),]), height = probabilities * 100))
   ylab("Meters above present sea level") +
   xlab("Cal. BCE/CE") +
   scale_colour_manual(values = c("red", "blue", "seagreen2")) +
@@ -276,13 +307,13 @@ ggplot(dispcurves, aes(x = years, col = name)) +
 samplingframe <- list(x = posteriorprobs[["date_grid"]],
                       y = posteriorprobs[["probabilities"]])
 
-sdate <- round(with(samplingframe, sample(x, size = 1, prob = y)))
-library(ggridges)
+#sdate <- round(with(samplingframe, sample(x, size = 1, prob = y)))
+sdate <- -3016
 postsum <- filter(datedat, name == "Posterior sum")
 postplot <- ggplot(postsum) +
-  ggridges::geom_ridgeline(aes(x = dates, y = name, height = probabilities * 150), fill = "grey") +
+  ggridges::geom_ridgeline(aes(x = dates, y = name, height = probabilities * 100), fill = "grey") +
   #geom_segment(aes(x = sdate, xend = sdate, y = as.numeric(name), yend = as.numeric(name) + 0.9), colour = "red") +
-  labs(y = "", x = "Cal. BCE")  +
+  labs(y = "", x = "cal BCE")  +
   scale_y_discrete(expand = c(0.01, 0)) + theme_bw() + theme(legend.position = "none",
                                                              panel.grid.major = element_blank(),
                                                              panel.grid.minor = element_blank(),
@@ -296,7 +327,7 @@ curveplot <- ggplot(sitecurve, aes(x = years)) +
   geom_line(aes(y =  upperelev)) +
   geom_line(aes(y = lowerelev)) +
   ylab("Meters above present sea level") +
-  xlab("Cal. BCE/CE") +
+  xlab("cal BCE/CE") +
   theme_bw() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.direction = "horizontal")
@@ -306,7 +337,7 @@ plot_grid(postplot, curveplot)
 
 samp1plot <- postplot +
   geom_vline(xintercept = sdate, colour = "red") +
-  scale_x_continuous(breaks = sort(c(-7000, -6800, sdate, -6600, -6400)))
+  scale_x_continuous(breaks = sort(c(-3750, -3250, sdate, -2750)))
 
 plot_grid(samp1plot, curveplot)
 
@@ -318,30 +349,86 @@ lowers <- round(approx(sitecurve[,"years"], sitecurve[,"lowerelev"],
 curvesamp1 <- curveplot + geom_segment(aes(x = sdate, xend = sdate, y = uppers,
                                            yend = -Inf), col = "red", linetype = "dashed") +
   geom_segment(aes(x = -Inf, xend = sdate, y = uppers,
-                   yend = uppers), col = "red") +
+                   yend = uppers), col = "red", size = 0.25) +
   geom_segment(aes(x = -Inf, xend = sdate, y = lowers,
-                   yend = lowers), col = "red") +
+                   yend = lowers), col = "red", size = 0.25) +
+  annotate("text", x = -8000, y = uppers + 1, label = as.character(uppers)) +
+  annotate("text", x = -8000, y = lowers - 1, label = as.character(lowers)) +
   scale_x_continuous(breaks = sort(c(-8000, sdate, -4000, 0)))
 
 
 plot_grid(samp1plot, curvesamp1)
 
-masls <- data.frame(x = 0:150, y = 0:150)
-ggplot(masls, aes(x, y)) +
+sealevel <- sample(seq(lowers, uppers, 0.05), 1)
+
+masls <- data.frame(x = 0:50, y = 0:50)
+elevsamp1 <- ggplot(masls, aes(x, y)) +
+  annotate("text", x = uppers + 0.5, y = 10, label = as.character(uppers)) +
+  annotate("text", x = lowers - 0.5, y = 10, label = as.character(lowers)) +
   geom_vline(xintercept = uppers, colour = "red") +
-  geom_text(aes(x = uppers + 5, label = as.character(uppers), y = 10)) +
-  geom_text(aes(x = lowers - 5, label = as.character(lowers), y = 10)) +
   geom_vline(xintercept = lowers, colour = "red") +
-  scale_x_continuous(limits = c(0, 150),
+  geom_vline(xintercept = sealevel, colour = "red", linetype = "dashed") +
+  scale_x_continuous(limits = c(5, 20), breaks = c(0, 5, 10, sealevel, 20),
                      name = "Meters above present sea level") +
   theme_bw()  +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
         axis.line.x = element_line("black"),
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank())
+
+rclmat <- matrix(c(sealevel, Inf, NA, 0, sealevel, 1),
+                 ncol = 3, byrow = TRUE)
+classarea <- terra::classify(sitearea, rclmat)
+seapoly <- st_combine(st_as_sf(terra::as.polygons(classarea)))
+
+
+locbbox <- st_bbox(sitel)
+locbbox[1:2] <- locbbox[1:2] - 100
+locbbox[3:4] <- locbbox[3:4] + 100
+
+anc <- as.numeric(c(locbbox$ymin, locbbox$xmax))
+
+
+seaplot1 <- ggplot() +
+  geom_sf(data = seapoly, fill = "grey", colour = NA) +
+  geom_sf(data = sitel, fill = NA, colour = "red") +
+  labs(title =  paste0("Sealevel at ", sealevel, " m above present")) +
+  coord_sf(xlim = c(locbbox[1], locbbox[3]),
+           ylim = c(locbbox[2], locbbox[4]), expand = FALSE) +
+  ggsn::scalebar(data = sitel, dist = 20, dist_unit = "m",
+                 transform = FALSE, st.size = 4, height = 0.1,
+                 border.size = 0.1, st.dist = 0.2,
+                 anchor = c(x = anc[2] - 10, y = anc[1] + 10)) +
+  theme_bw() + theme(axis.title=element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.text.x = element_blank(),
+                     rect = element_rect(),
+                     axis.ticks = element_blank(),
+                     panel.grid.major = element_blank(),
+                     legend.position = "none")
+
+elevsamp1
+
+seaplot1
+
+# Vertical distance
+siteelev <- extract(sitearea, vect(sitel), fun = min)[2]
+vertdist <-  min(siteelev[1:nrow(siteelev),]) - sealevel
+
+# Horisontal distance
+distline <- st_nearest_points(sitel, st_cast(seapoly,"MULTILINESTRING"))
+distpts <- st_cast(distline, "POINT")
+hordist <- st_length(distline)
+
+# Topographic distance
+coords <- rbind(st_coordinates(distpts[1]),
+                st_coordinates(distpts[2]))
+rownames(coords) <- c("loc", "sea")
+topodist <- topoDist(raster::raster(sitearea), coords,
+                     paths = TRUE)
+topdist <- topodist[[1]]["loc", "sea"]
 
 
 location_bbox <- bboxpoly(sitel, 250)
@@ -388,6 +475,7 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
     if(st_overlaps(seapoly, sitel, sparse = FALSE)){
       results$hordist[i] <- 0
       results$topodist[i] <- 0
+      results$vertdist[i] <- 0
 
       # Else...if the entire site polygon is in the sea
     } else if(st_contains(seapoly, sitel, sparse = FALSE)){
@@ -466,7 +554,7 @@ output <- sample_shoreline(samps = 1000, sitel = sitel, sitecurve = sitecurve,
 # Save output here in case of crash in the following data handling and
 # visualisation.
 save(output,
-     file = here::here("analysis/data/derived_data/lv1.RData"))
+     file = here::here("analysis/data/derived_data/vm1a.RData"))
 
 seapol <- output$seapol
 topopath <- output$topop
@@ -474,19 +562,24 @@ topopath <- output$topop
 end_time <- Sys.time()
 end_time - start_time
 
-grid <- st_make_grid(sitearea,
-                   cellsize = c(res(sitearea)[1], res(sitearea)[2]),
-                   n = c(ncol(sitearea), nrow(sitearea)))
+# Define function to count the number of times the sea is simulated as present
+# for all raster cells
+sea_overlaps <- function(sitearea, seapolygons){
+  grid <- st_make_grid(sitearea,
+                       cellsize = c(res(sitearea)[1], res(sitearea)[2]),
+                       n = c(ncol(sitearea), nrow(sitearea)))
 
-grid_intersects <- st_intersects(grid, seapol)
-overlaps <- sapply(grid_intersects, length)
-overlapgrid <- data.frame(grid, overlaps) %>%
-  st_as_sf()
+  grid_intersects <- st_intersects(grid, seapol)
+  overlaps <- sapply(grid_intersects, length)
+  overlapgrid <- data.frame(grid, overlaps) %>%
+    st_as_sf()
 
-shoremaplv1 <- tmap_grob(tm_shape(overlapgrid, unit = "m") + tm_fill(col = "overlaps", title = "", palette = "Greys", alpha = 0.5, legend.show = FALSE) +
+}
+
+shoremaplv1 <- tmap_grob(tm_shape(overlapgrid, unit = "m") + tm_fill(col = "overlaps", title = "", legend.show = FALSE, palette = "Greys", alpha = 0.5) +
   tm_shape(sitel) + tm_borders(col = "black", lwd = 1) +
   #tm_shape(topopath) + tm_lines() +
-  tm_legend(legend.outside = TRUE) + tm_scale_bar(text.size = 0.8))
+  tm_legend(legend.outside = TRUE) + tm_scale_bar(text.size = 0.8) + tm_layout(frame = FALSE))
 
 distplotlv1 <- ggplot() + geom_boxplot(aes(x = "Vertical distance", y = output$results$vertdist)) +
   geom_boxplot(aes(x = "Horisontal distance", y = output$results$hordist)) +
@@ -494,7 +587,9 @@ distplotlv1 <- ggplot() + geom_boxplot(aes(x = "Vertical distance", y = output$r
   labs(y = "Distance from shoreline (m)", x = "") +
   theme_bw()
 
-lv1plot <- plot_grid(lv1dat, shoremaplv1, distplotlv1, nrow = 1)
+tdal <- plot_grid(shoremaplv1, distplotlv1)
+
+vm1aplot <- plot_grid(sitdat, shoremaplv1, distplotlv1, nrow = 1)
 
 # tm_shape(locationarea, unit = "m") +
 #   tm_raster(palette = ,
