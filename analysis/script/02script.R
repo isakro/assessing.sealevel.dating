@@ -1,4 +1,5 @@
 library(tidyverse)
+library(here)
 library(sf)
 library(tmap)
 library(cowplot)
@@ -9,19 +10,19 @@ load(here::here("analysis/data/derived_data/01data.RData"))
 
 # Read in displacement curves
 arendal_raw <- read.csv(
-  here::here("analysis/data/raw_data/displacement_curves/bjornebu.csv"))
+  here("analysis/data/raw_data/displacement_curves/bjornebu.csv"))
 tvedestrand_raw <- read.csv(
-  here::here("analysis/data/raw_data/displacement_curves/hanto.csv"))
+  here("analysis/data/raw_data/displacement_curves/hanto.csv"))
 larvik_raw <- read.csv(
-  here::here("analysis/data/raw_data/displacement_curves/gunnarsrod.csv"))
+  here("analysis/data/raw_data/displacement_curves/gunnarsrod.csv"))
 skoppum_raw <- read.csv(
-  here::here("analysis/data/raw_data/displacement_curves/skoppum.csv"))
+  here("analysis/data/raw_data/displacement_curves/skoppum.csv"))
 
 # Read in coast polgyon
-coast <- read_sf(here::here("analysis/data/raw_data/coast.gpkg"))
+coast <- read_sf(here("analysis/data/raw_data/coast.gpkg"))
 
 # Read in isobase centre points
-centpts <- read_sf(here::here("analysis/data/raw_data/isobase_centrepts.gpkg"))
+centpts <- read_sf(here("analysis/data/raw_data/isobase_centrepts.gpkg"))
 
 #### Setting up displacement curves ####
 
@@ -149,49 +150,7 @@ isopolys$isobase2 <- c("Tvedestrand", "Arendal", "Tvedestrand", "Larvik",
                        "Larvik")
 isopolys$dir_rel_1 <- c("sw", "sw", "sw", "sw", "nw")
 
-# Define function to interpolate displacement curve for a given location,
-# based on distance to curves on two provided isobases on the
-# north-east to south-west axis perpendicular to the isobases.
-interpolate_curve <- function(years, isobase1, isobase2, target, dispdat,
-                              isodat, direction_rel_curve1){
-
-  # Distance between "northern" and "southern" isobase
-  dist <- st_distance(filter(isodat, name == isobase1),
-                      filter(isodat, name == isobase2))
-
-  curve1 <- filter(dispdat, name == isobase1)
-  curve2 <- filter(dispdat, name == isobase2)
-
-  # Difference in displacement per meter between the the curves,
-  # upper confidence limit
-  prm_u <- (dplyr::select(curve1, upperelev) -
-              dplyr::select(curve2, upperelev))/ as.numeric(dist)
-  # Difference in difference per meter, lower confidence limit
-  prm_l <- (dplyr::select(curve1, lowerelev) -
-              dplyr::select(curve2, lowerelev))/ as.numeric(dist)
-
-  # Distance to target isobase from isobase of curve 1
-  distfrom1 <- st_distance(filter(isodat, name == isobase1),
-                           target)
-
-  # Find and return values for the target isobase
-  uppervals <- prm_u * as.numeric(distfrom1)
-  lowervals <- prm_l * as.numeric(distfrom1)
-
-  # If the direction relative to curve1 is southwest the values are subtracted,
-  # if not the values are added.
-  if (direction_rel_curve1 == "sw"){
-    upperelev <- dplyr::select(curve1, upperelev) - uppervals
-    lowerelev <- dplyr::select(curve1, lowerelev) - lowervals
-  } else {
-    upperelev <- dplyr::select(curve1, upperelev) + uppervals
-    lowerelev <- dplyr::select(curve1, lowerelev) + lowervals
-  }
-  values <- cbind.data.frame(years, upperelev, lowerelev)
-  return(values)
-}
-
 # Save required data
 save(displacement_curves, isobases, isopolys, xvals,
-     file = here::here("analysis/data/derived_data/02data.RData"))
+     file = here("analysis/data/derived_data/02data.RData"))
 

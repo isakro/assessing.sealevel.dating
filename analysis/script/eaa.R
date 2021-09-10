@@ -578,8 +578,7 @@ sea_overlaps <- function(sitearea, seapolygons){
 
 shoremaplv1 <- tmap_grob(tm_shape(overlapgrid, unit = "m") + tm_fill(col = "overlaps", title = "", legend.show = FALSE, palette = "Greys", alpha = 0.5) +
   tm_shape(sitel) + tm_borders(col = "black", lwd = 1) +
-  #tm_shape(topopath) + tm_lines() +
-  tm_legend(legend.outside = TRUE) + tm_scale_bar(text.size = 0.8) + tm_layout(frame = FALSE))
+  tm_legend(legend.outside = TRUE) + tm_scale_bar(text.size = 0.8))
 
 distplotlv1 <- ggplot() + geom_boxplot(aes(x = "Vertical distance", y = output$results$vertdist)) +
   geom_boxplot(aes(x = "Horisontal distance", y = output$results$hordist)) +

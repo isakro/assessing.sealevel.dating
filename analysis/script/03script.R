@@ -1,19 +1,13 @@
-library(here)
-library(tidyverse)
-library(sf)
-library(ggridges)
-library(tmap)
-library(tmaptools)
-library(cowplot)
-library(terra)
-library(oxcAAR)
-library(vapour)
-library(topoDistance)
-quickSetupOxcal()
-
-source(here("analysis/script/02script.R"))
-load(here("analysis/data/derived_data/01data.RData"))
-load(here("analysis/data/derived_data/02data.RData"))
+# Function for creating a bounding box polygon around a feature,
+# the size of which can be adjusted. Used for plotting purposes
+# and ease of raster handling.
+bboxpoly <- function(feature, xy_adjustment) {
+  feature_bbox <- st_bbox(feature)
+  feature_bbox[1:2] <- feature_bbox[1:2] - xy_adjustment
+  feature_bbox[3:4] <-feature_bbox[3:4] + xy_adjustment
+  feature_bboxpoly <- st_as_sf(st_as_sfc(feature_bbox))
+  return(feature_bboxpoly)
+}
 
 # Function to identify and load the correct raster
 load_raster <- function(dtmfolder, sitelimit) {
@@ -48,6 +42,48 @@ load_raster <- function(dtmfolder, sitelimit) {
 
   # Return the correct raster
   return(rast(craster$path))
+}
+
+# Define function to interpolate displacement curve for a given location,
+# based on distance to curves on two provided isobases on the
+# north-east to south-west axis perpendicular to the isobases.
+interpolate_curve <- function(years, isobase1, isobase2, target, dispdat,
+                              isodat, direction_rel_curve1){
+
+  # Distance between "northern" and "southern" isobase
+  dist <- st_distance(filter(isodat, name == isobase1),
+                      filter(isodat, name == isobase2))
+
+  curve1 <- filter(dispdat, name == isobase1)
+  curve2 <- filter(dispdat, name == isobase2)
+
+  # Difference in displacement per meter between the the curves,
+  # upper confidence limit
+  prm_u <- (dplyr::select(curve1, upperelev) -
+              dplyr::select(curve2, upperelev))/ as.numeric(dist)
+  # Difference in difference per meter, lower confidence limit
+  prm_l <- (dplyr::select(curve1, lowerelev) -
+              dplyr::select(curve2, lowerelev))/ as.numeric(dist)
+
+  # Distance to target isobase from isobase of curve 1
+  distfrom1 <- st_distance(filter(isodat, name == isobase1),
+                           target)
+
+  # Find and return values for the target isobase
+  uppervals <- prm_u * as.numeric(distfrom1)
+  lowervals <- prm_l * as.numeric(distfrom1)
+
+  # If the direction relative to curve1 is southwest the values are subtracted,
+  # if not the values are added.
+  if (direction_rel_curve1 == "sw"){
+    upperelev <- dplyr::select(curve1, upperelev) - uppervals
+    lowerelev <- dplyr::select(curve1, lowerelev) - lowervals
+  } else {
+    upperelev <- dplyr::select(curve1, upperelev) + uppervals
+    lowerelev <- dplyr::select(curve1, lowerelev) + lowervals
+  }
+  values <- cbind.data.frame(years, upperelev, lowerelev)
+  return(values)
 }
 
 
@@ -99,23 +135,6 @@ model_dates <- function(sitedates){
 
   # Return results
   return(rbind(prior, posterior))
-}
-
-# Define function to plot modelled and unmodelled 14C dates
-plot_dates <- function(datedata, sitename){
- datedata %>%
-  filter(!(name %in% c("Start", "End"))) %>%
-  arrange(class) %>%
-  ggplot() +
-  ggridges::geom_ridgeline(aes(x = dates, y = name,
-                               height = probabilities * 100,
-                               fill = class, alpha = class)) +
-  scale_fill_manual(values = c("Posterior sum" = "grey35",
-                               "aprior" = "white", "bposterior" = "grey")) +
-  scale_alpha_manual(values = c("Posterior sum" = 1, "aprior" = 0.1,
-                                "bposterior" = 0.7)) +
-  labs(title = sitename, y = "", x = "cal BCE")
-  + theme_bw() + theme(legend.position = "none")
 }
 
 # Define function to simulate shoreline and measure distances given a single
@@ -248,3 +267,41 @@ sea_overlaps <- function(sitearea, seapolygons){
   return(overlapgrid)
 }
 
+# Define function to plot site relative to simulated sea-levels
+shore_plot <- function(overlapgrid, sitelimit) {
+  tm_shape(overlapgrid, unit = "m") +
+    tm_fill(col = "overlaps", title = "",
+            legend.show = FALSE, palette = "Greys", alpha = 0.5) +
+    tm_shape(sitelimit) +
+    tm_borders(col = "black", lwd = 1) +
+    tm_scale_bar(text.size = 0.8)
+
+}
+
+# Define function to plot boxplots of distance from site to shoreline across
+# simulation runs
+distance_plot <- function(data) {
+  ggplot(data) +
+    geom_boxplot(aes(x = "Vertical distance", y = vertdist)) +
+    geom_boxplot(aes(x = "Horisontal distance", y = hordist)) +
+    geom_boxplot(aes(x = "Topographic distance", y = topodist)) +
+    labs(y = "Distance from shoreline (m)", x = "") +
+    theme_bw()
+}
+
+# Define function to plot modelled and unmodelled 14C dates
+plot_dates <- function(datedata, sitename){
+  datedata %>%
+    filter(!(name %in% c("Start", "End"))) %>%
+    arrange(class) %>%
+    ggplot() +
+    ggridges::geom_ridgeline(aes(x = dates, y = name,
+                                 height = probabilities * 100,
+                                 fill = class, alpha = class)) +
+    scale_fill_manual(values = c("Posterior sum" = "grey35",
+                                 "aprior" = "white", "bposterior" = "grey")) +
+    scale_alpha_manual(values = c("Posterior sum" = 1, "aprior" = 0.1,
+                                  "bposterior" = 0.7)) +
+    labs(title = sitename, y = "", x = "cal BCE") +
+  theme_bw() + theme(legend.position = "none")
+}

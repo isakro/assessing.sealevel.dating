@@ -1,23 +1,25 @@
 library(tidyverse)
 library(sf)
-library(tmap)
 library(oxcAAR)
+library(here)
 quickSetupOxcal()
 
 # Read in site and radiocarbon data
-sites <- read.csv(here::here('analysis/data/raw_data/sites.csv'))
-rcarbon <- read.csv(here::here('analysis/data/raw_data/radiocarbon.csv'))
+sites <- read.csv(here('analysis/data/raw_data/sites.csv'))
+rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
 
 # Read in site limits and combine into a single object
-sitespol <- read_sf(here::here('analysis/data/raw_data/site_limits/site_limits.gpkg'))
-siteslpts <- read_sf(here::here('analysis/data/raw_data/site_limits/site_limits_pts.gpkg'))
+sitespol <- read_sf(
+  here('analysis/data/raw_data/site_limits/site_limits.gpkg'))
+siteslpts <- read_sf(
+  here('analysis/data/raw_data/site_limits/site_limits_pts.gpkg'))
 sitesl <- st_zm(rbind(sitespol, siteslpts))
 
 
 # Read in site features and combine
-pts <- read_sf(here::here('analysis/data/raw_data/site_features/points.gpkg'))
-lines <- read_sf(here::here('analysis/data/raw_data/site_features/lines.gpkg'))
-polygons <- read_sf(here::here('analysis/data/raw_data/site_features/polygons.gpkg'))
+pts <- read_sf(here('analysis/data/raw_data/site_features/points.gpkg'))
+lines <- read_sf(here('analysis/data/raw_data/site_features/lines.gpkg'))
+polygons <- read_sf(here('analysis/data/raw_data/site_features/polygons.gpkg'))
 sitesf <- st_zm(rbind(pts, lines, polygons))
 
 # Assign placeholder for NA in Askeladden ID for joins
@@ -63,4 +65,4 @@ sites_sa <- site_limits %>% filter(name %in% unique(rcarb_sa$site_name))
 
 
 save(caldates, rcarb_sa, sites_sa,
-     file = here::here("analysis/data/derived_data/01data.RData"))
+     file = here("analysis/data/derived_data/01data.RData"))

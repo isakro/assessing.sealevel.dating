@@ -1,0 +1,56 @@
+---
+title: "Supplementary material"
+author:
+  - Myfirstname Mylastname:
+      email: fl@oneplace.edu
+      institute: [UofO]
+      correspondence: true
+institute:
+  - UofO: University of One Place
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+    bookdown::word_document2:
+      fig_caption: yes
+      reference_docx: "../templates/template.docx" # Insert path for the DOCX file
+      pandoc_args:
+      - --lua-filter=../templates/scholarly-metadata.lua
+      - --lua-filter=../templates/author-info-blocks.lua
+      - --lua-filter=../templates/pagebreak.lua
+bibliography: references.bib
+csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
+---
+
+```{r data_functions, eval = FALSE}
+# Load in required functions and prepared data
+library(here)
+```
+
+```{r data_functions, eval = TRUE, warning = FALSE}
+# Load in required functions and prepared data
+source(here("analysis/script/02script.R"))
+source(here("analysis/script/03script.R"))
+load(here("analysis/data/derived_data/01data.RData"))
+load(here("analysis/data/derived_data/02data.RData"))
+```
+
+```{r , cache= = TRUE}
+
+```
+
+```{r demo-inline-code}
+
+```
+
+
+\newpage
+
+# References 
+
+
+<div id="refs"></div>
+
+\newpage
+
+### Colophon
+
+This report was generated on `r Sys.time()` using the following computational environment and dependencies: 
