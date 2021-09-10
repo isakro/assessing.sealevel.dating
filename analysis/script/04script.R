@@ -28,43 +28,13 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 # Example site
 sitename <- "Langangen Vestgård 1"
 
-sitel <- filter(sites_sa, name == sitename)
-siter <- filter(rcarb_sa, site_name == sitename)
-
-# Model dates
-datedat <- model_dates(siter)
-
-# Interpolate displacement curve to the site location
-sitecurve <- interpolate_curve(years = xvals,
-                               isobase1 = sitel$isobase1,
-                               isobase2 = sitel$isobase2,
-                               target = sitel,
-                               dispdat = displacement_curves,
-                               isodat = isobases,
-                               direction_rel_curve1 = sitel$dir_rel_1)
-# Add site name
-sitecurve$name <- sitename
-
-# Load correct regional raster
-dtm <- load_raster(dtmpath, sitel)
-
-# Create bounding box polygon
-location_bbox <- bboxpoly(sitel, 250)
-
-# Use this to clip the dtm to the site area
-sitearea <- terra::crop(dtm, location_bbox)
-
-# Simulate sea-level and retrieve distances (takes some time)
-output <- sample_shoreline(samps = 1000, sitel, sitecurve, sitearea,
-                           posteriorprobs)
-
-# Generate grid with dtm resolution holding number of overlaps for each cell
-# (also takes quite some time to execute)
-simsea <- sea_overlaps(sitearea, output$seapol)
+# Apply functions (see 03script.R)
+output <- apply_functions(sitename, dtmpath, displacement_curves, isobases,
+                          nsamp = 1000)
 
 # Create plots
-datplot <- plot_dates(datedat, sitename)
-smap <- tmap_grob(shore_plot(simsea, sitel))
+datplot <- plot_dates(output$datedat, sitename)
+smap <- tmap_grob(shore_plot(output$simsea, output$sitel))
 distplot <- distance_plot(output$results)
 
 # Arrange plots

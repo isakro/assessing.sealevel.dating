@@ -1,47 +1,51 @@
-# Function for creating a bounding box polygon around a feature,
-# the size of which can be adjusted. Used for plotting purposes
-# and ease of raster handling.
-bboxpoly <- function(feature, xy_adjustment) {
-  feature_bbox <- st_bbox(feature)
-  feature_bbox[1:2] <- feature_bbox[1:2] - xy_adjustment
-  feature_bbox[3:4] <-feature_bbox[3:4] + xy_adjustment
-  feature_bboxpoly <- st_as_sf(st_as_sfc(feature_bbox))
-  return(feature_bboxpoly)
-}
+# Define function to model a series of dates using the Boundary
+# function from oxcal, sum the posterior density estimate, and return
+# all the data for plotting and further analysis (including raw probabilites).
+model_dates <- function(sitedates){
+  dates <- R_Date(sitedates$lab_code, sitedates$c14_bp, sitedates$error)
+  oxcal_code <- paste0('
+  Plot()
+   {
+    Sequence()
+    {
+     Boundary("Start");
+     Phase()
+     {
+     ',
+                       dates,
+                       '
+     Sum("Sum");
+     };
+     Boundary("End");
+    };
+  };')
 
-# Function to identify and load the correct raster
-load_raster <- function(dtmfolder, sitelimit) {
+  # Execute the OxCal script and retrieve the results
+  oxcal_exec <- executeOxcalScript(oxcal_code)
+  oxcal_read <- readOxcalOutput(oxcal_exec)
+  oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
 
-  # Number of raster files in total
-  nrasts <- length(list.files(dtmfolder))
+  # Retrieve the raw probabilities for individual 14C-dates
+  prior <- get_raw_probabilities(oxcal_data)
+  names(prior) <- paste0(get_name(oxcal_data))
+  prior <- prior[!(names(prior) %in% c("Sum", "End", "Start",
+                                       "character(0)"))]
+  prior <-  bind_rows(prior, .id = "name")
+  prior$class <- "aprior"
 
-  # Empty data frame to hold raster data
-  rasterexts <- data.frame(matrix(ncol = 5, nrow = nrasts))
-  names(rasterexts) <- c("xmin", "xmax", "ymin", "ymax", "path")
+  # Retrieve the posterior probabilities for individual 14C-dates and the
+  # posterior sum.
+  posterior <- get_posterior_probabilities(oxcal_data)
+  names(posterior) <- get_name(oxcal_data)
+  posterior <- bind_rows(posterior[names(posterior) != "character(0)"],
+                         .id = "name")
+  posterior$class <- "bposterior"
+  posterior <- mutate(posterior, class =
+                        ifelse(name == "Sum", "Posterior sum", class),
+                      name = ifelse(name == "Sum", "Posterior sum", name))
 
-  # Loop over and retrieve raster info using the package vapour() without
-  # actually loading the raster
-  for (i in 1:nrasts){
-    # Path to the current raster
-    path <- here(list.files(dtmfolder, full.names = TRUE)[i])
-
-    # Retrieve raster extent
-    rextent <- vapour_raster_info(path)$extent
-
-    # Populate row in the data frame
-    rasterexts[i,] <- c(rextent[1], rextent[2], rextent[3], rextent[4], path)
-  }
-
-  sitebbox <- st_bbox(sitelimit)
-
-  # Identify correct raster
-  craster <- rasterexts %>% filter(xmin < sitebbox$xmin &
-                          xmax > sitebbox$xmax &
-                          ymin < sitebbox$ymin &
-                          ymax > sitebbox$ymax)
-
-  # Return the correct raster
-  return(rast(craster$path))
+  # Return results
+  return(rbind(prior, posterior))
 }
 
 # Define function to interpolate displacement curve for a given location,
@@ -86,55 +90,50 @@ interpolate_curve <- function(years, isobase1, isobase2, target, dispdat,
   return(values)
 }
 
+# Function to identify and load the correct raster
+load_raster <- function(dtmfolder, sitelimit) {
 
-# Define function to model a series of dates using the Boundary
-# function from oxcal, sum the posterior density estimate, and return
-# all the data for plotting and further analysis (including raw probabilites).
-model_dates <- function(sitedates){
-  dates <- R_Date(sitedates$lab_code, sitedates$c14_bp, sitedates$error)
-  oxcal_code <- paste0('
-  Plot()
-   {
-    Sequence()
-    {
-     Boundary("Start");
-     Phase()
-     {
-     ',
-                       dates,
-                       '
-     Sum("Sum");
-     };
-     Boundary("End");
-    };
-  };')
+  # Number of raster files in total
+  nrasts <- length(list.files(dtmfolder))
 
-  # Execute the OxCal script and retrieve the results
-  oxcal_exec <- executeOxcalScript(oxcal_code)
-  oxcal_read <- readOxcalOutput(oxcal_exec)
-  oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
+  # Empty data frame to hold raster data
+  rasterexts <- data.frame(matrix(ncol = 5, nrow = nrasts))
+  names(rasterexts) <- c("xmin", "xmax", "ymin", "ymax", "path")
 
-  # Retrieve the raw probabilities for individual 14C-dates
-  prior <- get_raw_probabilities(oxcal_data)
-  names(prior) <- paste0(get_name(oxcal_data))
-  prior <- prior[!(names(prior) %in% c("Sum", "End", "Start",
-                                       "character(0)"))]
-  prior <-  bind_rows(prior, .id = "name")
-  prior$class <- "aprior"
+  # Loop over and retrieve raster info using the package vapour() without
+  # actually loading the raster
+  for (i in 1:nrasts){
+    # Path to the current raster
+    path <- here(list.files(dtmfolder, full.names = TRUE)[i])
 
-  # Retrieve the posterior probabilities for individual 14C-dates and the
-  # posterior sum.
-  posterior <- get_posterior_probabilities(oxcal_data)
-  names(posterior) <- get_name(oxcal_data)
-  posterior <- bind_rows(posterior[names(posterior) != "character(0)"],
-                         .id = "name")
-  posterior$class <- "bposterior"
-  posterior <- mutate(posterior, class =
-                      ifelse(name == "Sum", "Posterior sum", class),
-                      name = ifelse(name == "Sum", "Posterior sum", name))
+    # Retrieve raster extent
+    rextent <- vapour_raster_info(path)$extent
 
-  # Return results
-  return(rbind(prior, posterior))
+    # Populate row in the data frame
+    rasterexts[i,] <- c(rextent[1], rextent[2], rextent[3], rextent[4], path)
+  }
+
+  sitebbox <- st_bbox(sitelimit)
+
+  # Identify correct raster
+  craster <- rasterexts %>% filter(xmin < sitebbox$xmin &
+                                     xmax > sitebbox$xmax &
+                                     ymin < sitebbox$ymin &
+                                     ymax > sitebbox$ymax)
+
+  # Return the correct raster
+  return(rast(craster$path))
+}
+
+# Function for creating a bounding box polygon around a feature,
+# the size of which can be adjusted. Used for plotting purposes
+# and ease of raster handling.
+bboxpoly <- function(feature, xy_adjustment) {
+  feature_bbox <- st_bbox(feature)
+  feature_bbox[1:2] <- feature_bbox[1:2] - xy_adjustment
+  feature_bbox[3:4] <-feature_bbox[3:4] + xy_adjustment
+  feature_bboxpoly <- st_as_sf(st_as_sfc(feature_bbox))
+  return(feature_bboxpoly)
 }
 
 # Define function to simulate shoreline and measure distances given a single
@@ -149,7 +148,7 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
   for(i in 1:samps){
     # Set up sampling frame from sum of posterior densities
-    samplingframe <- list(x = posteriorprobs[["date_grid"]],
+    samplingframe <- list(x = posteriorprobs[["dates"]],
                           y = posteriorprobs[["probabilities"]])
     # Draw single sample date
     sdate <- with(samplingframe, sample(x, size = 1, prob = y))
@@ -265,6 +264,53 @@ sea_overlaps <- function(sitearea, seapolygons){
   overlapgrid <- data.frame(grid, overlaps) %>%
     st_as_sf()
   return(overlapgrid)
+}
+
+# Function that combines all of the above
+apply_functions <- function(sitename, dtmpath, displacement_curves, isobases,
+                            nsamp = 1000){
+
+  sitel <- filter(sites_sa, name == sitename)
+  siter <- filter(rcarb_sa, site_name == sitename)
+
+  # Model dates
+  datedat <- model_dates(siter)
+
+  # Interpolate displacement curve to the site location
+  sitecurve <- interpolate_curve(years = xvals,
+                                 isobase1 = sitel$isobase1,
+                                 isobase2 = sitel$isobase2,
+                                 target = sitel,
+                                 dispdat = displacement_curves,
+                                 isodat = isobases,
+                                 direction_rel_curve1 = sitel$dir_rel_1)
+  # Add site name
+  sitecurve$name <- sitename
+
+  # Load correct regional raster
+  dtm <- load_raster(dtmpath, sitel)
+
+  # Create bounding box polygon
+  location_bbox <- bboxpoly(sitel, 250)
+
+  # Use this to clip the dtm to the site area
+  sitearea <- terra::crop(dtm, location_bbox)
+
+  # Retrieve the posterior density estimate
+  posteriorprobs <- filter(datedat, datedat$class == "Posterior sum")
+
+  # Simulate sea-level and retrieve distances (takes some time)
+  output <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
+                             posteriorprobs)
+
+  # Generate grid with dtm resolution holding number of overlaps for each cell
+  # (also takes quite some time to execute)
+  simsea <- sea_overlaps(sitearea, output$seapol)
+
+  output$simsea <- simsea
+  output$datedat <- datedat
+  output$sitel <- sitel
+  return(output)
 }
 
 # Define function to plot site relative to simulated sea-levels
