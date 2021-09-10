@@ -28,7 +28,7 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 # Example site
 sitename <- "Langangen Vestgård 1"
 
-# Apply functions (see 03script.R)
+# Apply functions (see 03script.R) - likely takes a few hours to execute
 output <- apply_functions(sitename, dtmpath, displacement_curves, isobases,
                           nsamp = 1000)
 
@@ -37,5 +37,5 @@ datplot <- plot_dates(output$datedat, sitename)
 smap <- tmap_grob(shore_plot(output$simsea, output$sitel))
 distplot <- distance_plot(output$results)
 
-# Arrange plots
+# Arrange and call to plot
 plot_grid(datplot, smap, distplot, nrow = 1)

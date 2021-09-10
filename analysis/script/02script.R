@@ -6,7 +6,7 @@ library(cowplot)
 library(era)
 
 # Load radiocarbon and site data from the first script
-load(here::here("analysis/data/derived_data/01data.RData"))
+load(here("analysis/data/derived_data/01data.RData"))
 
 # Read in displacement curves
 arendal_raw <- read.csv(
@@ -143,8 +143,8 @@ plot_grid(isocurves_plot, iso_map)
 outline <- st_as_sf(st_as_sfc(centpts_bb))
 # Then split this by the isobases
 isopolys <- st_collection_extract(lwgeom::st_split(outline, isobases))
-# Then assign isobasenames to the polygons and the direction (in case of ne of
-# both).
+# Then assign isobasenames to the polygons and the direction (in case both are
+# to the north-east).
 isopolys$isobase1 <- c("Arendal", "Tvedestrand", "Larvik", "Halden", "Halden")
 isopolys$isobase2 <- c("Tvedestrand", "Arendal", "Tvedestrand", "Larvik",
                        "Larvik")

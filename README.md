@@ -5,24 +5,18 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/isakro/assessing.sealevel.dating/master?urlpath=rstudio)
 
-This repository contains the data and code for our paper:
-
-> Authors, (YYYY). *Title of your paper goes here*. Name of journal/book
-> <https://doi.org/xxx/xxx>
-
-Our pre-print is online here:
-
-> Authors, (YYYY). *Title of your paper goes here*. Name of
-> journal/book, Accessed 14 Aug 2021. Online at
-> <https://doi.org/xxx/xxx>
+<!-- This repository contains the data and code for our paper: -->
+<!-- > Authors, (YYYY). _assessing.sealevel.dating_. Name of journal/book <https://doi.org/xxx/xxx> -->
+<!-- Our pre-print is online here: -->
+<!-- > Authors, (YYYY). _assessing.sealevel.dating_. Name of journal/book, Accessed 10 Sep 2021. Online at <https://doi.org/xxx/xxx> -->
 
 ### How to cite
 
 Please cite this compendium as:
 
-> Authors, (2021). *Compendium of R code and data for Title of your
-> paper goes here*. Accessed 14 Aug 2021. Online at
-> <https://doi.org/xxx/xxx>
+> Roalkvam, I (2021). *Compendium of R code and data for
+> assessing.sealevel.dating*. Accessed 10 Sep 2021. Online at
+> <https://doi.org/10.17605/OSF.IO/7F9SU>
 
 ## Contents
 

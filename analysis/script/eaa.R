@@ -35,6 +35,65 @@ countries <- st_read(here::here('analysis/data/raw_data/naturalearth_countries.g
 sites_sa <- st_join(st_make_valid(sites_sa), isopolys, join = st_intersects, largest = TRUE)
 site_pts <- st_centroid(sites_sa)
 
+
+model_rcarb <- function(data){
+
+  # Format individual dates for R_Date in Oxcal
+  dates <- R_Date(data[["lab_code"]], data[["c14_bp"]], data[["error"]])
+
+  # Manually compile rest of OxCal code
+  oxcal_code <- paste0('
+  Plot()
+   {
+    Sequence()
+    {
+     Boundary("Start");
+     Phase()
+     {
+    ',
+                       dates,
+                       '
+     Sum("Sum");
+     };
+     Boundary("End");
+    };
+  };')
+
+  # Run OxCal code - wrapped this in some functions to  not print to
+  # rmarkdown
+  invisible(capture.output(oxcal_exec <- executeOxcalScript(oxcal_code)))
+  oxcal_read <- readOxcalOutput(oxcal_exec)
+  # Note that parseOxcalOutput() defaults to only returning individual dates,
+  # specified with only.R_Date
+  oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
+
+  # Assemble data frame to be returned
+  posterior <- data.frame(
+    probabilities = oxcal_data$Sum$posterior_probabilities$probabilities,
+    date_grid = oxcal_data$Sum$posterior_probabilities$dates,
+    site = data[["site_name"]][1])
+
+  # Return data
+  return(posterior)
+}
+
+# Apply modelling function to the radiocarbon dates, grouped by site name
+posteriors <- rcarb_sa %>%
+  group_by(site_name) %>%
+  group_map(~ model_rcarb(.), .keep = TRUE)
+
+rcarb_data <- do.call(rbind, posteriors)
+
+ggplot(rcarb_data) +
+  geom_ridgeline(aes(x = date_grid, y = site, height = probabilities * 100,
+                     fill = site,
+                     colour = site)) +
+  xlab("Cal. BCE") +
+  theme_classic() +
+  theme(axis.title.y = element_blank()) +
+  guides(fill =  guide_legend(title.position = "top", title.hjust = 0.5),
+         colour = FALSE)
+
 # Create bounding box around the sites, both for extent indicator on the
 # overview map and to create basemap for the site overview.
 sitbbox2 <- st_bbox(site_pts)
