@@ -39,3 +39,6 @@ distplot <- distance_plot(output$results)
 
 # Arrange and call to plot
 plot_grid(datplot, smap, distplot, nrow = 1)
+
+save(output,
+     file = here::here("analysis/data/derived_data/lv1.RData"))

@@ -82,9 +82,16 @@ posteriors <- rcarb_sa %>%
   group_by(site_name) %>%
   group_map(~ model_rcarb(.), .keep = TRUE)
 
-rcarb_data <- do.call(rbind, posteriors)
 
-ggplot(rcarb_data) +
+posteriors_t <- rcarb_sa %>%
+  filter(rcarb_cor == "t") %>%
+  group_by(site_name) %>%
+  group_map(~ model_rcarb(.), .keep = TRUE)
+
+rcarb_data <- do.call(rbind, posteriors)
+rcarb_data_t <- do.call(rbind, posteriors)
+
+ggplot(rcarb_data_t) +
   geom_ridgeline(aes(x = date_grid, y = site, height = probabilities * 100,
                      fill = site,
                      colour = site)) +
@@ -648,6 +655,8 @@ distplotlv1 <- ggplot() + geom_boxplot(aes(x = "Vertical distance", y = output$r
 tdal <- plot_grid(shoremaplv1, distplotlv1)
 
 vm1aplot <- plot_grid(sitdat, shoremaplv1, distplotlv1, nrow = 1)
+
+
 
 # tm_shape(locationarea, unit = "m") +
 #   tm_raster(palette = ,
