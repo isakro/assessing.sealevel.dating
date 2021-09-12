@@ -9,7 +9,13 @@ library(terra)
 library(oxcAAR)
 library(vapour)
 library(topoDistance)
+library(IRanges)
 quickSetupOxcal()
+
+# To install IRanges:
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("IRanges")
+
 
 # Load required functions and prepared data
 source(here("analysis/script/03script.R"))

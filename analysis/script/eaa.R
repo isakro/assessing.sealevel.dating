@@ -89,7 +89,7 @@ posteriors_t <- rcarb_sa %>%
   group_map(~ model_rcarb(.), .keep = TRUE)
 
 rcarb_data <- do.call(rbind, posteriors)
-rcarb_data_t <- do.call(rbind, posteriors)
+rcarb_data_t <- do.call(rbind, posteriors_t)
 
 ggplot(rcarb_data_t) +
   geom_ridgeline(aes(x = date_grid, y = site, height = probabilities * 100,
@@ -226,7 +226,7 @@ plot_grid(isomap, isocurves_plot)
 start_time <- Sys.time()
 
 # Example site
-sitename <- "Langangen Vestgård 1"
+sitename <- "Krøgenes D1"
 
 sitel <- filter(sites_sa, name == sitename)
 siter <- filter(rcarb_sa, site_name == sitename)
@@ -656,7 +656,52 @@ tdal <- plot_grid(shoremaplv1, distplotlv1)
 
 vm1aplot <- plot_grid(sitdat, shoremaplv1, distplotlv1, nrow = 1)
 
+sitedates <- siter
+dates <- R_Date(sitedates$lab_code, sitedates$c14_bp, sitedates$error)
+oxcal_code <- paste0('
+  Plot()
+   {
+    Sequence()
+    {
+     Boundary("Start");
+     Phase()
+     {
+     ',
+                     dates,
+                     '
+     };
+     Boundary("End");
+    };
+  };')
 
+oxcal_exec <- executeOxcalScript(oxcal_code)
+oxcal_read <- readOxcalOutput(oxcal_exec)
+oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
+indices <- parseFullOxcalOutput(oxcal_read)
+amodel <- indices$model$modelAgreement
+
+# Alternative models
+library(IRanges)
+
+ir <- IRanges(as.numeric(siter$sig_2_start_bc), as.numeric(siter$sig_2_end_bc))
+siter$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+
+for(i in 1:length(unique(siter$group))){
+  # All dates in present group i
+  dats <- filter(siter, group == i)
+  cat(paste0('
+         Boundary("Start");
+         Phase("', i, '")
+         {
+         ',
+
+         R_Date(dats$lab_code, dats$c14_bp, dats$error),
+         '
+         };
+         Boundary("End");
+         '
+         ))
+}
 
 # tm_shape(locationarea, unit = "m") +
 #   tm_raster(palette = ,
