@@ -226,7 +226,7 @@ plot_grid(isomap, isocurves_plot)
 start_time <- Sys.time()
 
 # Example site
-sitename <- "Nauen A"
+sitename <- "Kvastad A2"
 
 sitel <- filter(sites_sa, name == sitename)
 siter <- filter(rcarb_sa, site_name == sitename)
@@ -734,13 +734,17 @@ amodel2 <- indices2$model$modelAgreement
 ir <- IRanges(as.numeric(siter$sig_3_start_bc), as.numeric(siter$sig_3_end_bc))
 siter$group <- subjectHits(findOverlaps(ir, reduce(ir)))
 
+siter <- siter %>% mutate(group = ifelse(lab_code %in% g1, 1, 2))
+
+g1 <- c("Ua-52878", "Ua-52879", "Ua-52880")
+g2 <- c("Ua-52926", "Ua-52925")
 
 phase_model <- vector()
 for(i in 1:length(unique(siter$group))){
   # All dates in present group i
   dats <- filter(siter, group == i)
   txt <- paste0('
-         Boundary("', i, '");
+         Boundary("Start ', i, '");
          Phase("', i, '")
          {
          ',
@@ -748,6 +752,7 @@ for(i in 1:length(unique(siter$group))){
                 R_Date(dats$lab_code, dats$c14_bp, dats$error),
                 '
          };
+         Boundary("End ', i, '");
          '
   )
   phase_model[i] <- txt
@@ -758,9 +763,7 @@ threesig_model <- paste0('
    {
     Sequence()
     {', paste(phase_model, collapse = " "),
-                       ' Boundary("End");
-    };
-  };')
+    '};')
 
 oxcal_exec3 <- executeOxcalScript(threesig_model)
 oxcal_read3 <- readOxcalOutput(oxcal_exec3)
@@ -855,18 +858,19 @@ for(i in 1:length(sums)){
 }
 
 
-datedat <- rbind(prior, posterior)
+# datedat <- rbind(prior, posterior)
 #forcats::fct_relevel
 
 datedat %>%
   filter(!(name %in% c("Start", "End"))) %>%
   arrange(class) %>%
   ggplot() +
-  ggridges::geom_ridgeline(aes(x = dates, y = name,
+  ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),
                                height = probabilities * 50,
-                               fill = as.factor(group), alpha = class))+
+                               fill = as.factor(group),
+                               alpha = class))+
   scale_alpha_manual(values = c("aprior" = 0.1,
-                                "bposterior" = 0.5,
+                                "bposterior" = 0.1,
                                 "sum" = 1)) +
   theme_bw()
 

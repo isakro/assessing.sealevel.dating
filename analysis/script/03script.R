@@ -54,7 +54,6 @@ model_dates <- function(sitedates){
 model_phases <- function(sitedates){
 
   # Initial model groups all dates using the Boundary function
-  sitedates
   dates <- R_Date(sitedates$lab_code, sitedates$c14_bp, sitedates$error)
   oxcal_code <- paste0('
   Plot()
@@ -250,11 +249,7 @@ model_phases <- function(sitedates){
     posterior[posterior$name == sums[i], "class"] <- "sum"
   }
 
-  datedat <- rbind(prior, posterior)
-
-
-  return()
-
+  return(rbind(prior, posterior))
 
 }
 
