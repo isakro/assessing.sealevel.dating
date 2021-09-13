@@ -226,7 +226,7 @@ plot_grid(isomap, isocurves_plot)
 start_time <- Sys.time()
 
 # Example site
-sitename <- "Krøgenes D1"
+sitename <- "Nauen A"
 
 sitel <- filter(sites_sa, name == sitename)
 siter <- filter(rcarb_sa, site_name == sitename)
@@ -656,6 +656,18 @@ tdal <- plot_grid(shoremaplv1, distplotlv1)
 
 vm1aplot <- plot_grid(sitdat, shoremaplv1, distplotlv1, nrow = 1)
 
+# Model comparisons drawing on:
+# https://groups.google.com/g/oxcal/c/YRGxmMKWIIo/m/lOUbzBsP7_oJ
+
+# See also discussion at:
+# https://groups.google.com/g/oxcal/c/mDVhh8FNnGY/m/6ugk93lyFrEJ
+# https://groups.google.com/g/oxcal/c/g5AsmhUBat8/m/RB_zye5fZosJ
+# And Bronk Ramsey 2015 Bayesian Approaches to the Building of
+# Archaeological Chronologies
+
+
+
+# Initial model groups all dates using the Boundary function
 sitedates <- siter
 dates <- R_Date(sitedates$lab_code, sitedates$c14_bp, sitedates$error)
 oxcal_code <- paste0('
@@ -676,21 +688,22 @@ oxcal_code <- paste0('
 
 oxcal_exec <- executeOxcalScript(oxcal_code)
 oxcal_read <- readOxcalOutput(oxcal_exec)
-oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
+oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = TRUE)
 indices <- parseFullOxcalOutput(oxcal_read)
 amodel <- indices$model$modelAgreement
 
-# Alternative models
-library(IRanges)
 
+# Second model group all dates overlapping with two-sigma date ranges
 ir <- IRanges(as.numeric(siter$sig_2_start_bc), as.numeric(siter$sig_2_end_bc))
 siter$group <- subjectHits(findOverlaps(ir, reduce(ir)))
 
+
+phase_model <- vector()
 for(i in 1:length(unique(siter$group))){
   # All dates in present group i
   dats <- filter(siter, group == i)
-  cat(paste0('
-         Boundary("Start");
+  txt <- paste0('
+         Boundary("', i, '");
          Phase("', i, '")
          {
          ',
@@ -698,10 +711,167 @@ for(i in 1:length(unique(siter$group))){
          R_Date(dats$lab_code, dats$c14_bp, dats$error),
          '
          };
-         Boundary("End");
          '
-         ))
+         )
+  phase_model[i] <- txt
 }
+
+twosig_model <- paste0('
+  Plot()
+   {
+    Sequence()
+    {', paste(phase_model, collapse = " "),
+    ' Boundary("End");
+    };
+  };')
+
+oxcal_exec2 <- executeOxcalScript(twosig_model)
+oxcal_read2 <- readOxcalOutput(oxcal_exec2)
+indices2 <- parseFullOxcalOutput(oxcal_read2)
+amodel2 <- indices2$model$modelAgreement
+
+# Third model combines all dates with overlapping three sigma date ranges
+ir <- IRanges(as.numeric(siter$sig_3_start_bc), as.numeric(siter$sig_3_end_bc))
+siter$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+
+
+phase_model <- vector()
+for(i in 1:length(unique(siter$group))){
+  # All dates in present group i
+  dats <- filter(siter, group == i)
+  txt <- paste0('
+         Boundary("', i, '");
+         Phase("', i, '")
+         {
+         ',
+
+                R_Date(dats$lab_code, dats$c14_bp, dats$error),
+                '
+         };
+         '
+  )
+  phase_model[i] <- txt
+}
+
+threesig_model <- paste0('
+  Plot()
+   {
+    Sequence()
+    {', paste(phase_model, collapse = " "),
+                       ' Boundary("End");
+    };
+  };')
+
+oxcal_exec3 <- executeOxcalScript(threesig_model)
+oxcal_read3 <- readOxcalOutput(oxcal_exec3)
+indices3 <- parseFullOxcalOutput(oxcal_read3)
+amodel3 <- indices3$model$modelAgreement
+
+# Find F-model for each model
+fmodel <- (amodel/100)^sqrt(nrow(siter))
+fmodel2 <-(amodel2/100)^sqrt(nrow(siter))
+fmodel3 <-(amodel3/100)^sqrt(nrow(siter))
+
+fmodels <- c(fmodel, fmodel2, fmodel3)
+
+# Choose whichever has the highest value
+if(which(fmodels == max(fmodels)) == 1){
+  siter$group <- 1
+} else if(which(fmodels == max(fmodels)) == 2){
+  ir <- IRanges(as.numeric(siter$sig_2_start_bc), as.numeric(siter$sig_2_end_bc))
+  siter$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+} else{
+  ir <- IRanges(as.numeric(siter$sig_3_start_bc), as.numeric(siter$sig_3_end_bc))
+  siter$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+}
+
+# Rerun final model, this time summing each group
+phase_model <- vector()
+for(i in 1:length(unique(siter$group))){
+  # All dates in present group i
+  dats <- filter(siter, group == i)
+  txt <- paste0('
+         Boundary("', i, '");
+         Phase("', i, '")
+         {
+         ',
+          R_Date(dats$lab_code, dats$c14_bp, dats$error),
+        if(nrow(dats) > 1){
+         paste0('
+         Sum("Sum ', i, '");
+          };
+         ')
+        } else{
+         paste0('
+         };
+         ')
+        }
+  )
+  phase_model[i] <- txt
+}
+
+final_model <- paste0('
+  Plot()
+   {
+    Sequence()
+    {', paste(phase_model, collapse = " "),
+                       ' Boundary("End");
+    };
+  };')
+
+oxcal_exec <- executeOxcalScript(final_model)
+oxcal_read <- readOxcalOutput(oxcal_exec)
+oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
+
+# Retrieve the raw probabilities for individual 14C-dates
+prior <- get_raw_probabilities(oxcal_data)
+names(prior) <- paste0(get_name(oxcal_data))
+prior <- prior[!(names(prior) %in% c(unique(siter$group),
+                                    names(prior)[grep("Sum", names(prior))],
+                                     "End", "Start",
+                                     "character(0)"))]
+prior <-  bind_rows(prior, .id = "name")
+prior <- left_join(prior, siter, by = c("name" = "lab_code"))
+prior$class <- "aprior"
+
+# Retrieve the posterior probabilities for individual 14C-dates and the
+# posterior sum.
+posterior <- get_posterior_probabilities(oxcal_data)
+names(posterior) <- get_name(oxcal_data)
+posterior <- bind_rows(posterior[!(names(posterior) %in% c(unique(siter$group),
+                       "character(0)"))], .id = "name")
+posterior <- left_join(posterior, siter, by = c("name" = "lab_code"))
+posterior$class <- "bposterior"
+
+# Could not for the life of me get this to work:
+# tst <- posterior %>% mutate(group = ifelse(grepl("Sum", name),
+#        strsplit(name)[[1]][2], group))
+# So I gave up and went for the for-loop
+sums <- unique(posterior[grep("Sum", tst$name),]$name)
+for(i in 1:length(sums)){
+  posterior[posterior$name == sums[i], "group"] <- as.numeric(
+                                      strsplit(sums[i], " ")[[1]][2])
+  posterior[posterior$name == sums[i], "class"] <- "sum"
+}
+
+
+datedat <- rbind(prior, posterior)
+#forcats::fct_relevel
+
+datedat %>%
+  filter(!(name %in% c("Start", "End"))) %>%
+  arrange(class) %>%
+  ggplot() +
+  ggridges::geom_ridgeline(aes(x = dates, y = name,
+                               height = probabilities * 50,
+                               fill = as.factor(group), alpha = class))+
+  scale_alpha_manual(values = c("aprior" = 0.1,
+                                "bposterior" = 0.5,
+                                "sum" = 1)) +
+  theme_bw()
+
+# Assemble new model, this time summing the modelled dates
+
 
 # tm_shape(locationarea, unit = "m") +
 #   tm_raster(palette = ,

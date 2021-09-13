@@ -48,6 +48,216 @@ model_dates <- function(sitedates){
   return(rbind(prior, posterior))
 }
 
+# Define function to compare three models of the radiocarbon dates, compare
+# F_model values, implement the one with the highest value, and
+
+model_phases <- function(sitedates){
+
+  # Initial model groups all dates using the Boundary function
+  sitedates
+  dates <- R_Date(sitedates$lab_code, sitedates$c14_bp, sitedates$error)
+  oxcal_code <- paste0('
+  Plot()
+   {
+    Sequence()
+    {
+     Boundary("Start");
+     Phase()
+     {
+     ',
+                       dates,
+                       '
+     };
+     Boundary("End");
+    };
+  };')
+
+  oxcal_exec <- executeOxcalScript(oxcal_code)
+  oxcal_read <- readOxcalOutput(oxcal_exec)
+  oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = TRUE)
+  indices <- parseFullOxcalOutput(oxcal_read)
+  amodel <- indices$model$modelAgreement
+
+
+  # Second model group all dates overlapping with two-sigma date ranges
+  ir <- IRanges(as.numeric(sitedates$sig_2_start_bc),
+                as.numeric(sitedates$sig_2_end_bc))
+  sitedates$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+
+  # Skip model comparison if there is only a single group at two sigma
+  if(length(unique(sitedates$group)) > 1){
+
+    phase_model <- vector()
+    for(i in 1:length(unique(sitedates$group))){
+      # All dates in present group i
+      dats <- filter(sitedates, group == i)
+      txt <- paste0('
+           Boundary("', i, '");
+           Phase("', i, '")
+           {
+           ',
+
+                    R_Date(dats$lab_code, dats$c14_bp, dats$error),
+                    '
+           };
+           '
+      )
+      phase_model[i] <- txt
+    }
+
+    twosig_model <- paste0('
+    Plot()
+     {
+      Sequence()
+      {', paste(phase_model, collapse = " "),
+                           ' Boundary("End");
+      };
+    };')
+
+    oxcal_exec2 <- executeOxcalScript(twosig_model)
+    oxcal_read2 <- readOxcalOutput(oxcal_exec2)
+    indices2 <- parseFullOxcalOutput(oxcal_read2)
+    amodel2 <- indices2$model$modelAgreement
+
+    # Third model combines all dates with overlapping three sigma date ranges
+    ir <- IRanges(as.numeric(sitedates$sig_3_start_bc),
+                  as.numeric(sitedates$sig_3_end_bc))
+    sitedates$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+
+
+    phase_model <- vector()
+    for(i in 1:length(unique(sitedates$group))){
+      # All dates in present group i
+      dats <- filter(sitedates, group == i)
+      txt <- paste0('
+           Boundary("', i, '");
+           Phase("', i, '")
+           {
+           ',
+
+                    R_Date(dats$lab_code, dats$c14_bp, dats$error),
+                    '
+           };
+           '
+      )
+      phase_model[i] <- txt
+    }
+
+    threesig_model <- paste0('
+    Plot()
+     {
+      Sequence()
+      {', paste(phase_model, collapse = " "),
+                             ' Boundary("End");
+      };
+    };')
+
+    oxcal_exec3 <- executeOxcalScript(threesig_model)
+    oxcal_read3 <- readOxcalOutput(oxcal_exec3)
+    indices3 <- parseFullOxcalOutput(oxcal_read3)
+    amodel3 <- indices3$model$modelAgreement
+
+    # Find F-model for each model
+    fmodel <- (amodel/100)^sqrt(nrow(sitedates))
+    fmodel2 <-(amodel2/100)^sqrt(nrow(sitedates))
+    fmodel3 <-(amodel3/100)^sqrt(nrow(sitedates))
+
+    fmodels <- c(fmodel, fmodel2, fmodel3)
+
+    # Choose whichever has the highest value
+    if(which(fmodels == max(fmodels)) == 1){
+      sitedates$group <- 1
+    } else if(which(fmodels == max(fmodels)) == 2){
+      ir <- IRanges(as.numeric(sitedates$sig_2_start_bc),
+                    as.numeric(sitedates$sig_2_end_bc))
+      sitedates$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+    } else{
+      ir <- IRanges(as.numeric(sitedates$sig_3_start_bc),
+                    as.numeric(sitedates$sig_3_end_bc))
+      sitedates$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+    }
+  } else {
+    sitedates$group <- 1
+  }
+
+
+  # Rerun final model, this time summing each group
+  phase_model <- vector()
+  for(i in 1:length(unique(sitedates$group))){
+    # All dates in present group i
+    dats <- filter(sitedates, group == i)
+    txt <- paste0('
+         Boundary("', i, '");
+         Phase("', i, '")
+         {
+         ',
+                  R_Date(dats$lab_code, dats$c14_bp, dats$error),
+                  if(nrow(dats) > 1){
+                    paste0('
+         Sum("Sum ', i, '");
+          };
+         ')
+                  } else{
+                    paste0('
+         };
+         ')
+                  }
+    )
+    phase_model[i] <- txt
+  }
+
+  final_model <- paste0('
+  Plot()
+   {
+    Sequence()
+    {', paste(phase_model, collapse = " "),
+                        ' Boundary("End");
+    };
+  };')
+
+  oxcal_exec <- executeOxcalScript(final_model)
+  oxcal_read <- readOxcalOutput(oxcal_exec)
+  oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
+
+  # Retrieve the raw probabilities for individual 14C-dates
+  prior <- get_raw_probabilities(oxcal_data)
+  names(prior) <- paste0(get_name(oxcal_data))
+  prior <- prior[!(names(prior) %in% c(unique(sitedates$group),
+                                       names(prior)[grep("Sum", names(prior))],
+                                       "End", "Start",
+                                       "character(0)"))]
+  prior <-  bind_rows(prior, .id = "name")
+  prior <- left_join(prior, sitedates, by = c("name" = "lab_code"))
+  prior$class <- "aprior"
+
+  # Retrieve the posterior probabilities for individual 14C-dates and the
+  # posterior sum.
+  posterior <- get_posterior_probabilities(oxcal_data)
+  names(posterior) <- get_name(oxcal_data)
+  posterior <- bind_rows(posterior[!(names(posterior) %in%
+                    c(unique(sitedates$group), "character(0)"))], .id = "name")
+  posterior <- left_join(posterior, sitedates, by = c("name" = "lab_code"))
+  posterior$class <- "bposterior"
+
+  # Could not for the life of me get this to work:
+  # posterior <- posterior %>% mutate(group = ifelse(grepl("Sum", name),
+  #        strsplit(name)[[1]][2], group))
+  # So I gave up and went for the for-loop
+  sums <- unique(posterior[grep("Sum", posterior$name),]$name)
+  for(i in 1:length(sums)){
+    posterior[posterior$name == sums[i], "group"] <- as.numeric(
+      strsplit(sums[i], " ")[[1]][2])
+    posterior[posterior$name == sums[i], "class"] <- "sum"
+  }
+
+  datedat <- rbind(prior, posterior)
+
+
+  return()
+
+
+}
+
 # Define function to interpolate displacement curve for a given location,
 # based on distance to curves on two provided isobases on the
 # north-east to south-west axis perpendicular to the isobases.
@@ -274,7 +484,7 @@ apply_functions <- function(sitename, dtmpath, displacement_curves, isobases,
   siter <- filter(rcarb_sa, site_name == sitename)
 
   # Model dates
-  datedat <- model_dates(siter)
+  datedat <- model_phases(sitedates = siter)
 
   # Interpolate displacement curve to the site location
   sitecurve <- interpolate_curve(years = xvals,
@@ -297,7 +507,7 @@ apply_functions <- function(sitename, dtmpath, displacement_curves, isobases,
   sitearea <- terra::crop(dtm, location_bbox)
 
   # Retrieve the posterior density estimate
-  posteriorprobs <- filter(datedat, datedat$class == "Posterior sum")
+  posteriorprobs <- filter(datedat, datedat$class == "Sum")
 
   # Simulate sea-level and retrieve distances (takes some time)
   output <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
