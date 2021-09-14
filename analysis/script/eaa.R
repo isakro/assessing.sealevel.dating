@@ -751,6 +751,7 @@ for(i in 1:length(unique(siter$group))){
 
                 R_Date(dats$lab_code, dats$c14_bp, dats$error),
                 '
+                KDE_Plot("KDE_Plot_', i,'");
          };
          Boundary("End ', i, '");
          '
@@ -763,12 +764,13 @@ threesig_model <- paste0('
    {
     Sequence()
     {', paste(phase_model, collapse = " "),
-    '};')
+    '};
+    };')
 
 oxcal_exec3 <- executeOxcalScript(threesig_model)
 oxcal_read3 <- readOxcalOutput(oxcal_exec3)
 indices3 <- parseFullOxcalOutput(oxcal_read3)
-amodel3 <- indices3$model$modelAgreement
+amodel4 <- indices3$model$modelAgreement
 
 # Find F-model for each model
 fmodel <- (amodel/100)^sqrt(nrow(siter))
@@ -824,14 +826,15 @@ final_model <- paste0('
 
 oxcal_exec <- executeOxcalScript(final_model)
 oxcal_read <- readOxcalOutput(oxcal_exec)
-oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
+oxcal_data <- parseOxcalOutput(oxcal_read3, only.R_Date = FALSE)
 
 # Retrieve the raw probabilities for individual 14C-dates
 prior <- get_raw_probabilities(oxcal_data)
 names(prior) <- paste0(get_name(oxcal_data))
 prior <- prior[!(names(prior) %in% c(unique(siter$group),
-                                    names(prior)[grep("Sum", names(prior))],
-                                     "End", "Start",
+                                    names(prior)[grep("Start", names(prior))],
+                                    names(prior)[grep("End", names(prior))],
+                                    names(prior)[grep("KDE", names(prior))],
                                      "character(0)"))]
 prior <-  bind_rows(prior, .id = "name")
 prior <- left_join(prior, siter, by = c("name" = "lab_code"))
@@ -841,6 +844,13 @@ prior$class <- "aprior"
 # posterior sum.
 posterior <- get_posterior_probabilities(oxcal_data)
 names(posterior) <- get_name(oxcal_data)
+posterior <- posterior[!(names(posterior) %in%
+                           c(names(posterior)[grep("Kernel", names(posterior))],
+                            names(posterior)[grep("Scale", names(posterior))],
+                            names(posterior)[grep("Start", names(posterior))],
+                            names(posterior)[grep("End", names(posterior))]))]
+
+
 posterior <- bind_rows(posterior[!(names(posterior) %in% c(unique(siter$group),
                        "character(0)"))], .id = "name")
 posterior <- left_join(posterior, siter, by = c("name" = "lab_code"))
@@ -850,29 +860,114 @@ posterior$class <- "bposterior"
 # tst <- posterior %>% mutate(group = ifelse(grepl("Sum", name),
 #        strsplit(name)[[1]][2], group))
 # So I gave up and went for the for-loop
-sums <- unique(posterior[grep("Sum", tst$name),]$name)
-for(i in 1:length(sums)){
-  posterior[posterior$name == sums[i], "group"] <- as.numeric(
-                                      strsplit(sums[i], " ")[[1]][2])
-  posterior[posterior$name == sums[i], "class"] <- "sum"
+kdes <- unique(posterior[grep("KDE", posterior$name),]$name)
+for(i in 1:length(kdes)){
+  posterior[posterior$name == kdes[i], "group"] <- as.numeric(
+                                      strsplit(kdes[i], "_")[[1]][3])
+  posterior[posterior$name == kdes[i], "class"] <- "kde"
 }
 
 
-# datedat <- rbind(prior, posterior)
+datedat <- rbind(prior, posterior)
 #forcats::fct_relevel
 
 datedat %>%
-  filter(!(name %in% c("Start", "End"))) %>%
   arrange(class) %>%
   ggplot() +
   ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),
                                height = probabilities * 50,
                                fill = as.factor(group),
-                               alpha = class))+
+                               alpha = fct_reorder(class, group)))+
   scale_alpha_manual(values = c("aprior" = 0.1,
-                                "bposterior" = 0.1,
+                                "bposterior" = 0.5,
+                                "kde" = 1)) +
+  theme_bw()
+
+
+phase_model <- vector()
+for(i in 1:length(unique(siter$group))){
+  # All dates in present group i
+  dats <- filter(siter, group == i)
+  txt <- paste0('
+         Boundary("Start ', i, '");
+         Phase("', i, '")
+         {
+         ',
+
+                R_Date(dats$lab_code, dats$c14_bp, dats$error),
+                '
+                Sum("Sum ', i,'");
+         };
+         Boundary("End ', i, '");
+         '
+  )
+  phase_model[i] <- txt
+}
+
+threesig_model <- paste0('
+  Plot()
+   {
+    Sequence()
+    {', paste(phase_model, collapse = " "),
+                         '};
+    };')
+
+oxcal_exec3 <- executeOxcalScript(threesig_model)
+oxcal_read3 <- readOxcalOutput(oxcal_exec3)
+indices3 <- parseFullOxcalOutput(oxcal_read3)
+
+oxcal_data <- parseOxcalOutput(oxcal_read3, only.R_Date = FALSE)
+
+# Retrieve the raw probabilities for individual 14C-dates
+prior <- get_raw_probabilities(oxcal_data)
+names(prior) <- paste0(get_name(oxcal_data))
+prior <- prior[!(names(prior) %in% c(unique(siter$group),
+                                     names(prior)[grep("Start", names(prior))],
+                                     names(prior)[grep("End", names(prior))],
+                                     names(prior)[grep("Sum", names(prior))],
+                                     "character(0)"))]
+prior <-  bind_rows(prior, .id = "name")
+prior <- left_join(prior, siter, by = c("name" = "lab_code"))
+prior$class <- "aprior"
+
+# Retrieve the posterior probabilities for individual 14C-dates and the
+# posterior sum.
+posterior <- get_posterior_probabilities(oxcal_data)
+names(posterior) <- get_name(oxcal_data)
+posterior <- posterior[!(names(posterior) %in%
+                           c(names(posterior)[grep("Kernel", names(posterior))],
+                             names(posterior)[grep("Scale", names(posterior))],
+                             names(posterior)[grep("Start", names(posterior))],
+                             names(posterior)[grep("End", names(posterior))]))]
+posterior <- bind_rows(posterior[!(names(posterior) %in% c(unique(siter$group),
+                                                           "character(0)"))], .id = "name")
+posterior <- left_join(posterior, siter, by = c("name" = "lab_code"))
+posterior$class <- "bposterior"
+
+
+sums <- unique(posterior[grep("Sum", posterior$name),]$name)
+for(i in 1:length(sums)){
+  posterior[posterior$name == sums[i], "group"] <- as.numeric(
+    strsplit(kdes[i], "_")[[1]][3])
+  posterior[posterior$name == sums[i], "class"] <- "sum"
+}
+
+
+datedat <- rbind(prior, posterior)
+#forcats::fct_relevel
+
+datedat %>%
+  arrange(class) %>%
+  ggplot() +
+  ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),
+                               height = probabilities * 50,
+                               fill = as.factor(group),
+                               alpha = fct_reorder(class, group)))+
+  scale_alpha_manual(values = c("aprior" = 0.1,
+                                "bposterior" = 0.5,
                                 "sum" = 1)) +
   theme_bw()
+
 
 # Assemble new model, this time summing the modelled dates
 
