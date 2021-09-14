@@ -7,6 +7,7 @@ library(cowplot)
 library(terra)
 library(oxcAAR)
 library(topoDistance)
+library(nord)
 quickSetupOxcal()
 
 # This script is an absolute mess and will not run. The main components are
@@ -962,10 +963,11 @@ datedat %>%
   ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),
                                height = probabilities * 50,
                                fill = as.factor(group),
-                               alpha = fct_reorder(class, group)))+
+                               alpha = class))+
   scale_alpha_manual(values = c("aprior" = 0.1,
-                                "bposterior" = 0.5,
+                                "bposterior" = 0.25,
                                 "sum" = 1)) +
+  scale_fill_colorblind() +
   theme_bw()
 
 
