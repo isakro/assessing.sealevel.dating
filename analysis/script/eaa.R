@@ -740,6 +740,9 @@ siter <- siter %>% mutate(group = ifelse(lab_code %in% g1, 1, 2))
 g1 <- c("Ua-52878", "Ua-52879", "Ua-52880")
 g2 <- c("Ua-52926", "Ua-52925")
 
+
+siter
+
 phase_model <- vector()
 for(i in 1:length(unique(siter$group))){
   # All dates in present group i
@@ -957,7 +960,9 @@ for(i in 1:length(sums)){
 datedat <- rbind(prior, posterior)
 #forcats::fct_relevel
 
-datedat %>%
+c14results <- model_phases(siter, c(1,1,1,2,2))
+
+
   arrange(class) %>%
   ggplot() +
   ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),

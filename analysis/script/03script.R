@@ -48,9 +48,9 @@ model_dates <- function(sitedates){
   return(rbind(prior, posterior))
 }
 
-# Define function to compare three models of the radiocarbon dates, compare
-# F_model values, implement the one with the highest value, and
-
+# Define utility function to compare three models of radiocarbon dates
+# associated with a site. Either as all dates grouped, only dates overlapping
+# at three sigma and alternatively a manually defined model
 model_phases <- function(sitedates, manual_groups = NULL){
 
   # Initial model groups all dates using the Boundary function
@@ -162,26 +162,31 @@ model_phases <- function(sitedates, manual_groups = NULL){
     indices3 <- parseFullOxcalOutput(oxcal_read3)
     amodel3 <- indices3$model$modelAgreement
 
-  }
+   }
 
     # Find F-model for each model
-    fmodel <- (amodel/100)^sqrt(nrow(sitedates))
-    fmodel2 <-(amodel2/100)^sqrt(nrow(sitedates))
-    fmodel3 <-(amodel3/100)^sqrt(nrow(sitedates))
+    fmodels <- c("Model 1" = (amodel/100)^sqrt(nrow(sitedates)))
 
-    fmodels <- c(fmodel, fmodel2, fmodel3)
+    if(length(unique(sitedates$group)) > 1){
+      fmodel2 <-(amodel2/100)^sqrt(nrow(sitedates))
+      fmodels <- c(fmodels, "Model 2" = fmodel2)
+    }
+
+    if(!is.null(manual_groups)){
+      fmodel3 <-(amodel2/100)^sqrt(nrow(sitedates))
+      fmodels <- c(fmodels, "Model 3" = fmodel3)
+    }
 
     # Find pseudo bayes factor for all model comparisons
     bfactor <- function(x, y){(x / y) ^ sqrt(nrow(sitedates))}
     bfactors <- outer(fmodels, fmodels, FUN = bfactor)
-    rownames(bfactors) <- c("Model 1", "Model 2", "Model 3")
+    rownames(bfactors) <- names(fmodels)
 
-    # Check which model outcompetes the others (no Bayes factor below 1),
-    # and return the name
+    # Check which model out-competes the others (no Bayes factor below 1)
     model <- names(which(!(apply(bfactors, 1, function(x) any(x < 1)))))
 
 
-    # Choose whichever has the highest value
+    # Assign model groupings to 14c-dates
     if(model == "Model 1"){
       sitedates$group <- 1
     } else if(model == "Model 2"){
@@ -189,9 +194,6 @@ model_phases <- function(sitedates, manual_groups = NULL){
     } else if(model == "Model 3"){
       sitedates$group <- manual_groups
     }
-  } else {
-    sitedates$group <- 1
-  }
 
 
   # Rerun final model, this time summing each group of more than one date
@@ -264,8 +266,8 @@ model_phases <- function(sitedates, manual_groups = NULL){
     posterior[posterior$name == sums[i], "class"] <- "sum"
   }
 
-  return(rbind(prior, posterior))
-
+  # Return result and model number
+  return(rbind(model, prior, posterior))
 }
 
 # Define function to interpolate displacement curve for a given location,
