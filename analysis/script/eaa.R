@@ -962,7 +962,7 @@ datedat <- rbind(prior, posterior)
 
 c14results <- model_phases(siter, c(1,1,1,2,2))
 
-
+c14results[2] %>%
   arrange(class) %>%
   ggplot() +
   ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),

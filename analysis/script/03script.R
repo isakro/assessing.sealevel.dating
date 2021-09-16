@@ -127,7 +127,7 @@ model_phases <- function(sitedates, manual_groups = NULL){
   }
 
   if(!is.null(manual_groups)){
-    sitedates$groups <- manual_groups
+    sitedates$group <- manual_groups
 
     phase_model <- vector()
     for(i in 1:length(unique(siter$group))){
@@ -267,7 +267,7 @@ model_phases <- function(sitedates, manual_groups = NULL){
   }
 
   # Return result and model number
-  return(rbind(model, prior, posterior))
+  return(list(model, rbind( prior, posterior)))
 }
 
 # Define function to interpolate displacement curve for a given location,
