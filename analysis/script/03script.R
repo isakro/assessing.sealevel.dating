@@ -1,51 +1,84 @@
 # Define function to model a series of dates using the Boundary
 # function from oxcal, sum the posterior density estimate, and return
-# all the data for plotting and further analysis (including raw probabilites).
-model_dates <- function(sitedates){
-  dates <- R_Date(sitedates$lab_code, sitedates$c14_bp, sitedates$error)
-  oxcal_code <- paste0('
+# all the data for plotting and further analysis (including raw probabilities).
+model_dates <- function(sitedates, manual_groups){
+
+  # Assign group to dates
+  sitedates$group <- manual_groups
+
+  # Rerun final model, this time summing each group of more than one date
+  phase_model <- vector()
+  for(i in 1:length(unique(sitedates$group))){
+    # All dates in present group i
+    dats <- filter(sitedates, group == i)
+    txt <- paste0('
+         Boundary("', i, '");
+         Phase("', i, '")
+         {
+         ',
+                  R_Date(dats$lab_code, dats$c14_bp, dats$error),
+                  if(nrow(dats) > 1){
+                    paste0('
+         Sum("Sum ', i, '");
+          };
+         ')
+                  } else{
+                    paste0('
+         };
+         ')
+                  }
+    )
+    phase_model[i] <- txt
+  }
+
+  # Add start and end of OxCal code
+  model <- paste0('
   Plot()
    {
     Sequence()
-    {
-     Boundary("Start");
-     Phase()
-     {
-     ',
-                       dates,
-                       '
-     Sum("Sum");
-     };
-     Boundary("End");
+    {', paste(phase_model, collapse = " "),
+                        ' Boundary("End");
     };
   };')
 
-  # Execute the OxCal script and retrieve the results
-  oxcal_exec <- executeOxcalScript(oxcal_code)
+  oxcal_exec <- executeOxcalScript(model)
   oxcal_read <- readOxcalOutput(oxcal_exec)
   oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
 
   # Retrieve the raw probabilities for individual 14C-dates
   prior <- get_raw_probabilities(oxcal_data)
   names(prior) <- paste0(get_name(oxcal_data))
-  prior <- prior[!(names(prior) %in% c("Sum", "End", "Start",
+  prior <- prior[!(names(prior) %in% c(unique(sitedates$group),
+                                       names(prior)[grep("Sum", names(prior))],
+                                       "End", "Start",
                                        "character(0)"))]
   prior <-  bind_rows(prior, .id = "name")
+  prior <- left_join(prior, sitedates, by = c("name" = "lab_code"))
   prior$class <- "aprior"
 
   # Retrieve the posterior probabilities for individual 14C-dates and the
-  # posterior sum.
+  # posterior sums.
   posterior <- get_posterior_probabilities(oxcal_data)
   names(posterior) <- get_name(oxcal_data)
-  posterior <- bind_rows(posterior[names(posterior) != "character(0)"],
-                         .id = "name")
+  posterior <- bind_rows(posterior[!(names(posterior) %in%
+                                      c(unique(sitedates$group), "End", "Start",
+                                        "character(0)"))], .id = "name")
+  posterior <- left_join(posterior, sitedates, by = c("name" = "lab_code"))
   posterior$class <- "bposterior"
-  posterior <- mutate(posterior, class =
-                        ifelse(name == "Sum", "Posterior sum", class),
-                      name = ifelse(name == "Sum", "Posterior sum", name))
+
+  # Could not for the life of me get something like this to work:
+  # posterior <- posterior %>% mutate(group = ifelse(grepl("Sum", name),
+  #        strsplit(name)[[1]][2], group))
+  # So I gave up and went for a for-loop
+  sums <- unique(posterior[grep("Sum", posterior$name),]$name)
+  for(i in 1:length(sums)){
+    posterior[posterior$name == sums[i], "group"] <- as.numeric(
+      strsplit(sums[i], " ")[[1]][2])
+    posterior[posterior$name == sums[i], "class"] <- "sum"
+  }
 
   # Return results
-  return(rbind(prior, posterior))
+  return(rbind( prior, posterior))
 }
 
 # Define utility function to compare three models of radiocarbon dates
@@ -81,15 +114,13 @@ model_phases <- function(sitedates, manual_groups = NULL){
   # Second model group all dates overlapping with two-sigma date ranges
   ir <- IRanges(as.numeric(sitedates$sig_3_start_bc),
                 as.numeric(sitedates$sig_3_end_bc))
-  sitedates$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+  threesgroup <- subjectHits(findOverlaps(ir, reduce(ir)))
 
   # Skip model comparison if there is only a single group at three sigma
-  if(length(unique(sitedates$group)) > 1){
+  if(length(unique(threesgroup)) > 1){
 
     # Second model combines all dates with overlapping three sigma date ranges
-    ir <- IRanges(as.numeric(sitedates$sig_3_start_bc),
-                  as.numeric(sitedates$sig_3_end_bc))
-    sitedates$group <- subjectHits(findOverlaps(ir, reduce(ir)))
+    sitedates$group <- threesgroup
 
     phase_model <- vector()
     for(i in 1:length(unique(siter$group))){
@@ -157,7 +188,7 @@ model_phases <- function(sitedates, manual_groups = NULL){
                              '};
     };')
 
-    oxcal_exec3 <- executeOxcalScript(threesig_model)
+    oxcal_exec3 <- executeOxcalScript(manual_model)
     oxcal_read3 <- readOxcalOutput(oxcal_exec3)
     indices3 <- parseFullOxcalOutput(oxcal_read3)
     amodel3 <- indices3$model$modelAgreement
@@ -165,43 +196,43 @@ model_phases <- function(sitedates, manual_groups = NULL){
    }
 
     # Find F-model for each model
-    fmodels <- c("Model 1" = (amodel/100)^sqrt(nrow(sitedates)))
+   fmodels <- c("Model 1" = (amodel/100)^sqrt(nrow(sitedates)))
 
-    if(length(unique(sitedates$group)) > 1){
+   if(length(unique(threesgroup)) > 1){
       fmodel2 <-(amodel2/100)^sqrt(nrow(sitedates))
       fmodels <- c(fmodels, "Model 2" = fmodel2)
-    }
+   }
 
-    if(!is.null(manual_groups)){
-      fmodel3 <-(amodel2/100)^sqrt(nrow(sitedates))
+   if(!is.null(manual_groups)){
+      fmodel3 <-(amodel3/100)^sqrt(nrow(sitedates))
       fmodels <- c(fmodels, "Model 3" = fmodel3)
-    }
+   }
 
     # Find pseudo bayes factor for all model comparisons
-    bfactor <- function(x, y){(x / y) ^ sqrt(nrow(sitedates))}
-    bfactors <- outer(fmodels, fmodels, FUN = bfactor)
-    rownames(bfactors) <- names(fmodels)
+   bfactor <- function(x, y){(x / y) ^ sqrt(nrow(sitedates))}
+   bfactors <- outer(fmodels, fmodels, FUN = bfactor)
+   rownames(bfactors) <- names(fmodels)
 
     # Check which model out-competes the others (no Bayes factor below 1)
-    model <- names(which(!(apply(bfactors, 1, function(x) any(x < 1)))))
+   model <- names(which(!(apply(bfactors, 1, function(x) any(x < 1)))))
 
 
     # Assign model groupings to 14c-dates
-    if(model == "Model 1"){
+   if(model == "Model 1"){
       sitedates$group <- 1
-    } else if(model == "Model 2"){
-      sitedates$group <- subjectHits(findOverlaps(ir, reduce(ir)))
-    } else if(model == "Model 3"){
+   } else if(model == "Model 2"){
+      sitedates$group <- threesgroup
+   } else if(model == "Model 3"){
       sitedates$group <- manual_groups
-    }
+   }
 
 
-  # Rerun final model, this time summing each group of more than one date
-  phase_model <- vector()
-  for(i in 1:length(unique(sitedates$group))){
-    # All dates in present group i
-    dats <- filter(sitedates, group == i)
-    txt <- paste0('
+   # Rerun final model, this time summing each group of more than one date
+   phase_model <- vector()
+   for(i in 1:length(unique(sitedates$group))){
+     # All dates in present group i
+     dats <- filter(sitedates, group == i)
+     txt <- paste0('
          Boundary("', i, '");
          Phase("', i, '")
          {
@@ -251,7 +282,8 @@ model_phases <- function(sitedates, manual_groups = NULL){
   posterior <- get_posterior_probabilities(oxcal_data)
   names(posterior) <- get_name(oxcal_data)
   posterior <- bind_rows(posterior[!(names(posterior) %in%
-                    c(unique(sitedates$group), "character(0)"))], .id = "name")
+                    c(unique(sitedates$group), "End", "Start",
+                      "character(0)"))], .id = "name")
   posterior <- left_join(posterior, sitedates, by = c("name" = "lab_code"))
   posterior$class <- "bposterior"
 
@@ -489,14 +521,15 @@ sea_overlaps <- function(sitearea, seapolygons){
 }
 
 # Function that combines all of the above
-apply_functions <- function(sitename, dtmpath, displacement_curves, isobases,
-                            nsamp = 1000){
+apply_functions <- function(sitename, date_groups, dtmpath,
+                            displacement_curves, isobases, nsamp = 1000){
 
+  # Retrieve site limit and features
   sitel <- filter(sites_sa, name == sitename)
   siter <- filter(rcarb_sa, site_name == sitename)
 
   # Model dates
-  datedat <- model_phases(sitedates = siter)
+  datedat <- model_dates(sitedates = siter, manual_groups = date_groups)
 
   # Interpolate displacement curve to the site location
   sitecurve <- interpolate_curve(years = xvals,
@@ -518,20 +551,49 @@ apply_functions <- function(sitename, dtmpath, displacement_curves, isobases,
   # Use this to clip the dtm to the site area
   sitearea <- terra::crop(dtm, location_bbox)
 
-  # Retrieve the posterior density estimate
+  # Define empty list to hold results
+  output <- list()
+  # Retrieve the posterior density estimate for each date group
+  for(i in 1:length(unique(date_groups))){
+
+    # If the length of the group is not longer than one, there is no sum
+    # associated with the date
+    if(length(date_groups[date_groups == i]) < 1){
+      posteriorprobs <- filter(datedat, group == i & class == "bposterior")
+    # If the group length is longer than one, use the posterior sum
+    } else{
+      posteriorprobs <- filter(datedat, group == i & class == "sum")
+    }
+
+    # Simulate sea-level and retrieve distances (takes some time)
+    output[[i]] <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
+                               posteriorprobs)
+
+    # Generate grid with dtm resolution holding number of overlaps for each cell
+    # (also takes quite some time to execute)
+    simsea <- sea_overlaps(sitearea, output[[i]]$seapol)
+
+    output[[i]]$simsea <- simsea
+    output[[i]]$datedat <- datedat
+    output[[i]]$sitel <- sitel
+  }
+  sums <- unique(posterior[grep("Sum", posterior$name),]$name)
+  unique(datedat[grep("Sum", datedat$name),]$name)
+
   posteriorprobs <- filter(datedat, datedat$class == "Sum")
 
   # Simulate sea-level and retrieve distances (takes some time)
   output <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
                              posteriorprobs)
 
-  # Generate grid with dtm resolution holding number of overlaps for each cell
-  # (also takes quite some time to execute)
+
   simsea <- sea_overlaps(sitearea, output$seapol)
 
   output$simsea <- simsea
   output$datedat <- datedat
   output$sitel <- sitel
+
+  # Return results
   return(output)
 }
 
@@ -563,13 +625,15 @@ plot_dates <- function(datedata, sitename){
     filter(!(name %in% c("Start", "End"))) %>%
     arrange(class) %>%
     ggplot() +
-    ggridges::geom_ridgeline(aes(x = dates, y = name,
-                                 height = probabilities * 100,
-                                 fill = class, alpha = class)) +
-    scale_fill_manual(values = c("Posterior sum" = "grey35",
-                                 "aprior" = "white", "bposterior" = "grey")) +
-    scale_alpha_manual(values = c("Posterior sum" = 1, "aprior" = 0.1,
-                                  "bposterior" = 0.7)) +
+    ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),
+                                 height = probabilities * 50,
+                                 fill = as.factor(group),
+                                 alpha = class))+
+    scale_alpha_manual(values = c("aprior" = 0.1,
+                                  "bposterior" = 0.25,
+                                  "sum" = 1)) +
+    scale_fill_colorblind() +
+    theme_bw() +
     labs(title = sitename, y = "", x = "cal BCE") +
-  theme_bw() + theme(legend.position = "none")
+    theme(legend.position = "none")
 }

@@ -961,8 +961,10 @@ datedat <- rbind(prior, posterior)
 #forcats::fct_relevel
 
 c14results <- model_phases(siter, c(1,1,1,2,2))
+datedat <- model_dates(siter, c(1,1,1,2,2))
 
-c14results[2] %>%
+
+datedat %>%
   arrange(class) %>%
   ggplot() +
   ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),
@@ -973,7 +975,9 @@ c14results[2] %>%
                                 "bposterior" = 0.25,
                                 "sum" = 1)) +
   scale_fill_colorblind() +
-  theme_bw()
+  theme_bw() +
+  labs(y = "", x = "cal BCE") +
+  theme(legend.position = "none")
 
 
 # Assemble new model, this time summing the modelled dates
