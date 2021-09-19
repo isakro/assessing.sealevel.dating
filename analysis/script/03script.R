@@ -526,6 +526,8 @@ apply_functions <- function(sitename, date_groups, dtmpath,
 
   # Retrieve site limit and features
   sitel <- filter(sites_sa, name == sitename)
+  siteu <- st_union(sitel)
+  sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
   siter <- filter(rcarb_sa, site_name == sitename)
 
   # Model dates
@@ -546,7 +548,7 @@ apply_functions <- function(sitename, date_groups, dtmpath,
   dtm <- load_raster(dtmpath, sitel)
 
   # Create bounding box polygon
-  location_bbox <- bboxpoly(sitel, 250)
+  location_bbox <- bboxpoly(sitel, 500)
 
   # Use this to clip the dtm to the site area
   sitearea <- terra::crop(dtm, location_bbox)
@@ -574,9 +576,8 @@ apply_functions <- function(sitename, date_groups, dtmpath,
     simsea <- sea_overlaps(sitearea, output[[i]]$seapol)
 
     output[[i]]$simsea <- simsea
-    output[[i]]$datedat <- datedat
-    output[[i]]$sitel <- sitel
   }
+
   sums <- unique(posterior[grep("Sum", posterior$name),]$name)
   unique(datedat[grep("Sum", datedat$name),]$name)
 
@@ -590,6 +591,7 @@ apply_functions <- function(sitename, date_groups, dtmpath,
   simsea <- sea_overlaps(sitearea, output$seapol)
 
   output$simsea <- simsea
+
   output$datedat <- datedat
   output$sitel <- sitel
 
@@ -605,7 +607,6 @@ shore_plot <- function(overlapgrid, sitelimit) {
     tm_shape(sitelimit) +
     tm_borders(col = "black", lwd = 1) +
     tm_scale_bar(text.size = 0.8)
-
 }
 
 # Define function to plot boxplots of distance from site to shoreline across
@@ -625,7 +626,8 @@ plot_dates <- function(datedata, sitename){
     filter(!(name %in% c("Start", "End"))) %>%
     arrange(class) %>%
     ggplot() +
-    ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),
+    ggridges::geom_ridgeline(aes(x = dates,
+                                 y = fct_reorder(name, group, .desc = TRUE),
                                  height = probabilities * 50,
                                  fill = as.factor(group),
                                  alpha = class))+

@@ -32,6 +32,13 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
                     join = st_intersects, largest = TRUE)
 
 # Example site
+sitename <- "Kvastad A2"
+
+# Apply functions (see 03script.R) - likely takes a few hours to execute
+output <- apply_functions(sitename, c(1,1,1,2,2), dtmpath, displacement_curves, isobases,
+                          nsamp = 1000)
+
+# Example site
 sitename <- "Langangen Vestgård 1"
 
 # Apply functions (see 03script.R) - likely takes a few hours to execute
@@ -40,7 +47,7 @@ output <- apply_functions(sitename, dtmpath, displacement_curves, isobases,
 
 # Create plots
 datplot <- plot_dates(output$datedat, sitename)
-smap <- tmap_grob(shore_plot(output$simsea, output$sitel))
+smap <- tmap_grob(shore_plot(output[[1]]$simsea, output$sitel))
 distplot <- distance_plot(output$results)
 
 # Arrange and call to plot
