@@ -251,7 +251,6 @@ bboxpoly <- function(feature, xy_adjustment) {
 location_bbox <- bboxpoly(sitel, 10)
 
 sitmap1 <- ggplot() +
-  geom_sf(data = count_reproj2, fill = "grey", colour = NA) +
   geom_sf(data = isobases, aes(colour = name)) +
   geom_sf(data = st_centroid(sitel), size = 3, shape = 21, fill = "red",
           colour = "black") +
@@ -259,10 +258,6 @@ sitmap1 <- ggplot() +
                                  "Larvik" = "darkgreen",
                                  "Tvedestrand" = "blue",
                                  "Halden" = 'red')) +
-  ggsn::scalebar(data = site_pts, dist = 20, dist_unit = "km",
-                 transform = FALSE, st.size = 4, height = 0.02,
-                 border.size = 0.1, st.dist = 0.03,
-                 anchor = c(x = anc[2] - 15500, y = anc[1]) + 8000) +
   coord_sf(xlim = c(sitbbox2[1], sitbbox2[3]),
            ylim = c(sitbbox2[2], sitbbox2[4]),
            expand = FALSE) +
@@ -964,7 +959,7 @@ c14results <- model_phases(siter, c(1,1,1,2,2))
 datedat <- model_dates(siter, c(1,1,1,2,2))
 
 
-datedat %>%
+output$datedat %>%
   arrange(class) %>%
   ggplot() +
   ggridges::geom_ridgeline(aes(x = dates, y = fct_reorder(name, group, .desc = TRUE),

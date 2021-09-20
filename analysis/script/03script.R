@@ -578,51 +578,150 @@ apply_functions <- function(sitename, date_groups, dtmpath,
     output[[i]]$simsea <- simsea
   }
 
-  sums <- unique(posterior[grep("Sum", posterior$name),]$name)
-  unique(datedat[grep("Sum", datedat$name),]$name)
-
-  posteriorprobs <- filter(datedat, datedat$class == "Sum")
-
-  # Simulate sea-level and retrieve distances (takes some time)
-  output <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
-                             posteriorprobs)
-
-
-  simsea <- sea_overlaps(sitearea, output$seapol)
-
-  output$simsea <- simsea
-
   output$datedat <- datedat
   output$sitel <- sitel
+  output$sitearea <- sitearea
 
   # Return results
   return(output)
 }
 
+# Define function to plot site in present day landscape
+site_plot <- function(locationraster, sitelimit, dist) {
+
+  # Make present day sea-level NA
+  locationraster[locationraster <= 0] <- NA
+
+  # Retrieve bounding box for scale bar placement
+  bboxraster <- st_bbox(locationraster)
+  anc <- as.numeric(c(bboxraster$ymin, bboxraster$xmax))
+
+  # Create hillshade
+  # For some reason the terra version returned pathchy hillshade
+  slope <- raster::terrain(raster(locationraster), 'slope')
+  aspect <- raster::terrain(raster(locationraster), 'aspect')
+  hill <- raster::hillShade(slope, aspect, 40, 270)
+  hill_df <- raster::as.data.frame(raster(hill), xy = TRUE)
+
+  # Make the raster amenable for plotting with ggplot
+  raster_df <- raster::as.data.frame(raster(locationraster), xy = TRUE)
+  names(raster_df) <- c("x", "y", "value")
+
+  # Code partly taken from
+  # https://gist.github.com/dirkseidensticker/ce98c6adfe16d5e4590e95c587ea0432
+  ggplot() +
+    geom_raster(data = hill_df,
+                aes(x = x, y = y, fill = layer)) +
+    scale_fill_gradient(low = "black", high = "grey") +
+    new_scale_fill() +
+    geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
+                alpha = 0.4) +
+    scale_fill_gradient(low = "black", high = "white") +
+    geom_sf(data = sitelimit, fill = "red",
+            colour = "black") +
+    ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+                   transform = FALSE, st.size = 6, height = 0.2,
+                   border.size = 0.1, st.dist = 0.5,
+                   anchor = c(x = anc[2] - 175, y = anc[1]) + 85) +
+    coord_sf(expand = FALSE) +
+    theme_bw() + theme(axis.title=element_blank(),
+                       axis.text.y = element_blank(),
+                       axis.text.x = element_blank(),
+                       rect = element_rect(),
+                       axis.ticks = element_blank(),
+                       panel.grid.major = element_blank(),
+                       legend.position="none")
+}
+
+overview_plot <- function(background_map, sitelimit, sites, isobases) {
+  bboxsites <- st_bbox(sites)
+  bboxsites[1] <- bboxsites[1] - 15000
+  bboxsites[3] <- bboxsites[3] + 15000
+  bboxsites[2] <- bboxsites[2] - 5000
+  bboxsites[4] <- bboxsites[4] + 5000
+  bboxsitespoly <- st_as_sf(st_as_sfc(bboxsites))
+
+  bound_reproj <- st_transform(bboxsitespoly, st_crs(background_map))
+  bmap2 <- background_map %>%
+    filter(st_intersects(., bound_reproj, sparse = FALSE))
+  bmap_reproj <- st_transform(bmap2, st_crs(sites))
+
+  anc <- as.numeric(c(bboxsites$ymin, bboxsites$xmax))
+
+  ggplot() +
+    geom_sf(data = bmap_reproj, fill = "grey", colour = NA) +
+    geom_sf(data = isobases, aes(colour = name)) +
+    geom_sf(data = sitelimit, size = 3, shape = 21, colour = "red") +
+    ggsn::scalebar(data = sites, dist = 20, dist_unit = "km",
+                   transform = FALSE, st.size = 4, height = 0.02,
+                   border.size = 0.1, st.dist = 0.03,
+                   anchor = c(x = anc[2] - 15500, y = anc[1]) + 8000) +
+    coord_sf(xlim = c(bboxsites[1], bboxsites[3]),
+             ylim = c(bboxsites[2], bboxsites[4]),
+             expand = FALSE) +
+    scale_colour_manual(values = c("Arendal" = "black",
+                                   "Larvik" = "darkgreen",
+                                   "Tvedestrand" = "blue",
+                                   "Halden" = 'red')) +
+    theme_bw() + theme(axis.title=element_blank(),
+                       axis.text.y = element_blank(),
+                       axis.text.x = element_blank(),
+                       rect = element_rect(),
+                       axis.ticks = element_blank(),
+                       panel.grid.major = element_blank(),
+                       legend.position = "none")
+}
+
 # Define function to plot site relative to simulated sea-levels
-shore_plot <- function(overlapgrid, sitelimit) {
-  tm_shape(overlapgrid, unit = "m") +
-    tm_fill(col = "overlaps", title = "",
-            legend.show = FALSE, palette = "Greys", alpha = 0.5) +
-    tm_shape(sitelimit) +
-    tm_borders(col = "black", lwd = 1) +
-    tm_scale_bar(text.size = 0.8)
+shore_plot <- function(overlapgrid, sitelimit, dist) {
+
+  bboxgrid <- st_bbox(overlapgrid)
+  anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
+
+
+  # Make 0 overlaps NA to remove colour using na.values in call to plot"
+  overlapgrid <- mutate(overlapgrid, overlaps = ifelse(overlaps == 0,
+                                                       NA, overlaps))
+
+  ggplot() +
+    geom_sf(data = overlapgrid, aes(colour = overlaps)) +
+    geom_sf(data = sitelimit, colour = "black", fill = "white") +
+    scale_colour_gradient(low = "grey95", high = "grey25", na.value = "grey99") +
+    ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+                   transform = FALSE, st.size = 6, height = 0.2,
+                   border.size = 0.1, st.dist = 0.5,
+                   anchor = c(x = anc[2] - 175, y = anc[1]) + 85) +
+    coord_sf(expand = FALSE) +
+    theme_bw() + theme(axis.title=element_blank(),
+                       axis.text.y = element_blank(),
+                       axis.text.x = element_blank(),
+                       rect = element_rect(),
+                       axis.ticks = element_blank(),
+                       panel.grid.major = element_blank(),
+                       legend.position = "none")
 }
 
 # Define function to plot boxplots of distance from site to shoreline across
 # simulation runs
 distance_plot <- function(data) {
   ggplot(data) +
-    geom_boxplot(aes(x = "Vertical distance", y = vertdist)) +
-    geom_boxplot(aes(x = "Horisontal distance", y = hordist)) +
-    geom_boxplot(aes(x = "Topographic distance", y = topodist)) +
+    geom_boxplot(aes(x = "Vertical", y = vertdist)) +
+    geom_boxplot(aes(x = "Horisontal", y = hordist)) +
+    geom_boxplot(aes(x = "Topographic", y = topodist)) +
     labs(y = "Distance from shoreline (m)", x = "") +
     theme_bw()
 }
 
-# Define function to plot modelled and unmodelled 14C dates
-plot_dates <- function(datedata, sitename){
-  datedata %>%
+# Define function to plot modelled and unmodelled 14C-dates
+plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
+                       title = TRUE){
+
+  # If only one of the groups of dates is being plotted
+  if(!is.na(groupn)){
+    datedata <- filter(datedata, group == groupn)
+  }
+
+  plot <- datedata %>%
     filter(!(name %in% c("Start", "End"))) %>%
     arrange(class) %>%
     ggplot() +
@@ -634,8 +733,21 @@ plot_dates <- function(datedata, sitename){
     scale_alpha_manual(values = c("aprior" = 0.1,
                                   "bposterior" = 0.25,
                                   "sum" = 1)) +
-    scale_fill_colorblind() +
     theme_bw() +
-    labs(title = sitename, y = "", x = "cal BCE") +
+    labs(y = "", x = "") +
     theme(legend.position = "none")
+
+  if(multigroup == TRUE){
+    plot <- plot + scale_fill_colorblind()
+  } else {
+    plot <- plot + scale_fill_manual(
+      values = as.character(ggthemes_data$colorblind[groupn, 2]))
+  }
+
+  if(title == TRUE){
+    plot <- plot + ggtitle(sitename)
+  }
+
+  return(plot)
 }
+
