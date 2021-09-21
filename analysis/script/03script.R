@@ -521,8 +521,8 @@ sea_overlaps <- function(sitearea, seapolygons){
 }
 
 # Function that combines all of the above
-apply_functions <- function(sitename, date_groups, dtmpath,
-                            displacement_curves, isobases, nsamp = 1000){
+apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
+                            isobases, nsamp = 1000, loc_bbox){
 
   # Retrieve site limit and features
   sitel <- filter(sites_sa, name == sitename)
@@ -548,7 +548,7 @@ apply_functions <- function(sitename, date_groups, dtmpath,
   dtm <- load_raster(dtmpath, sitel)
 
   # Create bounding box polygon
-  location_bbox <- bboxpoly(sitel, 500)
+  location_bbox <- bboxpoly(sitel, loc_bbox)
 
   # Use this to clip the dtm to the site area
   sitearea <- terra::crop(dtm, location_bbox)
@@ -581,13 +581,14 @@ apply_functions <- function(sitename, date_groups, dtmpath,
   output$datedat <- datedat
   output$sitel <- sitel
   output$sitearea <- sitearea
+  output$sitecurve <- sitecurve
 
   # Return results
   return(output)
 }
 
 # Define function to plot site in present day landscape
-site_plot <- function(locationraster, sitelimit, dist) {
+site_plot <- function(locationraster, sitelimit, dist, date_groups) {
 
   # Make present day sea-level NA
   locationraster[locationraster <= 0] <- NA
@@ -601,28 +602,24 @@ site_plot <- function(locationraster, sitelimit, dist) {
   slope <- raster::terrain(raster(locationraster), 'slope')
   aspect <- raster::terrain(raster(locationraster), 'aspect')
   hill <- raster::hillShade(slope, aspect, 40, 270)
-  hill_df <- raster::as.data.frame(raster(hill), xy = TRUE)
 
-  # Make the raster amenable for plotting with ggplot
+  # Make the raster amenable for plotting with ggplot (as.data.frame with terra
+  # returned some strange errors)
   raster_df <- raster::as.data.frame(raster(locationraster), xy = TRUE)
   names(raster_df) <- c("x", "y", "value")
 
   # Code partly taken from
   # https://gist.github.com/dirkseidensticker/ce98c6adfe16d5e4590e95c587ea0432
-  ggplot() +
-    geom_raster(data = hill_df,
+  plt <- ggplot() +
+    geom_raster(data = raster::as.data.frame(hill, xy = TRUE),
                 aes(x = x, y = y, fill = layer)) +
     scale_fill_gradient(low = "black", high = "grey") +
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
                 alpha = 0.4) +
-    scale_fill_gradient(low = "black", high = "white") +
-    geom_sf(data = sitelimit, fill = "red",
+    scale_fill_gradient(low = "darkgrey", high = "grey") +
+    geom_sf(data = sitelimit, fill = "black",
             colour = "black") +
-    ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-                   transform = FALSE, st.size = 6, height = 0.2,
-                   border.size = 0.1, st.dist = 0.5,
-                   anchor = c(x = anc[2] - 175, y = anc[1]) + 85) +
     coord_sf(expand = FALSE) +
     theme_bw() + theme(axis.title=element_blank(),
                        axis.text.y = element_blank(),
@@ -631,6 +628,21 @@ site_plot <- function(locationraster, sitelimit, dist) {
                        axis.ticks = element_blank(),
                        panel.grid.major = element_blank(),
                        legend.position="none")
+
+  # Adjust scalebar depending on plot layout (impacted by number of date groups)
+  if(length(unique(date_groups)) > 1){
+    plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+                        transform = FALSE, st.size = 3, height = 0.2,
+                        border.size = 0.1, st.dist = 0.5,
+                        anchor = c(x = anc[2] - 175, y = anc[1]) + 85)
+  } else {
+    plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+                                transform = FALSE, st.size = 3, height = 0.2,
+                                border.size = 0.1, st.dist = 0.5,
+                                anchor = c(x = anc[2] - 100, y = anc[1]) + 60)
+
+  }
+  return(plt)
 }
 
 overview_plot <- function(background_map, sitelimit, sites, isobases) {
@@ -651,11 +663,12 @@ overview_plot <- function(background_map, sitelimit, sites, isobases) {
   ggplot() +
     geom_sf(data = bmap_reproj, fill = "grey", colour = NA) +
     geom_sf(data = isobases, aes(colour = name)) +
-    geom_sf(data = sitelimit, size = 3, shape = 21, colour = "red") +
+    geom_sf(data = st_centroid(sitelimit), size = 1.5, shape = 21,
+            colour = "black", fill = "red") +
     ggsn::scalebar(data = sites, dist = 20, dist_unit = "km",
-                   transform = FALSE, st.size = 4, height = 0.02,
+                   transform = FALSE, st.size = 3, height = 0.02,
                    border.size = 0.1, st.dist = 0.03,
-                   anchor = c(x = anc[2] - 15500, y = anc[1]) + 8000) +
+                   anchor = c(x = anc[2] - 20000, y = anc[1]) + 8000) +
     coord_sf(xlim = c(bboxsites[1], bboxsites[3]),
              ylim = c(bboxsites[2], bboxsites[4]),
              expand = FALSE) +
@@ -673,7 +686,7 @@ overview_plot <- function(background_map, sitelimit, sites, isobases) {
 }
 
 # Define function to plot site relative to simulated sea-levels
-shore_plot <- function(overlapgrid, sitelimit, dist) {
+shore_plot <- function(overlapgrid, sitelimit, dist, date_groups) {
 
   bboxgrid <- st_bbox(overlapgrid)
   anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
@@ -683,14 +696,10 @@ shore_plot <- function(overlapgrid, sitelimit, dist) {
   overlapgrid <- mutate(overlapgrid, overlaps = ifelse(overlaps == 0,
                                                        NA, overlaps))
 
-  ggplot() +
+  plt <- ggplot() +
     geom_sf(data = overlapgrid, aes(colour = overlaps)) +
-    geom_sf(data = sitelimit, colour = "black", fill = "white") +
-    scale_colour_gradient(low = "grey95", high = "grey25", na.value = "grey99") +
-    ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-                   transform = FALSE, st.size = 6, height = 0.2,
-                   border.size = 0.1, st.dist = 0.5,
-                   anchor = c(x = anc[2] - 175, y = anc[1]) + 85) +
+    geom_sf(data = sitelimit, colour = "black", fill = NA) +
+    scale_colour_gradient(low = "grey98", high = "grey40", na.value = "grey99") +
     coord_sf(expand = FALSE) +
     theme_bw() + theme(axis.title=element_blank(),
                        axis.text.y = element_blank(),
@@ -699,6 +708,21 @@ shore_plot <- function(overlapgrid, sitelimit, dist) {
                        axis.ticks = element_blank(),
                        panel.grid.major = element_blank(),
                        legend.position = "none")
+
+  # Adjust scalebar depending on plot layout (impacted by number of date groups)
+  if(length(unique(date_groups)) > 1){
+    plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+                                transform = FALSE, st.size = 3, height = 0.2,
+                                border.size = 0.1, st.dist = 0.5,
+                                anchor = c(x = anc[2] - 175, y = anc[1]) + 85)
+  } else {
+    plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+                                transform = FALSE, st.size = 3, height = 0.2,
+                                border.size = 0.1, st.dist = 0.5,
+                                anchor = c(x = anc[2] - 100, y = anc[1]) + 60)
+
+  }
+  return(plt)
 }
 
 # Define function to plot boxplots of distance from site to shoreline across
@@ -730,8 +754,8 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
                                  height = probabilities * 50,
                                  fill = as.factor(group),
                                  alpha = class))+
-    scale_alpha_manual(values = c("aprior" = 0.1,
-                                  "bposterior" = 0.25,
+    scale_alpha_manual(values = c("aprior" = 0.05,
+                                  "bposterior" = 0.4,
                                   "sum" = 1)) +
     theme_bw() +
     labs(y = "", x = "") +
@@ -751,3 +775,48 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
   return(plot)
 }
 
+# Define function to plot results
+plot_results <- function(sitename, sitelimit, datedata, sitearea,
+                         background_map, sites, isobases, simulation_output,
+                         date_groups, scale_dist){
+
+  # Create list to hold all plots
+  plots <- list()
+
+  # Then create plots that are always needed
+  plots$dplot <- plot_dates(datedata, sitename, title = FALSE)
+  plots$pmap <- site_plot(sitearea, sitelimit, scale_dist, date_groups)
+  plots$omap <- overview_plot(background_map, sitelimit, sites, isobases)
+
+  # Then loop over and create plots per group of dates
+  for(i in 1:length(unique(date_groups))){
+
+      # Radiocarbon dates
+      plots[[paste0("datplot_", i)]] <- plot_dates(
+        datedata, sitename, multigroup = FALSE, group = i, title = FALSE)
+
+      # Map of simulated sea-levels
+      plots[[paste0("seaplot_", i)]] <- shore_plot(
+        simulation_output[[i]]$simsea, sitelimit, scale_dist, date_groups)
+
+      # Boxplot of distances from site to sea
+      plots[[paste0("distplot_", i)]] <- distance_plot(
+        simulation_output[[i]]$results)
+  }
+
+  # If the number of date groups is more than one the plots are assembled
+  #  a bit differently (mainly so that each individual group of dates get their
+  # own plot for inspection)
+  if(length(unique(date_groups)) > 1){
+      wrap_plots(plots,
+      nrow = length(unique(date_groups)) + 1, ncol = 3) +
+      plot_annotation(title = sitename) &
+      theme(plot.title = element_text(hjust = 0.5))
+  } else{
+      ( plots$pmap | plots$omap )
+      ( plots$pmap | plots$omap ) /
+      ( plots$datplot_1 | plots$seaplot_1 | plots$distplot_1 ) +
+      plot_annotation(title = sitename) &
+      theme(plot.title = element_text(hjust = 0.5))
+    }
+}

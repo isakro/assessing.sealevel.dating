@@ -2,8 +2,6 @@ Vestffoldbaneprosjektet, Lågerød(åsen) er ikke Intrasis v.3 (fikset vestfoldb
 Rugtvedt-Dørdal ser ikke ut til å ha lag 1 inkludert i Intrasis 
 Skljelsø 1 & 2 ser ikke ut til å Intrasis-prosjekter
 
-C14-dateringer fra kvadranter fra Kjørholt og ned må lages manuelt
-
 Sjekk to registreringsdateringer Krøgenes D1
 
 \\lagringshotell.uio.no\khm-kart\Kartavlevering\Avlevert_2010\Vestfoldbaneprosjektet_08_22814
@@ -15,14 +13,7 @@ Marum mellom 4 og Førstad store 1: Det var ingen .prj fil med disse dataene. Et
 Missing spatial:
 
 Hegna øst 2, stripped
-
-
-
-
-Tretjerna	 over MG	
-Olavsmyr	 over MG	
-Stormyr	 over MG	
-Veslevannet	 over MG			
+	
 		
 		
 
@@ -54,7 +45,8 @@ Gunnarsrød 5
 Dybdalshei 1
 Brunstad 25
 
-
+On individual sites:
+Kvastad A2. Two groups of radiocarbon dates. Highway clearly visible in the DTM does not impact the analysis as it is situated higher than the adjusted sea-levels
 
 
 
