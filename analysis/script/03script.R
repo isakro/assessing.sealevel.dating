@@ -6,79 +6,95 @@ model_dates <- function(sitedates, manual_groups){
   # Assign group to dates
   sitedates$group <- manual_groups
 
-  # Rerun final model, this time summing each group of more than one date
-  phase_model <- vector()
-  for(i in 1:length(unique(sitedates$group))){
-    # All dates in present group i
-    dats <- filter(sitedates, group == i)
-    txt <- paste0('
-         Boundary("', i, '");
-         Phase("', i, '")
-         {
-         ',
-                  R_Date(dats$lab_code, dats$c14_bp, dats$error),
-                  if(nrow(dats) > 1){
-                    paste0('
-         Sum("Sum ', i, '");
-          };
-         ')
-                  } else{
-                    paste0('
-         };
-         ')
-                  }
-    )
-    phase_model[i] <- txt
+  # If there are more than one date
+  if(nrow(siter) > 1){
+
+    # Assemble OxCal code for modelling dates, summing for each group of dates
+    phase_model <- vector()
+    for(i in 1:length(unique(sitedates$group))){
+      # All dates in present group i
+      dats <- filter(sitedates, group == i)
+      txt <- paste0('
+           Boundary("', i, '");
+           Phase("', i, '")
+           {
+           ',
+                    R_Date(dats$lab_code, dats$c14_bp, dats$error),
+                    if(nrow(dats) > 1){
+                      paste0('
+           Sum("Sum ', i, '");
+            };
+           ')
+                    } else{
+                      paste0('
+           };
+           ')
+                    }
+      )
+      phase_model[i] <- txt
+    }
+
+    # Add start and end of OxCal code
+    model <- paste0('
+    Plot()
+     {
+      Sequence()
+      {', paste(phase_model, collapse = " "),
+                          ' Boundary("End");
+      };
+    };')
+
+    # Execture the code and retrieve results
+    oxcal_exec <- executeOxcalScript(model)
+    oxcal_read <- readOxcalOutput(oxcal_exec)
+    oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
+
+    # Retrieve the raw probabilities for individual 14C-dates
+    prior <- get_raw_probabilities(oxcal_data)
+    names(prior) <- paste0(get_name(oxcal_data))
+    prior <- prior[!(names(prior) %in% c(unique(sitedates$group),
+                                        names(prior)[grep("Sum", names(prior))],
+                                        "End", "Start",
+                                        "character(0)"))]
+    prior <-  bind_rows(prior, .id = "name")
+    prior <- left_join(prior, sitedates, by = c("name" = "lab_code"))
+    prior$class <- "aprior"
+
+    # Retrieve the posterior probabilities for individual 14C-dates and the
+    # posterior sums.
+    posterior <- get_posterior_probabilities(oxcal_data)
+    names(posterior) <- get_name(oxcal_data)
+    posterior <- bind_rows(posterior[!(names(posterior) %in%
+                                        c(unique(sitedates$group), "End",
+                                          "Start", "character(0)"))],
+                                        .id = "name")
+    posterior <- left_join(posterior, sitedates, by = c("name" = "lab_code"))
+    posterior$class <- "bposterior"
+
+    # Could not for the life of me get something like this to work:
+    # posterior <- posterior %>% mutate(group = ifelse(grepl("Sum", name),
+    #        strsplit(name)[[1]][2], group))
+    # So I gave up and went for a for-loop
+    sums <- unique(posterior[grep("Sum", posterior$name),]$name)
+    for(i in 1:length(sums)){
+      posterior[posterior$name == sums[i], "group"] <- as.numeric(
+        strsplit(sums[i], " ")[[1]][2])
+      posterior[posterior$name == sums[i], "class"] <- "sum"
+    }
+
+    # Return results
+    return(rbind(prior, posterior))
+
+    # If there is only a singe date: Calibrate and return
+  } else {
+    caldat <- oxcalCalibrate(sitedates$c14_bp,
+                             sitedates$error, sitedates$lab_code)
+    dat <- get_raw_probabilities(caldat)
+    names(dat) <- get_name(caldat)
+    dat_df <- bind_rows(dat, .id = "name")
+    caldate <- left_join(dat_df, sitedates, by = c("name" = "lab_code"))
+    return(caldate)
   }
-
-  # Add start and end of OxCal code
-  model <- paste0('
-  Plot()
-   {
-    Sequence()
-    {', paste(phase_model, collapse = " "),
-                        ' Boundary("End");
-    };
-  };')
-
-  oxcal_exec <- executeOxcalScript(model)
-  oxcal_read <- readOxcalOutput(oxcal_exec)
-  oxcal_data <- parseOxcalOutput(oxcal_read, only.R_Date = FALSE)
-
-  # Retrieve the raw probabilities for individual 14C-dates
-  prior <- get_raw_probabilities(oxcal_data)
-  names(prior) <- paste0(get_name(oxcal_data))
-  prior <- prior[!(names(prior) %in% c(unique(sitedates$group),
-                                       names(prior)[grep("Sum", names(prior))],
-                                       "End", "Start",
-                                       "character(0)"))]
-  prior <-  bind_rows(prior, .id = "name")
-  prior <- left_join(prior, sitedates, by = c("name" = "lab_code"))
-  prior$class <- "aprior"
-
-  # Retrieve the posterior probabilities for individual 14C-dates and the
-  # posterior sums.
-  posterior <- get_posterior_probabilities(oxcal_data)
-  names(posterior) <- get_name(oxcal_data)
-  posterior <- bind_rows(posterior[!(names(posterior) %in%
-                                      c(unique(sitedates$group), "End", "Start",
-                                        "character(0)"))], .id = "name")
-  posterior <- left_join(posterior, sitedates, by = c("name" = "lab_code"))
-  posterior$class <- "bposterior"
-
-  # Could not for the life of me get something like this to work:
-  # posterior <- posterior %>% mutate(group = ifelse(grepl("Sum", name),
-  #        strsplit(name)[[1]][2], group))
-  # So I gave up and went for a for-loop
-  sums <- unique(posterior[grep("Sum", posterior$name),]$name)
-  for(i in 1:length(sums)){
-    posterior[posterior$name == sums[i], "group"] <- as.numeric(
-      strsplit(sums[i], " ")[[1]][2])
-    posterior[posterior$name == sums[i], "class"] <- "sum"
-  }
-
-  # Return results
-  return(rbind( prior, posterior))
 }
 
 # Define utility function to compare three models of radiocarbon dates
@@ -424,10 +440,10 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
     seapolygons[[i]] <- seapoly
 
-    # Retrieve lowest elevation on polygon
-    siteelev <- extract(sitearea, vect(sitel), fun = min)[2]
+    # Retrieve highest elevation on polygon
+    siteelev <- extract(sitearea, vect(sitel), fun = max)[2]
     # Find difference to sea level elevation
-    results$vertdist[i] <-  min(siteelev[1:nrow(siteelev),]) - sealevel
+    results$vertdist[i] <-  max(siteelev[1:nrow(siteelev),]) - sealevel
 
     # If these are at the same coordinate (i.e. the polygons are overlapping),
     # return all values as 0
@@ -522,7 +538,7 @@ sea_overlaps <- function(sitearea, seapolygons){
 
 # Function that combines all of the above
 apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
-                            isobases, nsamp = 1000, loc_bbox){
+                            isobases, nsamp = 1000, loc_bbox, siterpath){
 
   # Retrieve site limit and features
   sitel <- filter(sites_sa, name == sitename)
@@ -558,16 +574,20 @@ apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
   # Retrieve the posterior density estimate for each date group
   for(i in 1:length(unique(date_groups))){
 
+
+    # If there is only a single date from the site
+    if(nrow(siter) == 1){
+      posteriorprobs <- datedat
     # If the length of the group is not longer than one, there is no sum
     # associated with the date
-    if(length(date_groups[date_groups == i]) < 1){
+    } else if(length(date_groups[date_groups == i]) < 1){
       posteriorprobs <- filter(datedat, group == i & class == "bposterior")
     # If the group length is longer than one, use the posterior sum
     } else{
       posteriorprobs <- filter(datedat, group == i & class == "sum")
     }
 
-    # Simulate sea-level and retrieve distances (takes some time)
+    # Simulate sea-level and retrieve distances (takes time)
     output[[i]] <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
                                posteriorprobs)
 
@@ -580,15 +600,22 @@ apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
 
   output$datedat <- datedat
   output$sitel <- sitel
-  output$sitearea <- sitearea
   output$sitecurve <- sitecurve
+
+  # Store raster
+  writeRaster(sitearea, file.path(siterpath,
+                        paste0(str_replace(sitename, " ", "_"), ".tif")),
+              overwrite = TRUE)
 
   # Return results
   return(output)
 }
 
-# Define function to plot site in present day landscape
-site_plot <- function(locationraster, sitelimit, dist, date_groups) {
+# Define function to plot site in present day landscape. The various
+# "s" parameters are to adjust the scale bar, which needed some manual
+# adjustment for nearly every plot
+site_plot <- function(locationraster, sitelimit, dist, date_groups,
+                      s_tdist, s_xpos, s_ypos, s_bheight) {
 
   # Make present day sea-level NA
   locationraster[locationraster <= 0] <- NA
@@ -610,16 +637,20 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups) {
 
   # Code partly taken from
   # https://gist.github.com/dirkseidensticker/ce98c6adfe16d5e4590e95c587ea0432
-  plt <- ggplot() +
+  ggplot() +
     geom_raster(data = raster::as.data.frame(hill, xy = TRUE),
                 aes(x = x, y = y, fill = layer)) +
-    scale_fill_gradient(low = "black", high = "grey") +
+    scale_fill_gradient(low = "black", high = "grey", na.value = "white") +
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
                 alpha = 0.4) +
-    scale_fill_gradient(low = "darkgrey", high = "grey") +
+    scale_fill_gradient(low = "darkgrey", high = "grey", na.value = "white") +
     geom_sf(data = sitelimit, fill = "black",
             colour = "black") +
+    ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+                   transform = FALSE, st.size = 3, height = s_bheight,
+                   border.size = 0.1, st.dist = s_tdist,
+                   anchor = c(x = anc[2] - s_xpos, y = anc[1]) + s_ypos) +
     coord_sf(expand = FALSE) +
     theme_bw() + theme(axis.title=element_blank(),
                        axis.text.y = element_blank(),
@@ -628,21 +659,6 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups) {
                        axis.ticks = element_blank(),
                        panel.grid.major = element_blank(),
                        legend.position="none")
-
-  # Adjust scalebar depending on plot layout (impacted by number of date groups)
-  if(length(unique(date_groups)) > 1){
-    plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-                        transform = FALSE, st.size = 3, height = 0.2,
-                        border.size = 0.1, st.dist = 0.5,
-                        anchor = c(x = anc[2] - 175, y = anc[1]) + 85)
-  } else {
-    plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-                                transform = FALSE, st.size = 3, height = 0.2,
-                                border.size = 0.1, st.dist = 0.5,
-                                anchor = c(x = anc[2] - 100, y = anc[1]) + 60)
-
-  }
-  return(plt)
 }
 
 overview_plot <- function(background_map, sitelimit, sites, isobases) {
@@ -686,7 +702,8 @@ overview_plot <- function(background_map, sitelimit, sites, isobases) {
 }
 
 # Define function to plot site relative to simulated sea-levels
-shore_plot <- function(overlapgrid, sitelimit, dist, date_groups) {
+shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
+                       s_tdist, s_xpos, s_ypos, s_bheight) {
 
   bboxgrid <- st_bbox(overlapgrid)
   anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
@@ -696,10 +713,15 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups) {
   overlapgrid <- mutate(overlapgrid, overlaps = ifelse(overlaps == 0,
                                                        NA, overlaps))
 
-  plt <- ggplot() +
+  ggplot() +
     geom_sf(data = overlapgrid, aes(colour = overlaps)) +
     geom_sf(data = sitelimit, colour = "black", fill = NA) +
-    scale_colour_gradient(low = "grey98", high = "grey40", na.value = "grey99") +
+    scale_colour_gradient(low = "grey98", high = "grey40",
+                          na.value = "grey99") +
+    ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+                   transform = FALSE, st.size = 3, height = s_bheight,
+                   border.size = 0.1, st.dist = s_tdist,
+                   anchor = c(x = anc[2] - s_xpos, y = anc[1]) + s_ypos) +
     coord_sf(expand = FALSE) +
     theme_bw() + theme(axis.title=element_blank(),
                        axis.text.y = element_blank(),
@@ -709,20 +731,20 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups) {
                        panel.grid.major = element_blank(),
                        legend.position = "none")
 
-  # Adjust scalebar depending on plot layout (impacted by number of date groups)
-  if(length(unique(date_groups)) > 1){
-    plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-                                transform = FALSE, st.size = 3, height = 0.2,
-                                border.size = 0.1, st.dist = 0.5,
-                                anchor = c(x = anc[2] - 175, y = anc[1]) + 85)
-  } else {
-    plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-                                transform = FALSE, st.size = 3, height = 0.2,
-                                border.size = 0.1, st.dist = 0.5,
-                                anchor = c(x = anc[2] - 100, y = anc[1]) + 60)
-
-  }
-  return(plt)
+  # # Adjust scalebar depending on plot layout (impacted by number of date groups)
+  # if(length(unique(date_groups)) > 1){
+  #   plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+  #                               transform = FALSE, st.size = 3, height = 0.2,
+  #                               border.size = 0.1, st.dist = 0.5,
+  #                               anchor = c(x = anc[2] - 175, y = anc[1]) + 85)
+  # } else {
+  #   plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
+  #                               transform = FALSE, st.size = 3, height = 0.5,
+  #                               border.size = 0.1, st.dist = 1,
+  #                               anchor = c(x = anc[2] - 100, y = anc[1]) + 50)
+  #
+  # }
+  # return(plt)
 }
 
 # Define function to plot boxplots of distance from site to shoreline across
@@ -745,21 +767,31 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
     datedata <- filter(datedata, group == groupn)
   }
 
-  plot <- datedata %>%
-    filter(!(name %in% c("Start", "End"))) %>%
-    arrange(class) %>%
-    ggplot() +
-    ggridges::geom_ridgeline(aes(x = dates,
-                                 y = fct_reorder(name, group, .desc = TRUE),
-                                 height = probabilities * 50,
-                                 fill = as.factor(group),
-                                 alpha = class))+
-    scale_alpha_manual(values = c("aprior" = 0.05,
-                                  "bposterior" = 0.4,
-                                  "sum" = 1)) +
-    theme_bw() +
-    labs(y = "", x = "") +
-    theme(legend.position = "none")
+  if(length(unique(datedata$name)) > 1){
+    plot <- datedata %>%
+      filter(!(name %in% c("Start", "End"))) %>%
+      arrange(class) %>%
+      ggplot() +
+      ggridges::geom_ridgeline(aes(x = dates,
+                                   y = fct_reorder(name, group, .desc = TRUE),
+                                   height = probabilities * 50,
+                                   fill = as.factor(group),
+                                   alpha = class))+
+      scale_alpha_manual(values = c("aprior" = 0.05,
+                                    "bposterior" = 0.4,
+                                    "sum" = 1)) +
+      theme_bw() +
+      labs(y = "", x = "") +
+      theme(legend.position = "none")
+  } else{
+    plot <- ggplot(datedata) +
+      ggridges::geom_ridgeline(aes(x = dates, y = name,
+                                   height = probabilities * 50,
+                                   fill = as.factor(group))) +
+      theme_bw() +
+      labs(y = "", x = "") +
+      theme(legend.position = "none")
+  }
 
   if(multigroup == TRUE){
     plot <- plot + scale_fill_colorblind()
@@ -778,14 +810,16 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
 # Define function to plot results
 plot_results <- function(sitename, sitelimit, datedata, sitearea,
                          background_map, sites, isobases, simulation_output,
-                         date_groups, scale_dist){
+                         date_groups, scale_dist, s_tdist = 0.5, s_xpos = 175,
+                         s_ypos = 85,  s_bheight = 0.2){
 
   # Create list to hold all plots
   plots <- list()
 
   # Then create plots that are always needed
   plots$dplot <- plot_dates(datedata, sitename, title = FALSE)
-  plots$pmap <- site_plot(sitearea, sitelimit, scale_dist, date_groups)
+  plots$pmap <- site_plot(sitearea, sitelimit, scale_dist, date_groups,
+                          s_tdist, s_xpos, s_ypos, s_bheight)
   plots$omap <- overview_plot(background_map, sitelimit, sites, isobases)
 
   # Then loop over and create plots per group of dates
@@ -797,7 +831,8 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
 
       # Map of simulated sea-levels
       plots[[paste0("seaplot_", i)]] <- shore_plot(
-        simulation_output[[i]]$simsea, sitelimit, scale_dist, date_groups)
+        simulation_output[[i]]$simsea, sitelimit, scale_dist, date_groups,
+        s_tdist, s_xpos, s_ypos, s_bheight)
 
       # Boxplot of distances from site to sea
       plots[[paste0("distplot_", i)]] <- distance_plot(

@@ -46,6 +46,8 @@ Dybdalshei 1
 Brunstad 25
 
 On individual sites:
+Kvastad A1. What appears to be drainage and possibly redirection of a small creek visibile in the terrain model can possibly have skewed the dsitances somewhat towards more shore-bound. However, difficult to say to what degree and whether
+            removing these would be any more appropriate.
 Kvastad A2. Two groups of radiocarbon dates. Highway clearly visible in the DTM does not impact the analysis as it is situated higher than the adjusted sea-levels
 
 

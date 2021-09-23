@@ -32,6 +32,9 @@ bmap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
 
 # Specify path to raster data (currently stored locally)
 dtmpath <- "/home/isak/phd/eaa_presentation/dtm1"
+# Path to smaller site area rasters
+siterpath <- "/home/isak/phd/eaa_presentation/sitearea"
+
 
 # Assign closest isobases to site data.
 sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
@@ -47,26 +50,32 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 ######### Kvastad A2 #########
 sitename <- "Kvastad A2"
 date_groups <- c(1, 1, 1, 2, 2)
+
 # output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                          isobases, nsamp = 1000, loc_bbox = 500)
+#                          isobases, nsamp = 1000, loc_bbox = 500, siterpath)
 load(here("analysis/data/derived_data/kvastada2.RData"))
 
-plot_results(sitename, output$sitel, output$datedat, output$sitearea, bmap,
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 150)
 
-ggsave(file = here("analysis/figures/kvastad_a2.4.png"), width = 250,
+ggsave(file = here("analysis/figures/kvastad_a2.png"), width = 250,
        height = 228, units = "mm")
 
 ######### Langangen Vestgård 1 #########
 sitename <- "Langangen Vestgård 1"
 date_groups <- rep(1, 13)
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250)
 
-save(output,
-     file = here::here("analysis/data/derived_data/langangenv1.RData"))
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+load(here("analysis/data/derived_data/langangenv1.RData"))
 
-plot_results(sitename, output$sitel, output$datedat, output$sitearea, bmap,
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 100)
 
 ggsave(file = here("analysis/figures/langangenv1.png"), width = 250,
@@ -75,13 +84,15 @@ ggsave(file = here("analysis/figures/langangenv1.png"), width = 250,
 ######### Vallermyrene 1a #########
 sitename <- "Vallermyrene 1a"
 date_groups <- c(1, 1)
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250)
 
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene1a.RData"))
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250)
+load(here("analysis/data/derived_data/vallermyrene1a.RData"))
 
-plot_results(sitename, output$sitel, output$datedat, output$sitearea, bmap,
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 100)
 
 ggsave(file = here("analysis/figures/vallermyrene1a.png"), width = 250,
@@ -90,15 +101,109 @@ ggsave(file = here("analysis/figures/vallermyrene1a.png"), width = 250,
 ######### Vallermyrene 1b #########
 sitename <- "Vallermyrene 1b"
 date_groups <- 1
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250)
 
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene1b.RData"))
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250)
+load(here("analysis/data/derived_data/vallermyrene1b.RData"))
 
-plot_results(sitename, output$sitel, output$datedat, output$sitearea, bmap,
+sitearea <- rast(file.path(siterpath,
+          paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 100)
 
 ggsave(file = here("analysis/figures/vallermyrene1b.png"), width = 250,
        height = 152, units = "mm")
 
+
+######### Tverdal #########
+sitename <- "Tverdal"
+date_groups <- rep(1, 4)
+
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+load(here("analysis/data/derived_data/tverdal.RData"))
+
+sitearea <- rast(file.path(siterpath,
+           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.5, s_xpos = 175, s_ypos = 85,  s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/tverdal.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Kvastad A1 #########
+sitename <- "Kvastad A1"
+date_groups <- 1
+
+load(here("analysis/data/derived_data/kvastada1.RData"))
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/kvastada1.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Kvastad A4 #########
+sitename <- "Kvastad A4"
+date_groups <- 1
+
+load(here("analysis/data/derived_data/kvastada4.RData"))
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/kvastada4.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Kvastad A9 #########
+sitename <- "Kvastad A9"
+date_groups <- 1
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/kvastada9.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/kvastada9.png"), width = 250,
+       height = 152, units = "mm")
+
+
+######### Hesthag C2 #########
+sitename <- "Hesthag C2"
+date_groups <- c(1, 2)
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/hesthagc2.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
+
+ggsave(file = here("analysis/figures/hesthagc2.png"), width = 250,
+       height = 152, units = "mm")
