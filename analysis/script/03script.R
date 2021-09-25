@@ -7,8 +7,9 @@ model_dates <- function(sitedates, manual_groups){
   sitedates$group <- manual_groups
 
   # If there are more than one date
-  if(nrow(siter) > 1){
+  if(nrow(sitedates) > 1){
 
+    # as.data.frame(table(manual_groups))$Freq # number of dates per group
     # Assemble OxCal code for modelling dates, summing for each group of dates
     phase_model <- vector()
     for(i in 1:length(unique(sitedates$group))){
@@ -139,9 +140,9 @@ model_phases <- function(sitedates, manual_groups = NULL){
     sitedates$group <- threesgroup
 
     phase_model <- vector()
-    for(i in 1:length(unique(siter$group))){
+    for(i in 1:length(unique(sitedates$group))){
       # All dates in present group i
-      dats <- filter(siter, group == i)
+      dats <- filter(sitedates, group == i)
       txt <- paste0('
          Boundary("Start ', i, '");
          Phase("', i, '")
@@ -177,9 +178,9 @@ model_phases <- function(sitedates, manual_groups = NULL){
     sitedates$group <- manual_groups
 
     phase_model <- vector()
-    for(i in 1:length(unique(siter$group))){
+    for(i in 1:length(unique(sitedates$group))){
       # All dates in present group i
-      dats <- filter(siter, group == i)
+      dats <- filter(sitedates, group == i)
       txt <- paste0('
          Boundary("Start ', i, '");
          Phase("', i, '")
@@ -538,13 +539,21 @@ sea_overlaps <- function(sitearea, seapolygons){
 
 # Function that combines all of the above
 apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
-                            isobases, nsamp = 1000, loc_bbox, siterpath){
+                            isobases, nsamp = 1000, loc_bbox, siterpath,
+                            rcarbcor_true = FALSE){
 
   # Retrieve site limit and features
   sitel <- filter(sites_sa, name == sitename)
   siteu <- st_union(sitel)
   sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
   siter <- filter(rcarb_sa, site_name == sitename)
+
+  # If this option is set to true, only include radiocarbon dates which were
+  # evaluated by the original excavators to correlate with typological
+  # indicators of the assemblages.
+  if(rcarbcor_true == TRUE){
+    siter <- filter(siter, rcarb_cor == "t")
+  }
 
   # Model dates
   datedat <- model_dates(sitedates = siter, manual_groups = date_groups)
@@ -580,7 +589,7 @@ apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
       posteriorprobs <- datedat
     # If the length of the group is not longer than one, there is no sum
     # associated with the date
-    } else if(length(date_groups[date_groups == i]) < 1){
+    } else if(length(date_groups[date_groups == i]) <= 1){
       posteriorprobs <- filter(datedat, group == i & class == "bposterior")
     # If the group length is longer than one, use the posterior sum
     } else{

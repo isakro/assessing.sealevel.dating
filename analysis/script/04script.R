@@ -184,13 +184,88 @@ sitearea <- rast(file.path(siterpath,
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 100,
-             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
+             s_tdist = 3.5, s_xpos = 100, s_ypos = 40,  s_bheight = 2.5)
 
 ggsave(file = here("analysis/figures/kvastada9.png"), width = 250,
        height = 152, units = "mm")
 
 
-######### Hesthag C2 #########
+######### Langangen Vestgård 3 #########
+sitename <- "Langangen Vestgård 3"
+date_groups <- rep(1, 6)
+
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+load(here("analysis/data/derived_data/langangenv3.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 1, s_xpos = 110, s_ypos = 50,  s_bheight = 0.5)
+
+ggsave(file = here("analysis/figures/langangenv3.png"), width = 250,
+       height = 152, units = "mm")
+######### Gunnarsrød 4. Need to edit raster #########
+sitename <- "Gunnarsrød 4"
+date_groups <- c(1, 1)
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/gunnarsrod4.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/gunnarsrod4.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Gunnarsrød 5 #########
+sitename <- "Gunnarsrød 5"
+date_groups <- c(1, 1, 2)
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath,
+                          rcarbcor_true = TRUE)
+save(output,
+     file = here::here("analysis/data/derived_data/gunnarsrod4.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/gunnarsrod4.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Langangen Vestgård 7 Road as site limit #########
+sitename <- "Langangen Vestgård 7"
+date_groups <- 1
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/langangenv7.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 1, s_xpos = 110, s_ypos = 50,  s_bheight = 0.5)
+
+ggsave(file = here("analysis/figures/langangenv7.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Hesthag C2 Two individual dates #########
 sitename <- "Hesthag C2"
 date_groups <- c(1, 2)
 
