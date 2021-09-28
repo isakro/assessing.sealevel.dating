@@ -624,7 +624,7 @@ apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
 # "s" parameters are to adjust the scale bar, which needed some manual
 # adjustment for nearly every plot
 site_plot <- function(locationraster, sitelimit, dist, date_groups,
-                      s_tdist, s_xpos, s_ypos, s_bheight) {
+                      s_tdist, s_xpos, s_ypos, s_bheight, s_tsize) {
 
   # Make present day sea-level NA
   locationraster[locationraster <= 0] <- NA
@@ -657,7 +657,7 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
     geom_sf(data = sitelimit, fill = "black",
             colour = "black") +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-                   transform = FALSE, st.size = 3, height = s_bheight,
+                   transform = FALSE, st.size = s_tsize, height = s_bheight,
                    border.size = 0.1, st.dist = s_tdist,
                    anchor = c(x = anc[2] - s_xpos, y = anc[1]) + s_ypos) +
     coord_sf(expand = FALSE) +
@@ -670,7 +670,8 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
                        legend.position="none")
 }
 
-overview_plot <- function(background_map, sitelimit, sites, isobases) {
+overview_plot <- function(background_map, sitelimit, sites, isobases,
+                          os_tdist, os_xpos, os_ypos, os_bheight, os_tsize) {
   bboxsites <- st_bbox(sites)
   bboxsites[1] <- bboxsites[1] - 15000
   bboxsites[3] <- bboxsites[3] + 15000
@@ -691,9 +692,9 @@ overview_plot <- function(background_map, sitelimit, sites, isobases) {
     geom_sf(data = st_centroid(sitelimit), size = 1.5, shape = 21,
             colour = "black", fill = "red") +
     ggsn::scalebar(data = sites, dist = 20, dist_unit = "km",
-                   transform = FALSE, st.size = 3, height = 0.02,
-                   border.size = 0.1, st.dist = 0.03,
-                   anchor = c(x = anc[2] - 20000, y = anc[1]) + 8000) +
+                   transform = FALSE, st.size = os_tsize, height = os_bheight,
+                   border.size = 0.1, st.dist = os_tdist,
+                   anchor = c(x = anc[2] - os_xpos, y = anc[1]) + os_ypos) +
     coord_sf(xlim = c(bboxsites[1], bboxsites[3]),
              ylim = c(bboxsites[2], bboxsites[4]),
              expand = FALSE) +
@@ -712,7 +713,7 @@ overview_plot <- function(background_map, sitelimit, sites, isobases) {
 
 # Define function to plot site relative to simulated sea-levels
 shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
-                       s_tdist, s_xpos, s_ypos, s_bheight) {
+                       s_tdist, s_xpos, s_ypos, s_bheight, s_tsize) {
 
   bboxgrid <- st_bbox(overlapgrid)
   anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
@@ -728,7 +729,7 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
     scale_colour_gradient(low = "grey98", high = "grey40",
                           na.value = "grey99") +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-                   transform = FALSE, st.size = 3, height = s_bheight,
+                   transform = FALSE, st.size = s_tsize, height = s_bheight,
                    border.size = 0.1, st.dist = s_tdist,
                    anchor = c(x = anc[2] - s_xpos, y = anc[1]) + s_ypos) +
     coord_sf(expand = FALSE) +
@@ -739,21 +740,6 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
                        axis.ticks = element_blank(),
                        panel.grid.major = element_blank(),
                        legend.position = "none")
-
-  # # Adjust scalebar depending on plot layout (impacted by number of date groups)
-  # if(length(unique(date_groups)) > 1){
-  #   plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-  #                               transform = FALSE, st.size = 3, height = 0.2,
-  #                               border.size = 0.1, st.dist = 0.5,
-  #                               anchor = c(x = anc[2] - 175, y = anc[1]) + 85)
-  # } else {
-  #   plt <- plt + ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
-  #                               transform = FALSE, st.size = 3, height = 0.5,
-  #                               border.size = 0.1, st.dist = 1,
-  #                               anchor = c(x = anc[2] - 100, y = anc[1]) + 50)
-  #
-  # }
-  # return(plt)
 }
 
 # Define function to plot boxplots of distance from site to shoreline across
@@ -820,7 +806,9 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
 plot_results <- function(sitename, sitelimit, datedata, sitearea,
                          background_map, sites, isobases, simulation_output,
                          date_groups, scale_dist, s_tdist = 0.5, s_xpos = 175,
-                         s_ypos = 85,  s_bheight = 0.2){
+                         s_ypos = 85,  s_bheight = 0.2, s_tsize = 3,
+                         os_tdist = 0.03, os_xpos = 20000, os_ypos = 8000,
+                         os_bheight = 0.02, os_tsize = 3, adjust_widths = NA){
 
   # Create list to hold all plots
   plots <- list()
@@ -828,8 +816,9 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
   # Then create plots that are always needed
   plots$dplot <- plot_dates(datedata, sitename, title = FALSE)
   plots$pmap <- site_plot(sitearea, sitelimit, scale_dist, date_groups,
-                          s_tdist, s_xpos, s_ypos, s_bheight)
-  plots$omap <- overview_plot(background_map, sitelimit, sites, isobases)
+                          s_tdist, s_xpos, s_ypos, s_bheight, s_tsize)
+  plots$omap <- overview_plot(background_map, sitelimit, sites, isobases,
+                              os_tdist, os_xpos, os_ypos, os_bheight, os_tsize)
 
   # Then loop over and create plots per group of dates
   for(i in 1:length(unique(date_groups))){
@@ -841,7 +830,7 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
       # Map of simulated sea-levels
       plots[[paste0("seaplot_", i)]] <- shore_plot(
         simulation_output[[i]]$simsea, sitelimit, scale_dist, date_groups,
-        s_tdist, s_xpos, s_ypos, s_bheight)
+        s_tdist, s_xpos, s_ypos, s_bheight, s_tsize)
 
       # Boxplot of distances from site to sea
       plots[[paste0("distplot_", i)]] <- distance_plot(
@@ -852,10 +841,20 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
   #  a bit differently (mainly so that each individual group of dates get their
   # own plot for inspection)
   if(length(unique(date_groups)) > 1){
+    # For some reason the widths are sometimes completely off, so I
+    # added an option to specify these.
+    if(is.na(adjust_widths)){
       wrap_plots(plots,
       nrow = length(unique(date_groups)) + 1, ncol = 3) +
       plot_annotation(title = sitename) &
       theme(plot.title = element_text(hjust = 0.5))
+    } else {
+      wrap_plots(plots,
+        nrow = length(unique(date_groups)) + 1, ncol = 3,
+        widths = adjust_widths) +
+        plot_annotation(title = sitename) &
+        theme(plot.title = element_text(hjust = 0.5))
+    }
   } else{
       ( plots$pmap | plots$omap )
       ( plots$pmap | plots$omap ) /

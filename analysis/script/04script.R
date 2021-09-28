@@ -64,23 +64,6 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/kvastad_a2.png"), width = 250,
        height = 228, units = "mm")
 
-######### Langangen Vestgård 1 #########
-sitename <- "Langangen Vestgård 1"
-date_groups <- rep(1, 13)
-
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
-load(here("analysis/data/derived_data/langangenv1.RData"))
-
-sitearea <- rast(file.path(siterpath,
-                           paste0(str_replace(sitename, " ", "_"), ".tif")))
-
-plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 100)
-
-ggsave(file = here("analysis/figures/langangenv1.png"), width = 250,
-       height = 152, units = "mm")
-
 ######### Vallermyrene 1a #########
 sitename <- "Vallermyrene 1a"
 date_groups <- c(1, 1)
@@ -190,6 +173,22 @@ ggsave(file = here("analysis/figures/kvastada9.png"), width = 250,
        height = 152, units = "mm")
 
 
+######### Langangen Vestgård 1 #########
+sitename <- "Langangen Vestgård 1"
+date_groups <- rep(1, 13)
+
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+load(here("analysis/data/derived_data/langangenv1.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
+
+ggsave(file = here("analysis/figures/langangenv1.png"), width = 250,
+       height = 152, units = "mm")
 ######### Langangen Vestgård 3 #########
 sitename <- "Langangen Vestgård 3"
 date_groups <- rep(1, 6)
@@ -206,6 +205,43 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              s_tdist = 1, s_xpos = 110, s_ypos = 50,  s_bheight = 0.5)
 
 ggsave(file = here("analysis/figures/langangenv3.png"), width = 250,
+       height = 152, units = "mm")
+######### Langangen Vestgård 5 #########
+sitename <- "Langangen Vestgård 5"
+date_groups <- c(1, 1, 2, 2, 2)
+
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+load(here("analysis/data/derived_data/langangenv5.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.25, s_xpos = 110, s_ypos = 50, s_tsize = 2,  s_bheight = 0.05,
+             os_tdist = 0.03, os_bheight = 0.02, os_tsize = 2,
+             adjust_widths = c(1, 1, 1))
+
+ggsave(file = here("analysis/figures/langangenv5.png"), width = 250,
+       height = 152, units = "mm")
+######### Langangen Vestgård 6 #########
+sitename <- "Langangen Vestgård 6"
+date_groups <- rep(1, 9)
+
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath,
+#                           rcarbcor_true = TRUE)
+load(here("analysis/data/derived_data/langangenv6.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.5, s_xpos = 110, s_ypos = 50,  s_bheight = 0.3)
+
+ggsave(file = here("analysis/figures/langangenv6.png"), width = 250,
        height = 152, units = "mm")
 ######### Gunnarsrød 4. Need to edit raster #########
 sitename <- "Gunnarsrød 4"
@@ -283,7 +319,7 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/hesthagc2.png"), width = 250,
        height = 152, units = "mm")
 
-######### Hegna vest 1 #########
+######### Hegna vest 1 Need to edit raster #########
 sitename <- "Hegna vest 1"
 date_groups <- c(1, 1)
 
@@ -300,4 +336,25 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 100)
 
 ggsave(file = here("analysis/figures/hegnavest1.png"), width = 250,
+       height = 152, units = "mm")
+
+
+
+######### Hegna vest 3 #########
+sitename <- "Hegna vest 3"
+date_groups <- 1
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath,
+                          rcarbcor_true = TRUE)
+save(output,
+     file = here::here("analysis/data/derived_data/hegnavest3.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
+
+ggsave(file = here("analysis/figures/hegnavest3.png"), width = 250,
        height = 152, units = "mm")
