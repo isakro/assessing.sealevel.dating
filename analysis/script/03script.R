@@ -611,9 +611,10 @@ apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
   output$sitel <- sitel
   output$sitecurve <- sitecurve
 
-  # Store raster
+  # Store raster (replacing spaces and dashes in the file name)
   writeRaster(sitearea, file.path(siterpath,
-                        paste0(str_replace(sitename, " ", "_"), ".tif")),
+                        paste0(str_replace(str_replace(sitename, " ", "_"),
+                                           "/", "_"), ".tif")),
               overwrite = TRUE)
 
   # Return results

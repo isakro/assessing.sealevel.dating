@@ -14,9 +14,9 @@ library(vapour)
 library(topoDistance)
 quickSetupOxcal()
 
+# Not currently in use
 library(cowplot)
 library(IRanges)
-
 # To install IRanges:
 # source("http://bioconductor.org/biocLite.R")
 # biocLite("IRanges")
@@ -43,7 +43,7 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 # Both the digital terrain model and the radiocarbon dates required
 # manual inspection in case of inconsistencies (i.e. a highway running by the
 # site), defining necessary size of the window of analysis, and/or to decide on
-# grouping of dates. Each site was therefore first simulated 100 times and
+# grouping of dates. Each site was therefore first simulated 50 times and
 # then rerun at 1000 when these issues were handled.
 
 
@@ -340,13 +340,12 @@ ggsave(file = here("analysis/figures/hegnavest1.png"), width = 250,
 
 
 
-######### Hegna vest 3 #########
+######### Hegna vest 3 Need to edit raster #########
 sitename <- "Hegna vest 3"
 date_groups <- 1
 
 output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250, siterpath,
-                          rcarbcor_true = TRUE)
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hegnavest3.RData"))
 
@@ -357,4 +356,42 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 100)
 
 ggsave(file = here("analysis/figures/hegnavest3.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Hesthag C4 Need to edit raster #########
+sitename <- "Stokke/Polland 8"
+date_groups <- 1
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath,
+                          rcarbcor_true = TRUE)
+save(output,
+     file = here::here("analysis/data/derived_data/stokkepolland8.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
+
+ggsave(file = here("analysis/figures/stokkepolland8.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Solum 3 #########
+sitename <- "Solum 3"
+date_groups <- 1
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath,
+                          rcarbcor_true = TRUE)
+save(output,
+     file = here::here("analysis/data/derived_data/stokkepolland8.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
+
+ggsave(file = here("analysis/figures/stokkepolland8.png"), width = 250,
        height = 152, units = "mm")
