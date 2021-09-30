@@ -47,22 +47,6 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 # then rerun at 1000 when these issues were handled.
 
 
-######### Kvastad A2 #########
-sitename <- "Kvastad A2"
-date_groups <- c(1, 1, 1, 2, 2)
-
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                          isobases, nsamp = 1000, loc_bbox = 500, siterpath)
-load(here("analysis/data/derived_data/kvastada2.RData"))
-
-sitearea <- rast(file.path(siterpath,
-                           paste0(str_replace(sitename, " ", "_"), ".tif")))
-
-plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
-
-ggsave(file = here("analysis/figures/kvastad_a2.png"), width = 250,
-       height = 228, units = "mm")
 
 ######### Vallermyrene 1a #########
 sitename <- "Vallermyrene 1a"
@@ -135,6 +119,22 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/kvastada1.png"), width = 250,
        height = 152, units = "mm")
 
+######### Kvastad A2 #########
+sitename <- "Kvastad A2"
+date_groups <- c(1, 1, 1, 2, 2)
+
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                          isobases, nsamp = 1000, loc_bbox = 500, siterpath)
+load(here("analysis/data/derived_data/kvastada2.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150)
+
+ggsave(file = here("analysis/figures/kvastad_a2.png"), width = 250,
+       height = 228, units = "mm")
 ######### Kvastad A4 #########
 sitename <- "Kvastad A4"
 date_groups <- 1
@@ -242,6 +242,24 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              s_tdist = 0.5, s_xpos = 110, s_ypos = 50,  s_bheight = 0.3)
 
 ggsave(file = here("analysis/figures/langangenv6.png"), width = 250,
+       height = 152, units = "mm")
+######### Rognlien #########
+sitename <- "Rognlien"
+date_groups <- 1
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 100, loc_bbox = 250, siterpath,
+                          rcarbcor_true = TRUE)
+save(output,
+     file = here::here("analysis/data/derived_data/rognlien.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
+
+ggsave(file = here("analysis/figures/rognlien.png"), width = 250,
        height = 152, units = "mm")
 ######### Gunnarsrød 4. Need to edit raster #########
 sitename <- "Gunnarsrød 4"
@@ -385,7 +403,7 @@ output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
                           isobases, nsamp = 1000, loc_bbox = 250, siterpath,
                           rcarbcor_true = TRUE)
 save(output,
-     file = here::here("analysis/data/derived_data/stokkepolland8.RData"))
+     file = here::here("analysis/data/derived_data/solum3.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -393,5 +411,25 @@ sitearea <- rast(file.path(siterpath,
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 100)
 
-ggsave(file = here("analysis/figures/stokkepolland8.png"), width = 250,
+ggsave(file = here("analysis/figures/solum3.png"), width = 250,
+       height = 152, units = "mm")
+
+
+######### langemyr #########
+sitename <- "Langemyr"
+date_groups <- 1
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 250, siterpath,
+                          rcarbcor_true = TRUE)
+save(output,
+     file = here::here("analysis/data/derived_data/langemyr.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
+
+ggsave(file = here("analysis/figures/langemyr.png"), width = 250,
        height = 152, units = "mm")

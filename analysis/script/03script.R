@@ -783,7 +783,7 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
     plot <- ggplot(datedata) +
       ggridges::geom_ridgeline(aes(x = dates, y = name,
                                    height = probabilities * 50,
-                                   fill = as.factor(group))) +
+                                   fill = as.factor(group), alpha = class)) +
       theme_bw() +
       labs(y = "", x = "") +
       theme(legend.position = "none")
