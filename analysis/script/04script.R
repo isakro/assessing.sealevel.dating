@@ -233,13 +233,11 @@ sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 100,
-             s_tdist = 0.25, s_xpos = 110, s_ypos = 50, s_tsize = 2,  s_bheight = 0.05,
-             os_tdist = 0.03, os_bheight = 0.02, os_tsize = 2,
-             adjust_widths = c(1, 1, 1))
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
 
 ggsave(file = here("analysis/figures/langangenv5.png"), width = 250,
-       height = 152, units = "mm")
+       height = 228, units = "mm")
+
 ######### Langangen Vestgård 6 #########
 sitename <- "Langangen Vestgård 6"
 date_groups <- rep(1, 9)
@@ -276,6 +274,41 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 
 ggsave(file = here("analysis/figures/rognlien.png"), width = 250,
        height = 152, units = "mm")
+
+######### Dybdalshei 2 #########
+sitename <- "Dybdalshei 2"
+date_groups <- 1
+
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+load(here("analysis/data/derived_data/dybdalshei2.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100)
+
+ggsave(file = here("analysis/figures/dybdalshei2.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Dybdalshei 1 #########
+sitename <- "Dybdalshei 1"
+date_groups <- c(1, 1, 1, 1, 2, 2, 3, 3)
+
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+load(here("analysis/data/derived_data/dybdalshei1.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/dybdalshei1.png"), width = 250,
+       height = 304, units = "mm")
 
 ######### Gunnarsrød 4. Need to edit raster #########
 sitename <- "Gunnarsrød 4"
@@ -464,7 +497,7 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/langemyr.png"), width = 250,
        height = 152, units = "mm")
 
-######### Hovland 5 Need to solve raser loading #########
+######### Hovland 5 Need to solve raster loading #########
 sitename <- "Hovland 5"
 date_groups <- 1
 
@@ -500,38 +533,3 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/vallermyrene1.png"), width = 250,
        height = 152, units = "mm")
 
-######### Dybdalshei 2 #########
-sitename <- "Dybdalshei 2"
-date_groups <- 1
-
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/dybdalshei2.RData"))
-
-sitearea <- rast(file.path(siterpath,
-                           paste0(str_replace(sitename, " ", "_"), ".tif")))
-
-plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 100)
-
-ggsave(file = here("analysis/figures/dybdalshei2.png"), width = 250,
-       height = 152, units = "mm")
-
-######### Dybdalshei 2 #########
-sitename <- "Dybdalshei 1"
-date_groups <- c(1, 1, 1, 1, 2, 2, 3, 3)
-
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/dybdalshei1.RData"))
-
-sitearea <- rast(file.path(siterpath,
-                           paste0(str_replace(sitename, " ", "_"), ".tif")))
-
-plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 100)
-
-ggsave(file = here("analysis/figures/dybdalshei1.png"), width = 250,
-       height = 152, units = "mm")
