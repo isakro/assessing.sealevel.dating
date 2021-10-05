@@ -464,7 +464,7 @@ sitename <- "Solum 3"
 date_groups <- 1
 
 output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250, siterpath,
+                          isobases, nsamp = 1, loc_bbox = 2000, siterpath,
                           rcarbcor_true = TRUE)
 save(output,
      file = here::here("analysis/data/derived_data/solum3.RData"))
@@ -473,7 +473,8 @@ sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 100)
+             sites_sa, isobases, output, date_groups, scale_dist = 200,
+             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
 
 ggsave(file = here("analysis/figures/solum3.png"), width = 250,
        height = 152, units = "mm")
@@ -531,5 +532,23 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 100)
 
 ggsave(file = here("analysis/figures/vallermyrene1.png"), width = 250,
+       height = 152, units = "mm")
+
+######### Lunaveien #########
+sitename <- "Lunaveien"
+date_groups <- 1
+
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 650, siterpath)
+load(here("analysis/data/derived_data/lunaveien.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             scale_dist = 200,  s_tdist = 0.5, s_xpos = 135, s_ypos = 65,
+             s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/lunaveien.png"), width = 250,
        height = 152, units = "mm")
 
