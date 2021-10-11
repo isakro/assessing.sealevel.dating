@@ -46,8 +46,6 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 # grouping of dates. Each site was therefore first simulated 50 times and
 # then rerun at 1000 when these issues were handled.
 
-
-
 ######### Vallermyrene 1a #########
 sitename <- "Vallermyrene 1a"
 date_groups <- c(1, 1)
@@ -459,7 +457,7 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 
 ggsave(file = here("analysis/figures/vallermyrene4b.png"), width = 250,
        height = 152, units = "mm")
-######### Solum 3 #########
+######### Solum 3 Will need a lot of processing time (check if 2000 m necessary though) #########
 sitename <- "Solum 3"
 date_groups <- 1
 
@@ -538,8 +536,8 @@ ggsave(file = here("analysis/figures/vallermyrene1.png"), width = 250,
 sitename <- "Lunaveien"
 date_groups <- 1
 
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 650, siterpath)
+# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 650, siterpath)
 load(here("analysis/data/derived_data/lunaveien.RData"))
 
 sitearea <- rast(file.path(siterpath,
