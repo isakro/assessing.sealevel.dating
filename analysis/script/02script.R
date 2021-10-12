@@ -137,7 +137,7 @@ iso_map <- tmap_grob(
 
 plot_grid(isocurves_plot, iso_map)
 
-# Spøit study area into a series of polygons to assign correct displacement
+# Split study area into a series of polygons to assign correct displacement
 # curve to sites to be analysed
 # First find study area outline and make this a polygon
 outline <- st_as_sf(st_as_sfc(centpts_bb))

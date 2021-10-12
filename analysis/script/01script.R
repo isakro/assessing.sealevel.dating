@@ -56,8 +56,10 @@ caldates <- oxcalCalibrate(rcarb_features$c14_bp, rcarb_features$error,
 rcarb_features <- rcarb_features %>%
   mutate(sig_2_start_bc = map(caldates, ~ min(.x$sigma_ranges$two_sigma$start)),
          sig_2_end_bc = map(caldates, ~ max(.x$sigma_ranges$two_sigma$end)),
-         sig_3_start_bc = map(caldates, ~ min(.x$sigma_ranges$three_sigma["start"])),
-         sig_3_end_bc = map(caldates, ~ max(.x$sigma_ranges$three_sigma["end"])))
+         sig_3_start_bc = map(caldates,
+                              ~ min(.x$sigma_ranges$three_sigma["start"])),
+         sig_3_end_bc = map(caldates,
+                            ~ max(.x$sigma_ranges$three_sigma["end"])))
 
 # Exclude date ranges falling outside the Stone Age
 rcarb_sa <- rcarb_features %>%  filter(sig_2_end_bc < -1700)
@@ -65,7 +67,6 @@ rcarb_sa <- rcarb_features %>%  filter(sig_2_end_bc < -1700)
 # Use the above to retrieve overview of sites with radiocarbon dates to the
 # Stone Age.
 sites_sa <- site_limits %>% filter(name %in% unique(rcarb_sa$site_name))
-
 
 save(caldates, rcarb_sa, sites_sa,
      file = here("analysis/data/derived_data/01data.RData"))
