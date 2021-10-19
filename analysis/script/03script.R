@@ -361,7 +361,8 @@ interpolate_curve <- function(years, isobase1, isobase2, target, dispdat,
   return(values)
 }
 
-# Function to identify and load the correct raster
+# Function to identify and load the correct raster if it is split up into
+#  multiple tiles (not in use).
 load_raster <- function(dtmfolder, sitelimit) {
 
   # Number of raster files in total
@@ -538,7 +539,7 @@ sea_overlaps <- function(sitearea, seapolygons){
 }
 
 # Function that combines all of the above
-apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
+apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
                             isobases, nsamp = 1000, loc_bbox, siterpath,
                             rcarbcor_true = FALSE){
 
@@ -568,9 +569,6 @@ apply_functions <- function(sitename, date_groups, dtmpath, displacement_curves,
                                  direction_rel_curve1 = sitel$dir_rel_1)
   # Add site name
   sitecurve$name <- sitename
-
-  # Load correct regional raster
-  dtm <- load_raster(dtmpath, sitel)
 
   # Create bounding box polygon
   location_bbox <- bboxpoly(sitel, loc_bbox)
@@ -725,9 +723,11 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
                                                        NA, overlaps))
 
   ggplot() +
-    geom_sf(data = overlapgrid, aes(colour = overlaps)) +
+    geom_sf(data = overlapgrid, aes(colour = overlaps, fill = overlaps)) +
     geom_sf(data = sitelimit, colour = "black", fill = NA) +
     scale_colour_gradient(low = "grey98", high = "grey40",
+                          na.value = "grey99") +
+    scale_fill_gradient(low = "grey98", high = "grey40",
                           na.value = "grey99") +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
                    transform = FALSE, st.size = s_tsize, height = s_bheight,

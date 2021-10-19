@@ -30,8 +30,12 @@ load(here("analysis/data/derived_data/02data.RData"))
 # Load background map
 bmap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
 
-# Specify path to raster data (currently stored locally)
-dtmpath <- "/home/isak/phd/eaa_presentation/dtm1"
+# # Specify path to raster data (currently stored locally)
+# dtmpath <- "/home/isak/phd/eaa_presentation/dtm10/dtm10_32.tif"
+
+# Read in raster
+dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10_32.tif")
+
 # Path to smaller site area rasters
 siterpath <- "/home/isak/phd/eaa_presentation/sitearea"
 
@@ -50,8 +54,8 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 sitename <- "Vallermyrene 1a"
 date_groups <- c(1, 1)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250)
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                           isobases, nsamp = 1000, loc_bbox = 250)
 load(here("analysis/data/derived_data/vallermyrene1a.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -312,8 +316,8 @@ ggsave(file = here("analysis/figures/dybdalshei1.png"), width = 250,
 sitename <- "Gunnarsrød 4"
 date_groups <- c(1, 1)
 
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 10, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod4.RData"))
 
@@ -331,8 +335,8 @@ ggsave(file = here("analysis/figures/gunnarsrod4.png"), width = 250,
 sitename <- "Gunnarsrød 5"
 date_groups <- c(1, 1, 2)
 
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath,
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 10, loc_bbox = 400, siterpath,
                           rcarbcor_true = TRUE)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod5.RData"))
@@ -345,7 +349,7 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
 
 ggsave(file = here("analysis/figures/gunnarsrod5.png"), width = 250,
-       height = 152, units = "mm")
+       height = 228, units = "mm")
 
 ######### Langangen Vestgård 7 Road as site limit #########
 sitename <- "Langangen Vestgård 7"
