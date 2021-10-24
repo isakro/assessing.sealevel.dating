@@ -1,0 +1,4 @@
+Draw polygon over region to be interpolated over (should probably move the next parts to an R script)
+Rasterize (overwrite with fixed value) to burn in values to raster (e.g. - 100)
+Raster calculator to make -100 NA: "raster"/("raster" > -100)
+Fill nodata (GDAL)

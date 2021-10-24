@@ -54,8 +54,8 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 sitename <- "Vallermyrene 1a"
 date_groups <- c(1, 1)
 
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                           isobases, nsamp = 1000, loc_bbox = 250)
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/vallermyrene1a.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -71,8 +71,8 @@ ggsave(file = here("analysis/figures/vallermyrene1a.png"), width = 250,
 sitename <- "Vallermyrene 1b"
 date_groups <- 1
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250)
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/vallermyrene1b.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -88,9 +88,12 @@ ggsave(file = here("analysis/figures/vallermyrene1b.png"), width = 250,
 sitename <- "Vallermyrene 4a"
 date_groups <- c(1, 1)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/vallermyrene4a.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/vallermyrene4a.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -104,8 +107,10 @@ ggsave(file = here("analysis/figures/vallermyrene4a.png"), width = 250,
 sitename <- "Tverdal"
 date_groups <- rep(1, 4)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/tverdal.RData"))
 load(here("analysis/data/derived_data/tverdal.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -123,8 +128,11 @@ sitename <- "Kvastad A1"
 date_groups <- 1
 
 load(here("analysis/data/derived_data/kvastada1.RData"))
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+
+save(output,
+     file = here::here("analysis/data/derived_data/kvastada1.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -140,9 +148,12 @@ ggsave(file = here("analysis/figures/kvastada1.png"), width = 250,
 sitename <- "Kvastad A2"
 date_groups <- c(1, 1, 1, 2, 2)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                          isobases, nsamp = 1000, loc_bbox = 500, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                         isobases, nsamp = 1000, loc_bbox = 500, siterpath)
 load(here("analysis/data/derived_data/kvastada2.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/kvastada2.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -157,8 +168,11 @@ sitename <- "Kvastad A4"
 date_groups <- 1
 
 load(here("analysis/data/derived_data/kvastada4.RData"))
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+
+save(output,
+     file = here::here("analysis/data/derived_data/kvastada4.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -174,8 +188,8 @@ ggsave(file = here("analysis/figures/kvastada4.png"), width = 250,
 sitename <- "Kvastad A9"
 date_groups <- 1
 
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/kvastada9.RData"))
 
@@ -194,9 +208,12 @@ ggsave(file = here("analysis/figures/kvastada9.png"), width = 250,
 sitename <- "Langangen Vestgård 1"
 date_groups <- rep(1, 13)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/langangenv1.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/langangenv1.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -210,9 +227,12 @@ ggsave(file = here("analysis/figures/langangenv1.png"), width = 250,
 sitename <- "Langangen Vestgård 3"
 date_groups <- rep(1, 6)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/langangenv3.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/langangenv3.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -227,9 +247,12 @@ ggsave(file = here("analysis/figures/langangenv3.png"), width = 250,
 sitename <- "Langangen Vestgård 5"
 date_groups <- c(1, 1, 2, 2, 2)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/langangenv5.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/langangenv5.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -244,10 +267,13 @@ ggsave(file = here("analysis/figures/langangenv5.png"), width = 250,
 sitename <- "Langangen Vestgård 6"
 date_groups <- rep(1, 9)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath,
-#                           rcarbcor_true = TRUE)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath,
+                          rcarbcor_true = TRUE)
 load(here("analysis/data/derived_data/langangenv6.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/langangenv6.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -262,10 +288,13 @@ ggsave(file = here("analysis/figures/langangenv6.png"), width = 250,
 sitename <- "Rognlien"
 date_groups <- 1
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 100, loc_bbox = 250, siterpath,
-#                           rcarbcor_true = TRUE)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 100, loc_bbox = 400, siterpath,
+                          rcarbcor_true = TRUE)
 load(here("analysis/data/derived_data/rognlien.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/rognlien.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -281,9 +310,11 @@ ggsave(file = here("analysis/figures/rognlien.png"), width = 250,
 sitename <- "Dybdalshei 2"
 date_groups <- 1
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/dybdalshei2.RData"))
+save(output,
+     file = here::here("analysis/data/derived_data/dybdalshei2.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -298,9 +329,13 @@ ggsave(file = here("analysis/figures/dybdalshei2.png"), width = 250,
 sitename <- "Dybdalshei 1"
 date_groups <- c(1, 1, 1, 1, 2, 2, 3, 3)
 
-# output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/dybdalshei1.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/dybdalshei1.RData"))
+
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
