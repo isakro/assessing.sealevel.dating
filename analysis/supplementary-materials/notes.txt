@@ -6,18 +6,13 @@ Sjekk to registreringsdateringer Krøgenes D1
 
 \\lagringshotell.uio.no\khm-kart\Kartavlevering\Avlevert_2010\Vestfoldbaneprosjektet_08_22814
 
-
-Det føyer seg jo forsåvidt fint inn i rekken av all formidlingen jeg har sett du har drevet med da. Du får legge inn reklame for nett- og facebook-siden! :)
-
 Marum mellom 4 og Førstad store 1: Det var ingen .prj fil med disse dataene. Etter litt prøving og feiling har jeg kommet frem til CRSen må være NGO_1948_Norway_Zone_3
 
 Missing spatial:
 
 Hegna øst 2, stripped
 	
-		
-Definitivt! Det er jo konge for PT, så får bare håpe du får noe ut av formidlingen, selv om det ikke er fagfellevurdert. 
-Du får legge inn reklame for nett- og facebook-siden i hvert fall ;)
+
 
 Nymølldammen	38.4	259733.83, 6627264.1
 
@@ -48,7 +43,7 @@ Dybdalshei 1
 Brunstad 25
 
 On individual sites:
-Kvastad A1. What appears to be drainage and possibly redirection of a small creek visibile in the terrain model can possibly have skewed the dsitances somewhat towards more shore-bound. However, difficult to say to what degree and whether
+Kvastad A1. What appears to be drainage and possibly redirection of a small creek visibile in the terrain model can possibly have skewed the distances somewhat towards more shore-bound. However, difficult to say to what degree and whether
             removing these would be any more appropriate.
 Kvastad A2. Two groups of radiocarbon dates. Highway clearly visible in the DTM does not impact the analysis as it is situated higher than the adjusted sea-levels
 

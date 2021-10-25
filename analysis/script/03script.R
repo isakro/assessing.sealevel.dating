@@ -626,7 +626,7 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
                       s_tdist, s_xpos, s_ypos, s_bheight, s_tsize) {
 
   # Make present day sea-level NA
-  locationraster[locationraster <= 0] <- NA
+  locationraster[locationraster <= 0] <- 0
 
   # Retrieve bounding box for scale bar placement
   bboxraster <- st_bbox(locationraster)
@@ -638,6 +638,8 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
   aspect <- raster::terrain(raster(locationraster), 'aspect')
   hill <- raster::hillShade(slope, aspect, 40, 270)
 
+  locationraster[locationraster <= 0] <- NA
+
   # Make the raster amenable for plotting with ggplot (as.data.frame with terra
   # returned some strange errors)
   raster_df <- raster::as.data.frame(raster(locationraster), xy = TRUE)
@@ -648,11 +650,14 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
   ggplot() +
     geom_raster(data = raster::as.data.frame(hill, xy = TRUE),
                 aes(x = x, y = y, fill = layer)) +
-    scale_fill_gradient(low = "black", high = "grey", na.value = "white") +
+    scale_fill_gradient(low = "black", high = "grey", na.value = NA) +
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
                 alpha = 0.4) +
-    scale_fill_gradient(low = "darkgrey", high = "grey", na.value = "white") +
+    scale_fill_gradient(low = "darkgrey", high = "grey", na.value = NA) +
+    new_scale_fill() +
+    geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+    scale_fill_gradient(low = NA, high = NA, na.value = "white") +
     geom_sf(data = sitelimit, fill = "black",
             colour = "black") +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
@@ -718,16 +723,19 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
   anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
 
 
-  # Make 0 overlaps NA to remove colour using na.values in call to plot"
+  # Make 0 overlaps NA to remove colour using na.values in call to plot
   overlapgrid <- mutate(overlapgrid, overlaps = ifelse(overlaps == 0,
                                                        NA, overlaps))
+
+  # scols <- c("#f2fbff", "#86a6d4")
+  scols <- c("grey98", "grey40")
 
   ggplot() +
     geom_sf(data = overlapgrid, aes(colour = overlaps, fill = overlaps)) +
     geom_sf(data = sitelimit, colour = "black", fill = NA) +
-    scale_colour_gradient(low = "grey98", high = "grey40",
-                          na.value = "grey99") +
-    scale_fill_gradient(low = "grey98", high = "grey40",
+    scale_fill_gradient(low = scols[1], high = scols[2],
+                         na.value = "grey99") +
+    scale_colour_gradient(low = scols[1], high = scols[2],
                           na.value = "grey99") +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
                    transform = FALSE, st.size = s_tsize, height = s_bheight,
@@ -746,12 +754,14 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
 # Define function to plot boxplots of distance from site to shoreline across
 # simulation runs
 distance_plot <- function(data) {
-  ggplot(data) +
-    geom_boxplot(aes(x = "Vertical", y = vertdist)) +
-    geom_boxplot(aes(x = "Horisontal", y = hordist)) +
-    geom_boxplot(aes(x = "Topographic", y = topodist)) +
+  pivot_longer(data, c(vertdist, hordist, topodist)) %>%
+  ggplot(aes(name, value, fill = name)) +
+    geom_violin(alpha = 0.5) +
+    # geom_boxplot(width = 0.8, outlier.size = 0.1) +
     labs(y = "Distance from shoreline (m)", x = "") +
-    theme_bw()
+    scale_x_discrete(labels = c('Horisontal', 'Topographic', 'Vertical')) +
+    theme_bw() +
+    theme(legend.position = "none")
 }
 
 # Define function to plot modelled and unmodelled 14C-dates
@@ -807,7 +817,7 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
 plot_results <- function(sitename, sitelimit, datedata, sitearea,
                          background_map, sites, isobases, simulation_output,
                          date_groups, scale_dist, s_tdist = 0.5, s_xpos = 175,
-                         s_ypos = 85,  s_bheight = 0.2, s_tsize = 3,
+                         s_ypos = 85,  s_bheight = 0.3, s_tsize = 3,
                          os_tdist = 0.03, os_xpos = 20000, os_ypos = 8000,
                          os_bheight = 0.02, os_tsize = 3, adjust_widths = NA){
 

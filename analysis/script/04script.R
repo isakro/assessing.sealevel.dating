@@ -341,7 +341,7 @@ sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
              s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
 
 ggsave(file = here("analysis/figures/dybdalshei1.png"), width = 250,
