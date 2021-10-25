@@ -658,8 +658,8 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
     scale_fill_gradient(low = NA, high = NA, na.value = "white") +
-    geom_sf(data = sitelimit, fill = "black",
-            colour = "black") +
+    geom_sf(data = sitelimit, fill = NA,
+            colour = "red") +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
                    transform = FALSE, st.size = s_tsize, height = s_bheight,
                    border.size = 0.1, st.dist = s_tdist,
@@ -732,7 +732,7 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
 
   ggplot() +
     geom_sf(data = overlapgrid, aes(colour = overlaps, fill = overlaps)) +
-    geom_sf(data = sitelimit, colour = "black", fill = NA) +
+    geom_sf(data = sitelimit, colour = "red", fill = NA) +
     scale_fill_gradient(low = scols[1], high = scols[2],
                          na.value = "grey99") +
     scale_colour_gradient(low = scols[1], high = scols[2],
@@ -756,10 +756,13 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
 distance_plot <- function(data) {
   pivot_longer(data, c(vertdist, hordist, topodist)) %>%
   ggplot(aes(name, value, fill = name)) +
-    geom_violin(alpha = 0.5) +
-    # geom_boxplot(width = 0.8, outlier.size = 0.1) +
+    geom_violin(alpha = 0.5, scale='width') +
+    # ggdist::stat_halfeye(alpha = 0.7, adjust = 0.5, width = 0.6,
+    #                   justification = -0.2, .width = 0, point_colour = NA) +
+    # geom_boxplot(width = 0.12, outlier.size = 0.5) +
     labs(y = "Distance from shoreline (m)", x = "") +
     scale_x_discrete(labels = c('Horisontal', 'Topographic', 'Vertical')) +
+    viridis::scale_fill_viridis(discrete = TRUE) +
     theme_bw() +
     theme(legend.position = "none")
 }
