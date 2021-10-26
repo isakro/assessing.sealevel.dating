@@ -40,7 +40,7 @@ curve_interval <- function(years, curve){
   return(values)
 }
 
-# Define sequence of years for which to define displacement curves (cal. BP)
+# Define sequence of years for which to define displacement curves (cal BP)
 xvals <- seq(0, 12500, 1)
 
 # Define curves on a per year interval, using the sequence of years defined
