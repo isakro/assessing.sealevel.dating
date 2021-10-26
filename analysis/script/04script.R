@@ -634,7 +634,7 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
 site_plot <- function(locationraster, sitelimit, dist, date_groups,
                       s_tdist, s_xpos, s_ypos, s_bheight, s_tsize) {
 
-  # Make present day sea-level NA
+  # Make present day sea-level 0 (for hillshade)
   locationraster[locationraster <= 0] <- 0
 
   # Retrieve bounding box for scale bar placement
@@ -647,6 +647,7 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
   aspect <- raster::terrain(raster(locationraster), 'aspect')
   hill <- raster::hillShade(slope, aspect, 40, 270)
 
+  # Now make sea-level NA
   locationraster[locationraster <= 0] <- NA
 
   # Make the raster amenable for plotting with ggplot (as.data.frame with terra

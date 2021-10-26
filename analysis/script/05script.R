@@ -28,7 +28,7 @@ load(here("analysis/data/derived_data/01data.RData"))
 load(here("analysis/data/derived_data/02data.RData"))
 
 # Load background map
-bmap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
+bmap <- st_read(here("analysis/data/raw_data/naturalearth_countries.gpkg"))
 
 # # Specify path to raster data (currently stored locally)
 # dtmpath <- "/home/isak/phd/eaa_presentation/dtm10/dtm10_32.tif"
