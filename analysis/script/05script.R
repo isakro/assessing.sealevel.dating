@@ -34,7 +34,7 @@ bmap <- st_read(here("analysis/data/raw_data/naturalearth_countries.gpkg"))
 # dtmpath <- "/home/isak/phd/eaa_presentation/dtm10/dtm10_32.tif"
 
 # Read in raster
-dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10_32.tif")
+dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
 
 # Path to smaller site area rasters
 siterpath <- "/home/isak/phd/eaa_presentation/sitearea"
