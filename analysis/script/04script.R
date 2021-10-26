@@ -89,7 +89,7 @@ model_dates <- function(sitedates, manual_groups){
       # Retrieve the rcarb_cor value of 14-dates for associated with the sum
       posterior[posterior$name == sums[i], "rcarb_cor"] <-
                          unique(posterior[posterior$class == "bposterior" &
-                         posterior$group == 1,"rcarb_cor"])
+                         posterior$group == i,"rcarb_cor"])
     }
 
     # Return results

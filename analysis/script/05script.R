@@ -328,12 +328,13 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/dybdalshei1.png"), width = 250,
        height = 304, units = "mm")
 
-######### Gunnarsrød 4. Need to edit raster #########
+######### Gunnarsrød 4. Edited raster. Two single dates #########
 sitename <- "Gunnarsrød 4"
-date_groups <- c(1, 1)
+date_groups <- c(1, 2)
 
+source(here("analysis/script/04script.R"))
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 10, loc_bbox = 400, siterpath)
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod4.RData"))
 
@@ -347,12 +348,12 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/gunnarsrod4.png"), width = 250,
        height = 152, units = "mm")
 
-######### Gunnarsrød 5 Need to edit raster #########
+######### Gunnarsrød 5 Edited raster #########
 sitename <- "Gunnarsrød 5"
 date_groups <- c(1, 1, 2, 3)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 10, loc_bbox = 400, siterpath)
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod5.RData"))
 
@@ -360,11 +361,11 @@ sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 100,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
              s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
 
 ggsave(file = here("analysis/figures/gunnarsrod5.png"), width = 250,
-       height = 228, units = "mm")
+       height = 304, units = "mm")
 
 ######### Langangen Vestgård 7 Road as site limit #########
 sitename <- "Langangen Vestgård 7"
