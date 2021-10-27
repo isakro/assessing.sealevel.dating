@@ -550,17 +550,27 @@ sea_overlaps <- function(sitearea, seapolygons){
 # Function that combines all of the above
 apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
                             isobases, nsamp = 1000, loc_bbox, siterpath,
-                            rcarbcor_true = FALSE){
+                            rcarbcor_true = FALSE, sitelimit = TRUE){
 
-  # Retrieve site limit and features
-  sitel <- filter(sites_sa, name == sitename)
-  siteu <- st_union(sitel)
-  sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
+  # Retrieve site features and site limit
   siter <- filter(rcarb_sa, site_name == sitename)
+
+  # If the site limit is to be used
+  if(sitelimit == TRUE){
+    sitel <- filter(sites_sa, name == sitename)
+    siteu <- st_union(sitel)
+    sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
+  } else {
+    # If not create a convex hull around the dated features
+    sitel <- st_convex_hull(siter)
+    # And assign the values from the limit to the convex hull
+    sitel <- left_join(sitel, st_drop_geometry(filter(sites_sa, name == sitename)),
+              by = c("site_name" = "name", "ask_id"))
+  }
 
   # If this option is set to true, only include radiocarbon dates which were
   # evaluated by the original excavators to correlate with typological
-  # indicators of the assemblages.
+  # indicators of the assemblages. (Not in use)
   if(rcarbcor_true == TRUE){
     siter <- filter(siter, rcarb_cor == "t")
   }
