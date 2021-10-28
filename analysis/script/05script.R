@@ -311,22 +311,24 @@ ggsave(file = here("analysis/figures/langangenv5.png"), width = 250,
 
 ######### Langangen Vestgård 6 #########
 sitename <- "Langangen Vestgård 6"
-date_groups <- rep(1, 9)
+date_groups <- c(rep(1, 9), 2)
 
-# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath,
-#                           rcarbcor_true = TRUE)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 load(here("analysis/data/derived_data/langangenv6.RData"))
+
+save(output,
+     file = here::here("analysis/data/derived_data/langangenv6.RData.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 150,
-             s_tdist = 0.5, s_xpos = 110, s_ypos = 50,  s_bheight = 0.3)
+             s_tdist = 1, s_xpos = 170, s_ypos = 80,  s_bheight = 0.5)
 
 ggsave(file = here("analysis/figures/langangenv6.png"), width = 250,
-       height = 152, units = "mm")
+       height = 228, units = "mm")
 
 ######### Rognlien #########
 sitename <- "Rognlien"
@@ -369,9 +371,11 @@ ggsave(file = here("analysis/figures/dybdalshei2.png"), width = 250,
 sitename <- "Dybdalshei 1"
 date_groups <- c(1, 1, 1, 1, 2, 2, 3, 3)
 
-# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-load(here("analysis/data/derived_data/dybdalshei1.RData"))
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+
+save(output,
+     file = here::here("analysis/data/derived_data/dybdalshei1.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -385,9 +389,8 @@ ggsave(file = here("analysis/figures/dybdalshei1.png"), width = 250,
 
 ######### Gunnarsrød 4. Edited raster. Two single dates #########
 sitename <- "Gunnarsrød 4"
-date_groups <- c(1, 2)
+date_groups <- c(2, 1)
 
-source(here("analysis/script/04script.R"))
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 save(output,
@@ -426,8 +429,9 @@ ggsave(file = here("analysis/figures/gunnarsrod5.png"), width = 250,
 sitename <- "Langangen Vestgård 7"
 date_groups <- 1
 
-output <- apply_functions(sitename, date_groups, dtmpath, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 250, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 200, siterpath,
+                          sitelimit = FALSE)
 save(output,
      file = here::here("analysis/data/derived_data/langangenv7.RData"))
 
@@ -533,10 +537,11 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/hovland5.png"), width = 250,
        height = 152, units = "mm")
 
-######### Vallermyrene 2 Perhaps not use the site limit, but rather dated feature #########
+######### Vallermyrene 2 #########
 sitename <- "Vallermyrene 2"
 date_groups <- 1
 
+# Use dated feature instead of site limit
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
                           isobases, nsamp = 1000, loc_bbox = 200, siterpath,
                           sitelimit = FALSE)

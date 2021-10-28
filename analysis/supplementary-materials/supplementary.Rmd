@@ -1,0 +1,14 @@
+---
+title: "Supplementary material"
+author: "Isak Roalkvam"
+date: "10/27/2021"
+output: pdf_document
+---
+
+Simulation results for each individual site. The first plot on the first row for each site shows all radiocarbon dates from the site. The fill colour of the radiocarbon dates indicates whether they are interpreted as belonging to the same phase and each "sum" indicates that the dates for a phase have been modelled using the Boundary function and then summed. A red outline indicates that the date(s) were not seen as related to the lithic inventory in the original report (see also main text). The second plot on the first row displays the site location in the present day landscape on the edited DTM (i.e. highways and railways have been removed and elevation values are interpolated from the surroundings; see analysis/script/03script.R). The third plot on the first rows shows the site location within the study area relative to the isobases of the displacement curves in use (see main text for more on these).
+
+```{r gunnarsrod5, include=FALSE}
+
+```
+
+Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated. While the interpolation appears to give reasonable results for the rest of the flatter marsh area where the railway runs today, the site itself would thus have been situated slightly higher, leading to the negative values on the distance measures. As the simulation results compared to the site map in   indicate that the site would not have been situated any significant distance from the shoreline, the values have therefore been set to zero for the final aggregative analysis.

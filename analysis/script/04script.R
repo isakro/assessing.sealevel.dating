@@ -6,45 +6,78 @@ model_dates <- function(sitedates, manual_groups){
   # Assign group to dates
   sitedates$group <- manual_groups
 
-  # If there are more than one date
-  if(nrow(sitedates) > 1){
+  # If there are more dates than groups
+  #if(nrow(sitedates) > length(unique(manual_groups))){
 
     # as.data.frame(table(manual_groups))$Freq # number of dates per group
     # Assemble OxCal code for modelling dates, summing for each group of dates
     phase_model <- vector()
     for(i in 1:length(unique(sitedates$group))){
-      # All dates in present group i
-      dats <- filter(sitedates, group == i)
-      txt <- paste0('
+    #   # All dates in present group i
+    #   dats <- filter(sitedates, group == i)
+    #   txt <- paste0('
+    #        Boundary("', i, '");
+    #        Phase("', i, '")
+    #        {
+    #        ',
+    #                 R_Date(dats$lab_code, dats$c14_bp, dats$error),
+    #                 if(nrow(dats) > 1){
+    #                   paste0('
+    #        Sum("Sum ', i, '");
+    #         };
+    #        ')
+    #                 } else{
+    #                   paste0('
+    #        };
+    #        ')
+    #                 }
+    #   )
+    #   phase_model[i] <- txt
+    # }
+
+    # # Add start and end of OxCal code
+    # # This can be reviewed by calling cat(model)
+    # model <- paste0('
+    #   Sequence()
+    #   {', paste(phase_model, collapse = " "),
+    #                       ' Boundary("End");
+    #   };
+    # };')
+
+    # Independent phases
+    dats <- filter(sitedates, group == i)
+    txt <- paste0('
+      Sequence()
+           {
            Boundary("', i, '");
            Phase("', i, '")
            {
            ',
-                    R_Date(dats$lab_code, dats$c14_bp, dats$error),
-                    if(nrow(dats) > 1){
-                      paste0('
+                  R_Date(dats$lab_code, dats$c14_bp, dats$error),
+           if(nrow(dats) > 1){
+                    paste0('
            Sum("Sum ', i, '");
             };
-           ')
-                    } else{
-                      paste0('
+            Boundary("End ', i, '");
            };
            ')
-                    }
-      )
-      phase_model[i] <- txt
-    }
+                  } else{
+                    paste0('
+           };
+           Boundary("End ', i, '");
+            };
+           ')
+                  }
+    )
+    phase_model[i] <- txt
+  }
 
-    # Add start and end of OxCal code
-    # This can be reviewed by calling cat(model)
-    model <- paste0('
-    Plot()
-     {
-      Sequence()
-      {', paste(phase_model, collapse = " "),
-                          ' Boundary("End");
-      };
-    };')
+  # Add start and end of OxCal code
+  # This can be reviewed by calling cat(model)
+  model <- paste0('
+    Phase()
+     {', paste(phase_model, collapse = " "),
+                  '};')
 
     # Execture the code and retrieve results
     oxcal_exec <- executeOxcalScript(model)
@@ -56,22 +89,26 @@ model_dates <- function(sitedates, manual_groups){
     names(prior) <- paste0(get_name(oxcal_data))
     prior <- prior[!(names(prior) %in% c(unique(sitedates$group),
                                         names(prior)[grep("Sum", names(prior))],
+                                        names(prior)[grep("End", names(prior))],
                                         "End", "Start",
                                         "character(0)"))]
     prior <-  bind_rows(prior, .id = "name")
     prior <- left_join(prior, sitedates, by = c("name" = "lab_code"))
     prior$class <- "aprior"
+    prior$order <- 1
 
     # Retrieve the posterior probabilities for individual 14C-dates and the
     # posterior sums.
     posterior <- get_posterior_probabilities(oxcal_data)
     names(posterior) <- get_name(oxcal_data)
     posterior <- bind_rows(posterior[!(names(posterior) %in%
-                                        c(unique(sitedates$group), "End",
-                                          "Start", "character(0)"))],
+                                        c(unique(sitedates$group),
+                                        names(prior)[grep("End", names(prior))],
+                                       "Start", "character(0)"))],
                                         .id = "name")
     posterior <- left_join(posterior, sitedates, by = c("name" = "lab_code"))
     posterior$class <- "bposterior"
+    posterior$order <- 1
 
     # Add group number to sums and whether or not it is based on 14-dates
     # believed to correlate with the lithic inventory.
@@ -80,31 +117,37 @@ model_dates <- function(sitedates, manual_groups){
     #        strsplit(name)[[1]][2], group))
     # So I gave up and went for a for-loop
     sums <- unique(posterior[grep("Sum", posterior$name),]$name)
-    for(i in 1:length(sums)){
-      # Assign group number
-      posterior[posterior$name == sums[i], "group"] <- as.numeric(
-        strsplit(sums[i], " ")[[1]][2])
-      # Assign the class to be "sum"
-      posterior[posterior$name == sums[i], "class"] <- "sum"
-      # Retrieve the rcarb_cor value of 14-dates for associated with the sum
-      posterior[posterior$name == sums[i], "rcarb_cor"] <-
-                         unique(posterior[posterior$class == "bposterior" &
-                         posterior$group == i,"rcarb_cor"])
+    if(length(sums) > 0){
+      for(i in 1:length(sums)){
+        # Assign group number
+        posterior[posterior$name == sums[i], "group"] <- as.numeric(
+          strsplit(sums[i], " ")[[1]][2])
+        # Assign the class to be "sum"
+        posterior[posterior$name == sums[i], "class"] <- "sum"
+        # Retrieve the rcarb_cor value of 14-dates for associated with the sum
+        posterior[posterior$name == sums[i], "rcarb_cor"] <-
+                           unique(posterior[!is.na(posterior$rcarb_cor) &
+                           posterior$group == i,"rcarb_cor"])
+        # Add order = 2 for the sum to be plotted after the rest of the group in
+        # plot_dates() defined below
+        posterior[posterior$name == sums[i], "order"] <- 2
+      }
     }
+
 
     # Return results
     return(rbind(prior, posterior))
 
-    # If there is only a singe date: Calibrate and return
-  } else {
-    caldat <- oxcalCalibrate(sitedates$c14_bp,
-                             sitedates$error, sitedates$lab_code)
-    dat <- get_raw_probabilities(caldat)
-    names(dat) <- get_name(caldat)
-    dat_df <- bind_rows(dat, .id = "name")
-    caldate <- left_join(dat_df, sitedates, by = c("name" = "lab_code"))
-    return(caldate)
-  }
+    # If there is only a singe date per group: Calibrate and return
+  # } else {
+  #   caldat <- oxcalCalibrate(sitedates$c14_bp,
+  #                            sitedates$error, sitedates$lab_code)
+  #   dat <- get_raw_probabilities(caldat)
+  #   names(dat) <- get_name(caldat)
+  #   dat_df <- bind_rows(dat, .id = "name")
+  #   caldate <- left_join(dat_df, sitedates, by = c("name" = "lab_code"))
+  #   return(caldate)
+  # }
 }
 
 # Define utility function to compare three models of radiocarbon dates
@@ -552,7 +595,7 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
                             isobases, nsamp = 1000, loc_bbox, siterpath,
                             rcarbcor_true = FALSE, sitelimit = TRUE){
 
-  # Retrieve site features and site limit
+  # Retrieve site features
   siter <- filter(rcarb_sa, site_name == sitename)
 
   # If the site limit is to be used
@@ -564,8 +607,8 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
     # If not create a convex hull around the dated features
     sitel <- st_convex_hull(siter)
     # And assign the values from the limit to the convex hull
-    sitel <- left_join(sitel, st_drop_geometry(filter(sites_sa, name == sitename)),
-              by = c("site_name" = "name", "ask_id"))
+    sitel <- left_join(sitel, st_drop_geometry(filter(sites_sa,
+             name == sitename)), by = c("site_name" = "name", "ask_id"))
   }
 
   # If this option is set to true, only include radiocarbon dates which were
@@ -797,18 +840,27 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
   }
 
   if(length(unique(datedata$name)) > 1){
-    plot <- datedata %>%
-      filter(!(name %in% c("Start", "End"))) %>%
-      arrange(class) %>%
+
+    plot <-
+      datedata %>%
+      filter(!(name %in% c("Start",
+                           names(prior)[grep("End", names(prior))]))) %>%
       ggplot() +
       ggridges::geom_ridgeline(aes(x = dates,
-                                   y = fct_reorder(name, group, .desc = TRUE),
-                                   height = probabilities * 50,
-                                   fill = as.factor(group),
-                                   alpha = class))+
+      # 3 nested ordering levels: median age, group and sum/individual dates
+       y = fct_reorder(fct_reorder(fct_reorder(
+          name, sig_3_median_bc, .desc = TRUE),
+          order, .desc = TRUE),
+          group, .desc = TRUE),
+       height = probabilities * 50,
+       fill = as.factor(group),
+       colour = as.factor(rcarb_cor),
+       alpha = class))+
       scale_alpha_manual(values = c("aprior" = 0.05,
                                     "bposterior" = 0.4,
                                     "sum" = 1)) +
+      scale_colour_manual(breaks = c("f", "t", NA),
+                          values = c("red", "black", "yellow")) +
       theme_bw() +
       labs(y = "", x = "") +
       theme(legend.position = "none")
@@ -816,7 +868,14 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
     plot <- ggplot(datedata) +
       ggridges::geom_ridgeline(aes(x = dates, y = name,
                                    height = probabilities * 50,
-                                   fill = as.factor(group))) +
+                                   fill = as.factor(group),
+                                   alpha = class,
+                                   colour = as.factor(rcarb_cor))) +
+      scale_colour_manual(breaks = c("f", "t", NA),
+                         values = c("red", "black", "yellow")) +
+      scale_alpha_manual(values = c("aprior" = 0.05,
+                                    "bposterior" = 0.4,
+                                    "sum" = 1)) +
       theme_bw() +
       labs(y = "", x = "") +
       theme(legend.position = "none")

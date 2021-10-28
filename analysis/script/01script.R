@@ -51,7 +51,7 @@ rcarb_features <- rcarb_features %>%  left_join(sitesl,
 caldates <- oxcalCalibrate(rcarb_features$c14_bp, rcarb_features$error,
                            rcarb_features$lab_code)
 
-# Retrieve start and end date with 2 and 3 sigma confidence (for some reason
+# Retrieve start and end date with 2 and 3 sigma confidence (Not sure why I
 # I had to index using brackets for the three sigma ranges).
 rcarb_features <- rcarb_features %>%
   mutate(sig_2_start_bc = map(caldates, ~ min(.x$sigma_ranges$two_sigma$start)),
@@ -59,7 +59,10 @@ rcarb_features <- rcarb_features %>%
          sig_3_start_bc = map(caldates,
                               ~ min(.x$sigma_ranges$three_sigma["start"])),
          sig_3_end_bc = map(caldates,
-                            ~ max(.x$sigma_ranges$three_sigma["end"])))
+                            ~ max(.x$sigma_ranges$three_sigma["end"]))) %>%
+  # Find median age for sorting dates in plots
+  rowwise() %>%
+  mutate(sig_3_median_bc = median(c(sig_3_start_bc, sig_3_end_bc)))
 
 # Exclude date ranges falling outside the Stone Age
 rcarb_sa <- rcarb_features %>%  filter(sig_2_end_bc < -1700)

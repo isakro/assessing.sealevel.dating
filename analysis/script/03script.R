@@ -40,8 +40,8 @@ execGRASS("r.in.gdal", flags = c("overwrite"),
 # Set computational region to the raster
 execGRASS("g.region", parameters = list(raster = "tmprast") )
 
-# Perform interpolation using regularized spline interpolation with tension
-# with default settings for the tension parameter.
+# Perform regularized spline interpolation with tension
+# using default settings for the tension parameter.
 execGRASS("r.fillnulls", flags = "overwrite",
           parameters = list(input = "tmprast",
                             output = "intrast",
