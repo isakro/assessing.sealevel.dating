@@ -843,8 +843,7 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
 
     plot <-
       datedata %>%
-      filter(!(name %in% c("Start",
-                           names(prior)[grep("End", names(prior))]))) %>%
+      filter(!grepl("Start|End", name)) %>%
       ggplot() +
       ggridges::geom_ridgeline(aes(x = dates,
       # 3 nested ordering levels: median age, group and sum/individual dates
@@ -865,7 +864,9 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
       labs(y = "", x = "") +
       theme(legend.position = "none")
   } else{
-    plot <- ggplot(datedata) +
+    plot <- datedata %>%
+      filter(!grepl("Start|End", name)) %>%
+      ggplot() +
       ggridges::geom_ridgeline(aes(x = dates, y = name,
                                    height = probabilities * 50,
                                    fill = as.factor(group),

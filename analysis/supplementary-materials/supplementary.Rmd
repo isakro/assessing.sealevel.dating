@@ -11,4 +11,10 @@ Simulation results for each individual site. The first plot on the first row for
 
 ```
 
+Gunnarsrød 4 situated right by the railway (see also Gunnarsrød 5 below). The date is seen as possibly the result of old wood effect, a notion that is in line with simulation results here, as this date would the site located beneath the sea-level. 
+
+```{r gunnarsrod5, include=FALSE}
+
+```
+
 Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated. While the interpolation appears to give reasonable results for the rest of the flatter marsh area where the railway runs today, the site itself would thus have been situated slightly higher, leading to the negative values on the distance measures. As the simulation results compared to the site map in   indicate that the site would not have been situated any significant distance from the shoreline, the values have therefore been set to zero for the final aggregative analysis.
