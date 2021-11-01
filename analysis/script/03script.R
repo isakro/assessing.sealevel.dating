@@ -31,7 +31,7 @@ loc <- initGRASS(gisBase = grasspath,
 
 # Set projection
 execGRASS("g.proj", flags = "c",
-          proj4 = crs(dtm, proj = TRUE))
+          proj4 = as.character(crs(clip, proj = TRUE)))
 
 # Load raster into GRASS
 execGRASS("r.in.gdal", flags = c("overwrite"),
