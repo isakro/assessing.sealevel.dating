@@ -252,9 +252,9 @@ Stokke/Polland 5,"116722, 116728",t,Cooking pit (ID 20270),Hazel (Corylus),Ua-48
 Stokke/Polland 1,138156,t,Cooking pit (ID 22029),Hazel (Corylus),Ua-48259,5353,101,
 Stokke/Polland 1,138156,t,Charcoal clamp (ID 18176/22964),Spruce (Picea),Ua-48260,192,30,
 Stokke/Polland 1,138156,t,Cooking pit (ID 10537),Spruce (Picea),Ua-48261,88,31,
-Stokke/Polland 1,138156,t,Cooking pit (ID 22994),Willow (Salix),Ua-48262,4583,38,
-Stokke/Polland 1,138156,t,Undefined feature (ID 21259),Birch (Betula),Ua-48263,1514,30,
 Stokke/Polland 1,138156,t,Cooking pit (ID 18358),Elm (Ulmus),Ua-48264,4911,39,
+Stokke/Polland 1,138156,t,Undefined feature (ID 21259),Birch (Betula),Ua-48263,1514,30,
+Stokke/Polland 1,138156,t,Cooking pit (ID 22994),Willow (Salix),Ua-48262,4583,38,
 Stokke/Polland 1,138156,t,Undefined feature (ID 21238),Hazel (Corylus),Ua-48265,4667,39,
 Stokke/Polland 1,138156,t,Undefined feature (ID 15546),Birch (Betula),Ua-48266,1549,30,
 Stokke/Polland 1,138156,t,Tree throw (ID 1568),"Hazel (Corylus), nutshell",Beta-359783,2960,30,
@@ -279,8 +279,8 @@ Bakke,97832,f,Fireplace (ID 2),Birch (Betula),TUa-7853,6915,40,
 Nøklegård 1,97863,t,Quadrant (ID not provided),"Burnt bone, mammal",TUa-7708,3515,60,
 Krøgenes D2,159966,t,Cultural layer (ID 206712),Pine (Pinus),Ua-50980,6297,44,
 Krøgenes D2,159966,t,Cultural layer (ID 206712),Pine (Pinus),Ua-50982,6132,45,
-Krøgenes D2,159966,f,Stone packing (ID 206735),Pine (Pinus),Ua-50983,7059,143,
 Krøgenes D2,159966,t,"Cultural layer (K2, sample ID 3102)",Alder (Alnus),Beta-448128,6260,30,
+Krøgenes D2,159966,f,Stone packing (ID 206735),Pine (Pinus),Ua-50983,7059,143,
 Krøgenes D2,159966,f,Sand layer (ID 206652),Birch (Betula),Ua-50981,3379,34,
 Krøgenes D2,159966,f,"Cultural/Cultivation layer (K1, sample ID 3646)",Hazel (Corylus),Beta-448127,1760,30,
 Krøgenes D1,160617,t,Cooking pit/fireplace (ID 204387),Ash (Fraxinus),Ua-53108,5694,32,
@@ -371,11 +371,11 @@ Førstad store 1,89481,t,Post hole (ID 42),Birch/hazel (Betula/Corylus),TUa-7113
 Førstad store 1,89481,t,Post hole (ID 43),Birch/hazel (Betula/Corylus),TUa-7114,1410,30,-26.4
 Førstad store 1,89481,t,Post hole (ID 44),Birch/hazel/ash (Betula/Corylus/Fraxinus),TUa-7115,2205,30,-25.5
 Førstad store 1,89481,t,Post hole (ID 47),Birch/hazel (Betula/Corylus),TUa-7116,2475,30,-26
-Pjonkerød R1,89537,f,Undefined feature (ID 2001),Pine (Pinus),Ua-47913,4959,34,-25.9
+Pjonkerød R1,89537,t,"Quadrant 50x50x10 (112x51y NE, layer 2)",Burnt bone,Ua-47916,7970,44,-13.6
 Pjonkerød R1,89537,f,Undefined feature (ID 2001),Pine (Pinus),Ua-47914,3178,32,-29.2
 Pjonkerød R1,89537,f,Cooking pit (ID 2002),Pine (Pinus),Ua-47915,3117,31,-23.6
 Pjonkerød R1,89537,f,Cooking pit (ID 2007),Oak (Quercus),Ua-47917,1373,30,-26.2
-Pjonkerød R1,89537,t,"Quadrant 50x50x10 (112x51y NE, layer 2)",Burnt bone,Ua-47916,7970,44,-13.6
+Pjonkerød R1,89537,f,Undefined feature (ID 2001),Pine (Pinus),Ua-47913,4959,34,-25.9
 Nauen A,100762,t,Undefined layer (ID 153),"Charcoal, not specified",TUa-4651,3360,55,
 Nauen A,100762,t,Undefined layer (ID 156),"Charcoal, not specified",Beta-204709,3020,50,
 Nauen A,100762,f,Unspecified,"Charcoal, not specified",T-10907,1665,50,
@@ -384,8 +384,8 @@ Nauen A,100762,f,Unspecified,"Charcoal, not specified",T-10908,1755,65,
 Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10622,2810,85,
 Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10623,5965,100,
 Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10624,3175,90,
-Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10625,3705,120,
 Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10464,5875,115,
+Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10625,3705,120,
 Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10626,875,100,
 Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10465,1005,155,
 Nauen A,100762,t,Unspecified,"Charcoal, not specified",T-10627,1000,90,

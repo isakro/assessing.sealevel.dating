@@ -330,16 +330,18 @@ ggsave(file = here("analysis/figures/hegnavest2.png"), width = 250,
 sitename <- "Hegna vest 3"
 date_groups <- 1
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hegnavest3.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hegnavest3.RData"))
+load(here("analysis/data/derived_data/hegnavest3.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 1, s_xpos = 135, s_ypos = 65,  s_bheight = 0.5)
 
 ggsave(file = here("analysis/figures/hegnavest3.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -349,16 +351,18 @@ ggsave(file = here("analysis/figures/hegnavest3.png"), width = 250,
 sitename <- "Hesthag C2"
 date_groups <- c(1, 2)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hesthagc2.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hesthagc2.RData"))
+load(here("analysis/data/derived_data/hesthagc2.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 0.5, s_xpos = 135, s_ypos = 65,  s_bheight = 0.25)
 
 ggsave(file = here("analysis/figures/hesthagc2.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -368,16 +372,18 @@ ggsave(file = here("analysis/figures/hesthagc2.png"), width = 250,
 sitename <- "Hesthag C4"
 date_groups <- c(1, 2)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hesthagc4.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hesthagc4.RData"))
+load(here("analysis/data/derived_data/hesthagc4.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 1, s_xpos = 135, s_ypos = 65,  s_bheight = 0.5)
 
 ggsave(file = here("analysis/figures/hesthagc4.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -387,16 +393,18 @@ ggsave(file = here("analysis/figures/hesthagc4.png"), width = 250,
 sitename <- "Hovland 1"
 date_groups <- c(1, 1, 1, 2)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 10, loc_bbox = 1000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hovland1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hovland1.RData"))
+load(here("analysis/data/derived_data/hovland1.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 250)
+             sites_sa, isobases, output, date_groups, scale_dist = 250,
+             s_tdist = 3, s_xpos = 350, s_ypos = 150,  s_bheight = 2.25)
 
 ggsave(file = here("analysis/figures/hovland1.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -406,98 +414,92 @@ ggsave(file = here("analysis/figures/hovland1.png"), width = 250,
 sitename <- "Hovland 3"
 date_groups <- rep(1, 18)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hovland3.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hovland3.RData"))
+load(here("analysis/data/derived_data/hovland3.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 1, s_xpos = 135, s_ypos = 65,  s_bheight = 0.5)
 
 ggsave(file = here("analysis/figures/hovland3.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+                               units = "mm")
 
 ######### Hovland 4 #########
 sitename <- "Hovland 4"
 date_groups <- c(rep(1, 4), 2)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hovland4.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 1200, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hovland4.RData"))
+load(here("analysis/data/derived_data/hovland4.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
+             sites_sa, isobases, output, date_groups, scale_dist = 400,
+             s_tdist = 2.5, s_xpos = 500, s_ypos = 200,  s_bheight = 2)
 
 ggsave(file = here("analysis/figures/hovland4.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
 
 ######### Hovland 5 #########
 sitename <- "Hovland 5"
 date_groups <- 1
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hovland5.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hovland5.RData"))
+load(here("analysis/data/derived_data/hovland5.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
+             sites_sa, isobases, output, date_groups, scale_dist = 300,
+             s_tdist = 2.5, s_xpos = 500, s_ypos = 200,  s_bheight = 2)
 
 ggsave(file = here("analysis/figures/hovland5.png"), width = 250,
-       height = 152, units = "mm")
-
-######### Hovland 4 #########
-sitename <- "Hovland 4"
-date_groups <- c(rep(1, 4), 2)
-
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hovland4.RData"))
-
-sitearea <- rast(file.path(siterpath,
-                           paste0(str_replace(sitename, " ", "_"), ".tif")))
-
-plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
-
-ggsave(file = here("analysis/figures/hovland4.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
 
 ######### Hydal 4 #########
 sitename <- "Hydal 4"
 date_groups <- c(1,1)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hydal4.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hydal4.RData"))
+load(here("analysis/data/derived_data/hydal4.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150)
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 1.5, s_xpos = 135, s_ypos = 65,  s_bheight = 1)
 
 ggsave(file = here("analysis/figures/hydal4.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+                               units = "mm")
 
 ######### Krøgenes D1 #########
 sitename <- "Krøgenes D1"
 date_groups <- c(1, rep(2, 4), 3, 4, 5, 6)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = 10, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/krogenesd1.RData"))
 
@@ -512,7 +514,7 @@ ggsave(file = here("analysis/figures/krogenesd1.png"), width = 250,
 
 ######### Krøgenes D2 #########
 sitename <- "Krøgenes D2"
-date_groups <- c(1, 1, 2, 1)
+date_groups <- c(1, 1, 1, 2)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
@@ -752,7 +754,7 @@ ggsave(file = here("analysis/figures/lunaveien.png"), width = 250,
 
 ######### Nauen A #########
 sitename <- "Nauen A"
-date_groups <- c(1, 2, 1)
+date_groups <- c(1, 1, 2)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
@@ -1031,7 +1033,7 @@ ggsave(file = here("analysis/figures/solum3.png"), width = 250,
 
 ######### Stokke/Polland 1 #########
 sitename <- "Stokke/Polland 1"
-date_groups <- c(1, 3, 2, 3)
+date_groups <- c(1, 2, 3, 3)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
                           isobases, nsamp = 100, loc_bbox = 400, siterpath)

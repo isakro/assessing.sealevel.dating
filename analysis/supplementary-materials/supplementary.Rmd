@@ -8,15 +8,19 @@ output: pdf_document
 This document includes some notes and shows the simulation results for each individual site analysed in the study. The first plot on the first row for each site shows all calibrated radiocarbon dates from the Stone Age associated with the site if there are more than a single date (see analysis/data/raw_data/radiocarbon.csv for all dates, including those falling outside of the Stone Age). The fill colour of the radiocarbon dates indicates whether they are interpreted as belonging to the same phase, and each sum indicates that the dates for a phase have been modelled using the Boundary function and then summed using OxCal. Each phase is assumed to be independent of other phases. A red outline indicates that the date(s) were not seen as related to the lithic inventory in the original report (see also main text). The second plot on the first row displays the site location in the present day landscape on the edited DTM (i.e. highways and railways impacting the adjusted sea-level have been removed and elevation values are interpolated from the surroundings; see main text and analysis/script/03script.R). The third plot on the first row shows the site location within the study area relative to the isobases of the displacement curves in use.
 
 Subsequent rows for each site then show the simulation results. The first plot on these rows shows the probability density function from which site dates were drawn during simulation. The second plot shows the result of the simulation runs, where the intensity of the colour indicates the number of times the sea was simulated to be present at any given location. The third plot displays a violin plot of the measured distances between site and shore-line across all simulation runs. Measures for central tendency and dispersion associated with these are then given in the table
+```{r anvik, include=FALSE}
+
+```
+Anvik is situated by the highway and a smaller road. Neither appear to significantly impact the simulation results. The dated fireplace is not seen as related to lithic material, which is believed to hail from the latest part of the Early Mesolithc (c. 8500-8250 BCE). 
 
 ```{r gunnarsrod5, include=FALSE}
 
 ```
 
-Gunnarsrød 4 situated right by the railway (see also Gunnarsrød 5 below). The date is seen as possibly the result of old wood effect, a notion that is in line with simulation results here, as this date would the site located beneath the sea-level. 
+Gunnarsrød 4 situated right by the railway (see also Gunnarsrød 5 below). The date was seen as possibly the result of old-wood effect, a notion that is in line with the simulation results here, as this date would have the site located beneath the sea-level. 
 
 ```{r gunnarsrod5, include=FALSE}
 
 ```
 
-Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated. While the interpolation appears to give reasonable results for the rest of the flatter marsh area where the railway runs today, the site itself would thus have been situated slightly higher, leading to the negative values on the distance measures. As the simulation results compared to the site map in   indicate that the site would not have been situated any significant distance from the shoreline, the values have therefore been set to zero for the final aggregative analysis.
+Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated. While the interpolation appears to give reasonable results for the rest of the flatter marsh area where the railway runs today, the site itself would thus have been situated slightly higher, likely leading to the negative values on the distance measures. As the simulation results compared to the site map in   indicate that the site would not have been situated any significant distance from the shoreline, the values have therefore been set to zero for the final aggregative analysis.
