@@ -496,10 +496,10 @@ ggsave(file = here("analysis/figures/hydal4.png"), width = 250,
 
 ######### Krøgenes D1 #########
 sitename <- "Krøgenes D1"
-date_groups <- c(1, rep(2, 4), 3, 4, 5, 6)
+date_groups <- c(1, rep(2, 4), 3, 4, 5)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 10, loc_bbox = 400, siterpath)
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/krogenesd1.RData"))
 
@@ -510,7 +510,8 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 150)
 
 ggsave(file = here("analysis/figures/krogenesd1.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
 
 ######### Krøgenes D2 #########
 sitename <- "Krøgenes D2"
