@@ -119,15 +119,15 @@ model_dates <- function(sitedates, manual_groups){
     sums <- unique(posterior[grep("Sum", posterior$name),]$name)
     if(length(sums) > 0){
       for(i in 1:length(sums)){
+        group <- as.numeric(strsplit(sums[i], " ")[[1]][2])
         # Assign group number
-        posterior[posterior$name == sums[i], "group"] <- as.numeric(
-          strsplit(sums[i], " ")[[1]][2])
+        posterior[posterior$name == sums[i], "group"] <- group
         # Assign the class to be "sum"
         posterior[posterior$name == sums[i], "class"] <- "sum"
         # Retrieve the rcarb_cor value of 14-dates for associated with the sum
         posterior[posterior$name == sums[i], "rcarb_cor"] <-
                            unique(posterior[!is.na(posterior$rcarb_cor) &
-                           posterior$group == i,"rcarb_cor"])
+                           posterior$group == group,"rcarb_cor"])
         # Add order = 2 for the sum to be plotted after the rest of the group in
         # plot_dates() defined below
         posterior[posterior$name == sums[i], "order"] <- 2
