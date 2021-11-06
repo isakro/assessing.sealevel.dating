@@ -767,10 +767,11 @@ ggsave(file = here("analysis/figures/lunaveien.png"), width = 250,
 sitename <- "Nauen A"
 date_groups <- c(1, 1, 2)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/nauena.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/nauena.RData"))
+load(here("analysis/data/derived_data/nauena.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -787,11 +788,11 @@ ggsave(file = here("analysis/figures/nauena.png"), width = 250,
 sitename <- "Nauen C"
 date_groups <- c(1, 1, 1, 2)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
-
-save(output,
-     file = here::here("analysis/data/derived_data/nauenc.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/nauenc.RData"))
+load(here("analysis/data/derived_data/nauenc.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -808,11 +809,12 @@ ggsave(file = here("analysis/figures/nauenc.png"), width = 250,
 sitename <- "Nordby 1"
 date_groups <- rep(1, 5)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-
-save(output,
-     file = here::here("analysis/data/derived_data/nordby1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+#
+# save(output,
+#      file = here::here("analysis/data/derived_data/nordby1.RData"))
+load(here("analysis/data/derived_data/nordby1.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -822,54 +824,58 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              s_tdist = 0.5, s_xpos = 110, s_ypos = 50,  s_bheight = 0.25)
 
 ggsave(file = here("analysis/figures/nordby1.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
 
 ######### Nordby 52 #########
 sitename <- "Nordby 52"
 date_groups <- c(rep(1, 7), 2)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
-
-save(output,
-     file = here::here("analysis/data/derived_data/nordby52.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/nordby52.RData"))
+load(here("analysis/data/derived_data/nordby52.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 150,
-             s_tdist = 1, s_xpos = 110, s_ypos = 50,  s_bheight = 0.5)
+             s_tdist = 2, s_xpos = 150, s_ypos = 80,  s_bheight = 1)
 
 ggsave(file = here("analysis/figures/nordby52.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
 
 ######### Pauler 1 #########
 sitename <- "Pauler 1"
 date_groups <- 1
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = 1000, loc_bbox = 2500, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/pauler1.RData"))
+load(here("analysis/data/derived_data/pauler1.RData"))
 
-save(output,
-     file = here::here("analysis/data/derived_data/pauler1.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150,
-             s_tdist = 1, s_xpos = 110, s_ypos = 50,  s_bheight = 0.5)
+             sites_sa, isobases, output, date_groups, scale_dist = 1000,
+             s_tdist = 2, s_xpos = 110, s_ypos = 50,  s_bheight = 1)
 
 ggsave(file = here("analysis/figures/pauler1.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
 
 ######### Pauler 2 #########
 sitename <- "Pauler 2"
 date_groups <- c(1, 1, 2)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = 1000, loc_bbox = 2500, siterpath)
 
 save(output,
      file = here::here("analysis/data/derived_data/pauler2.RData"))
@@ -878,11 +884,12 @@ sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 150,
-             s_tdist = 1, s_xpos = 110, s_ypos = 50,  s_bheight = 0.5)
+             sites_sa, isobases, output, date_groups, scale_dist = 1000,
+             s_tdist = 2, s_xpos = 110, s_ypos = 50,  s_bheight = 1)
 
 ggsave(file = here("analysis/figures/pauler2.png"), width = 250,
-       height = 152, units = "mm")
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
 
 ######### Pjonkerød R1 #########
 sitename <- "Pjonkerød R1"
