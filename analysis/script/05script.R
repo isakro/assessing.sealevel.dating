@@ -947,8 +947,8 @@ sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 1000,
-             s_tdist = 10, s_xpos = 1200, s_ypos = 500,  s_bheight = 5)
+             sites_sa, isobases, output, date_groups, scale_dist = 1500,
+             s_tdist = 5, s_xpos = 1500, s_ypos = 700,  s_bheight = 3)
 
 ggsave(file = here("analysis/figures/ragnhildrod.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -1054,7 +1054,7 @@ sitearea <- rast(file.path(siterpath,
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 1000,
-             s_tdist = 15, s_xpos = 800, s_ypos = 300,  s_bheight = 8)
+             s_tdist = 15, s_xpos = 900, s_ypos = 500,  s_bheight = 8)
 
 ggsave(file = here("analysis/figures/solum3.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
