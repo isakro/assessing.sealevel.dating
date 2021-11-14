@@ -1,50 +1,16 @@
 # Define function to model a series of dates using the Boundary
 # function from oxcal, sum the posterior density estimate, and return
 # all the data for plotting and further analysis (including raw probabilities).
-model_dates <- function(sitedates, manual_groups){
+model_dates <- function(sitedates, date_groups){
 
   # Assign group to dates
-  sitedates$group <- manual_groups
+  sitedates$group <- date_groups
 
-  # If there are more dates than groups
-  #if(nrow(sitedates) > length(unique(manual_groups))){
-
-    # as.data.frame(table(manual_groups))$Freq # number of dates per group
+    # as.data.frame(table(date_groups))$Freq # number of dates per group
     # Assemble OxCal code for modelling dates, summing for each group of dates
     phase_model <- vector()
     for(i in 1:length(unique(sitedates$group))){
-    #   # All dates in present group i
-    #   dats <- filter(sitedates, group == i)
-    #   txt <- paste0('
-    #        Boundary("', i, '");
-    #        Phase("', i, '")
-    #        {
-    #        ',
-    #                 R_Date(dats$lab_code, dats$c14_bp, dats$error),
-    #                 if(nrow(dats) > 1){
-    #                   paste0('
-    #        Sum("Sum ', i, '");
-    #         };
-    #        ')
-    #                 } else{
-    #                   paste0('
-    #        };
-    #        ')
-    #                 }
-    #   )
-    #   phase_model[i] <- txt
-    # }
 
-    # # Add start and end of OxCal code
-    # # This can be reviewed by calling cat(model)
-    # model <- paste0('
-    #   Sequence()
-    #   {', paste(phase_model, collapse = " "),
-    #                       ' Boundary("End");
-    #   };
-    # };')
-
-    # Independent phases
     dats <- filter(sitedates, group == i)
     txt <- paste0('
       Sequence()
@@ -153,7 +119,7 @@ model_dates <- function(sitedates, manual_groups){
 # Define utility function to compare three models of radiocarbon dates
 # associated with a site. Either as all dates grouped, only dates overlapping
 # at three sigma and alternatively a manually defined model
-model_phases <- function(sitedates, manual_groups = NULL){
+model_phases <- function(sitedates, date_groups = NULL){
 
   # Initial model groups all dates using the Boundary function
   dates <- R_Date(sitedates$lab_code, sitedates$c14_bp, sitedates$error)
@@ -226,8 +192,8 @@ model_phases <- function(sitedates, manual_groups = NULL){
     amodel2 <- indices2$model$modelAgreement
   }
 
-  if(!is.null(manual_groups)){
-    sitedates$group <- manual_groups
+  if(!is.null(date_groups)){
+    sitedates$group <- date_groups
 
     phase_model <- vector()
     for(i in 1:length(unique(sitedates$group))){
@@ -272,7 +238,7 @@ model_phases <- function(sitedates, manual_groups = NULL){
       fmodels <- c(fmodels, "Model 2" = fmodel2)
    }
 
-   if(!is.null(manual_groups)){
+   if(!is.null(date_groups)){
       fmodel3 <-(amodel3/100)^sqrt(nrow(sitedates))
       fmodels <- c(fmodels, "Model 3" = fmodel3)
    }
@@ -292,7 +258,7 @@ model_phases <- function(sitedates, manual_groups = NULL){
    } else if(model == "Model 2"){
       sitedates$group <- threesgroup
    } else if(model == "Model 3"){
-      sitedates$group <- manual_groups
+      sitedates$group <- date_groups
    }
 
 
@@ -370,6 +336,16 @@ model_phases <- function(sitedates, manual_groups = NULL){
   # Return result and model number
   return(list(model, rbind( prior, posterior)))
 }
+
+# Group dates best on whether or not they overlap on 99.7 %
+group_dates <- function(data, sitename){
+  siter <-  filter(data, site_name == sitename)
+  ir <- IRanges(as.numeric(siter$sig_3_start_bc),
+                  as.numeric(siter$sig_3_end_bc))
+  date_groups <- subjectHits(findOverlaps(ir, reduce(ir)))
+  return(date_groups)
+  }
+
 
 # Define function to interpolate displacement curve for a given location,
 # based on distance to curves on two provided isobases on the
@@ -591,7 +567,7 @@ sea_overlaps <- function(sitearea, seapolygons){
 }
 
 # Function that combines all of the above
-apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
+apply_functions <- function(sitename, dtm, displacement_curves,
                             isobases, nsamp = 1000, loc_bbox, siterpath,
                             rcarbcor_true = FALSE, sitelimit = TRUE){
 
@@ -619,7 +595,7 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
   }
 
   # Model dates
-  datedat <- model_dates(sitedates = siter, manual_groups = date_groups)
+  datedat <- model_dates(sitedates = siter, date_groups = date_groups)
 
   # Interpolate displacement curve to the site location
   sitecurve <- interpolate_curve(years = xvals,
@@ -669,6 +645,7 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
 
   output$datedat <- datedat
   output$sitel <- sitel
+  output$date_groups <- date_groups
   output$sitecurve <- sitecurve
 
   # Store raster (replacing spaces and dashes in the file name)
