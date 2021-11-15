@@ -444,7 +444,7 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
   results <- data.frame(matrix(ncol = 6, nrow = samps))
   names(results) <- c("vertdist", "hordist", "topodist",
                       "year", "rcarb_cor", "sitename")
-  results$rcarb_cor <- unique(posteriorprobs$rcarb_cor)
+  results$rcarb_cor <- unique(na.omit(posteriorprobs$rcarb_cor))
   results$sitename <- unique(sitel$name)
   seapolygons <- list(length = samps)
   topopaths <- list(length = samps)
@@ -495,10 +495,6 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       # Retrieve the two points
       distpts <- st_cast(distline, "POINT")
 
-      # Make the value negative to indicate that the site is located below
-      # sea level
-      results$hordist[i] <- st_length(distline) * -1
-
       # Find topographic distance
       coords <- rbind(st_coordinates(distpts[1]),
                       st_coordinates(distpts[2]))
@@ -509,8 +505,23 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
                            paths = TRUE)
       # Store distance (negative to indicate below sea-level)
       results$topodist[i] <- topodist[[1]]["loc", "sea"] * -1
-      # Store path geometry
-      topopaths[[i]] <- st_as_sf(topodist[[2]])
+
+      # Retrieve path
+      tpath <- st_as_sf(topodist[[2]])
+      topopaths[[i]] <- tpath
+
+      # Find end-points
+      endptns <- st_line_sample(tpath, sample = c(0, 1))
+
+      # Cast as line
+      hordistl <- st_cast(endptns, "LINESTRING")
+
+      # Find horisontal distance and make the value negative to indicate that
+      # the site is located below sea level. The reason for not doing this with
+      # distline defined above is that the topographic distance is measured to
+      # the adjacent cell.
+      results$hordist[i] <- st_length(hordistl) * -1
+
 
       # Else, that is not overlapping slightly or completely, i.e. the site is
       # located some distance from the sea, perform above steps bu without
@@ -522,9 +533,6 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       # Retrieve the two points
       distpts <- st_cast(distline, "POINT")
 
-      # Retrieve horisontal distance
-      results$hordist[i] <- st_length(distline)
-
       # Find topographic distance
       coords <- rbind(st_coordinates(distpts[1]),
                       st_coordinates(distpts[2]))
@@ -535,8 +543,19 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
                            paths = TRUE)
       # Store distance
       results$topodist[i] <- topodist[[1]]["loc", "sea"]
-      # Store path geometry
-      topopaths[[i]] <- st_as_sf(topodist[[2]])
+
+      # Retrieve path
+      tpath <- st_as_sf(topodist[[2]])
+      topopaths[[i]] <- tpath
+
+      # Find end-points
+      endptns <- st_line_sample(tpath, sample = c(0, 1))
+
+      # Cast as line
+      hordistl <- st_cast(endptns, "LINESTRING")
+
+      # Find horisontal distance
+      results$hordist[i] <- st_length(hordistl)
     }
   }
   # If there are no topopaths at all, do not try to return these

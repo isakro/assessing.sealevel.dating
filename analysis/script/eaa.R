@@ -1021,3 +1021,131 @@ output$datedat %>%
 #
 # cpg <- gdalio_raster(f)
 # raster::plot(cpg, col = hcl.colours(26))
+
+sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
+
+  results <- data.frame(matrix(ncol = 6, nrow = samps))
+  names(results) <- c("vertdist", "hordist", "topodist",
+                      "year", "rcarb_cor", "sitename")
+  results$rcarb_cor <- unique(posteriorprobs$rcarb_cor)
+  results$sitename <- unique(sitel$name)
+  seapolygons <- list(length = samps)
+  topopaths <- list(length = samps)
+  horpaths <- list(length = samps)
+
+  for(i in 1:samps){
+    # Set up sampling frame from sum of posterior densities
+    samplingframe <- list(x = posteriorprobs[["dates"]],
+                          y = posteriorprobs[["probabilities"]])
+    # Draw single sample date
+    sdate <- with(samplingframe, sample(x, size = 1, prob = y))
+    results$year[i] <- sdate
+
+    # Find sealevel-range at sampled date
+    uppers <- approx(sitecurve[,"years"], sitecurve[,"upperelev"],
+                     xout = sdate)[["y"]]
+    lowers <- approx(sitecurve[,"years"], sitecurve[,"lowerelev"],
+                     xout = sdate)[["y"]]
+
+    sealevel <- sample(seq(lowers, uppers, 0.05), 1)
+
+    # Create polygon representing the elevation of the sea level
+    rclmat <- matrix(c(sealevel, Inf, NA, 0, sealevel, 1),
+                     ncol = 3, byrow = TRUE)
+    classarea <- terra::classify(sitearea, rclmat)
+    seapoly <- st_combine(st_as_sf(terra::as.polygons(classarea)))
+
+    seapolygons[[i]] <- seapoly
+
+    # Retrieve highest elevation on polygon
+    siteelev <- extract(sitearea, vect(sitel), fun = max)[2]
+    # Find difference to sea level elevation
+    results$vertdist[i] <-  max(siteelev[1:nrow(siteelev),]) - sealevel
+
+    # If these are at the same coordinate (i.e. the polygons are overlapping),
+    # return all values as 0
+    if(st_overlaps(seapoly, sitel, sparse = FALSE)){
+      results$hordist[i] <- 0
+      results$topodist[i] <- 0
+      results$vertdist[i] <- 0
+
+      # Else...if the entire site polygon is in the sea
+    } else if(st_contains(seapoly, sitel, sparse = FALSE)){
+
+      # Find the nearest points on site- and seapolygons, making the sea a
+      # multiline feature as it contains the site
+      distline <- st_nearest_points(sitel, st_cast(seapoly,"MULTILINESTRING"))
+
+      # Retrieve the two points
+      distpts <- st_cast(distline, "POINT")
+
+      # Make the value negative to indicate that the site is located below
+      # sea level
+      #results$hordist[i] <- st_length(distline) * -1
+
+      # Find topographic distance
+      coords <- rbind(st_coordinates(distpts[1]),
+                      st_coordinates(distpts[2]))
+      rownames(coords) <- c("loc", "sea")
+
+      hordist <- topoDist(raster::raster(sitearea), coords,
+                          paths = TRUE, zweight = 0)
+      results$hordist[i] <- hordist[[1]]["loc", "sea"] * -1
+      horpaths[[i]] <- st_as_sf(hordist[[2]])
+
+      # Find topographic distance (retrieve path)
+      topodist <- topoDist(raster::raster(sitearea), coords,
+                           paths = TRUE)
+
+      # Store distance (negative to indicate below sea-level)
+      results$topodist[i] <- topodist[[1]]["loc", "sea"] * -1
+      # Store path geometry
+      topopaths[[i]] <- st_as_sf(topodist[[2]])
+
+      # Else, that is not overlapping slightly or completely, i.e. the site is
+      # located some distance from the sea, perform above steps bu without
+      # negative values
+    } else {
+      # Find the nearest points on the site- and seapolygons,
+      distline <- st_nearest_points(sitel, seapoly)
+
+      # Retrieve the two points
+      distpts <- st_cast(distline, "POINT")
+
+      # Find topographic distance
+      coords <- rbind(st_coordinates(distpts[1]),
+                      st_coordinates(distpts[2]))
+      rownames(coords) <- c("loc", "sea")
+
+      # Find topographic distance (retrieve path)
+      topodist <- topoDist(raster::raster(sitearea), coords,
+                           paths = TRUE)
+      # Store distance
+      results$topodist[i] <- topodist[[1]]["loc", "sea"]
+      # Store path geometry
+      tpath <- st_as_sf(topodist[[2]])
+
+      topopaths[[i]] <- tpath
+
+      endptns <- st_line_sample(tpath, sample = c(0, 1))
+      hordistl <- st_cast(endptns, "LINESTRING")
+
+    }
+  }
+  # If there are no topopaths at all, do not try to return these
+  if(any(!(summary(topopaths)[,2]) %in% c("-none-", "sf"))){
+    return(list(
+      results = results,
+      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+                        crs = st_crs(sitel)),
+      topop = st_as_sf(st_sfc(do.call(rbind, topopaths)),
+                       crs = st_crs(sitel))
+    ))
+  } else
+    return(list(
+      results = results,
+      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+                        crs = st_crs(sitel))))
+}
+
+
