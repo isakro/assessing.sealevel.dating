@@ -441,8 +441,11 @@ bboxpoly <- function(feature, xy_adjustment) {
 # displacement curve
 sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
-  results <- data.frame(matrix(ncol = 4, nrow = samps))
-  names(results) <- c("vertdist", "hordist", "topodist", "year")
+  results <- data.frame(matrix(ncol = 6, nrow = samps))
+  names(results) <- c("vertdist", "hordist", "topodist",
+                      "year", "rcarb_cor", "sitename")
+  results$rcarb_cor <- unique(posteriorprobs$rcarb_cor)
+  results$sitename <- unique(sitel$name)
   seapolygons <- list(length = samps)
   topopaths <- list(length = samps)
 
@@ -567,7 +570,7 @@ sea_overlaps <- function(sitearea, seapolygons){
 }
 
 # Function that combines all of the above
-apply_functions <- function(sitename, dtm, displacement_curves,
+apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
                             isobases, nsamp = 1000, loc_bbox, siterpath,
                             rcarbcor_true = FALSE, sitelimit = TRUE){
 
@@ -619,7 +622,6 @@ apply_functions <- function(sitename, dtm, displacement_curves,
   # Retrieve the posterior density estimate for each date group
   for(i in 1:length(unique(date_groups))){
 
-
     # If there is only a single date from the site
     if(nrow(siter) == 1){
       posteriorprobs <- datedat
@@ -645,7 +647,6 @@ apply_functions <- function(sitename, dtm, displacement_curves,
 
   output$datedat <- datedat
   output$sitel <- sitel
-  output$date_groups <- date_groups
   output$sitecurve <- sitecurve
 
   # Store raster (replacing spaces and dashes in the file name)

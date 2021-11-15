@@ -12,7 +12,7 @@ quickSetupOxcal()
 
 # This script is an absolute mess and will not run. The main components are
 # available in the other scripts and defintion of relevant functions mainly in
-# 03script.R
+# 04script.R
 
 source(here::here("analysis/script/02script.R"))
 load(here::here("analysis/data/derived_data/01data.RData"))

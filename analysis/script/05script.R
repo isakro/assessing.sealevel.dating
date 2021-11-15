@@ -51,6 +51,49 @@ plot_height <- 76
 # grouping of dates. Each site was therefore first simulated 50 times and
 # then rerun at 1000 when these issues were handled.
 
+######### Adal vestre 1 #########
+sitename <- "Adal vestre 1"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+
+save(output,
+      file = here::here("analysis/data/derived_data/adalvestre1.RData"))
+load(here("analysis/data/derived_data/adalvestre1.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 0.5, s_xpos = 150, s_ypos = 70, s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/adalvestre1.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
+######### Adal vestre 2 #########
+sitename <- "Adal vestre 2"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/adalvestre2.RData"))
+load(here("analysis/data/derived_data/adalvestre2.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 1, s_xpos = 150, s_ypos = 70, s_bheight = 0.5)
+
+ggsave(file = here("analysis/figures/adalvestre2.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
 ######### Anvik #########
 sitename <- "Anvik"
 date_groups <- rep(1, 4)
@@ -116,7 +159,7 @@ ggsave(file = here("analysis/figures/dordal.png"), width = 250,
 
 ######### Dybdalshei 1 #########
 sitename <- "Dybdalshei 1"
-date_groups <- c(1, 1, 1, 1, 2, 2, 3, 3)
+date_groups <- group_dates(rcarb_sa, sitename)
 
 # output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
 #                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
@@ -137,10 +180,10 @@ ggsave(file = here("analysis/figures/dybdalshei1.png"), width = 250,
 
 ######### Dybdalshei 2 #########
 sitename <- "Dybdalshei 2"
-date_groups <- 1
+date_groups <- group_dates(rcarb_sa, sitename)
 
-# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-#                            isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                           isobases, nsamp = 10, loc_bbox = 400, siterpath)
 # save(output,
 #       file = here::here("analysis/data/derived_data/dybdalshei2.RData"))
 load(here("analysis/data/derived_data/dybdalshei2.RData"))
@@ -156,8 +199,9 @@ ggsave(file = here("analysis/figures/dybdalshei2.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 
-######### Gunnarsrød 4. Edited raster. Two single dates #########
+######### Gunnarsrød 4. Edited raster #########
 sitename <- "Gunnarsrød 4"
+# Oldest interpreted as unrelated in original report, manually seperated
 date_groups <- c(2, 1)
 
 # output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
@@ -179,7 +223,7 @@ ggsave(file = here("analysis/figures/gunnarsrod4.png"), width = 250,
 
 ######### Gunnarsrød 5 Edited raster #########
 sitename <- "Gunnarsrød 5"
-date_groups <- c(1, 1, 2, 3)
+date_groups <- group_dates(rcarb_sa, sitename)
 
 # output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
 #                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
@@ -761,6 +805,69 @@ ggsave(file = here("analysis/figures/lunaveien.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 
+######### Løvås 1 #########
+sitename <- "Løvås 1"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/lovas1.RData"))
+load(here("analysis/data/derived_data/lovas1.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 1, s_xpos = 150, s_ypos = 70, s_bheight = 0.5)
+
+ggsave(file = here("analysis/figures/lovas1.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
+######### Løvås 2 #########
+sitename <- "Løvås 2"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/lovas2.RData"))
+load(here("analysis/data/derived_data/lovas2.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 1, s_xpos = 150, s_ypos = 70, s_bheight = 0.5)
+
+ggsave(file = here("analysis/figures/lovas2.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
+######### Løvås 3 #########
+sitename <- "Løvås 3"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/lovas3.RData"))
+load(here("analysis/data/derived_data/lovas3.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 0.5, s_xpos = 150, s_ypos = 70, s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/lovas3.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
 ######### Nauen A #########
 sitename <- "Nauen A"
 date_groups <- c(1, 1, 2)
@@ -805,7 +912,7 @@ ggsave(file = here("analysis/figures/nauenc.png"), width = 250,
 
 ######### Nordby 1 #########
 sitename <- "Nordby 1"
-date_groups <- rep(1, 5)
+date_groups <- group_dates(rcarb_sa, sitename)
 
 # output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
 #                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
@@ -819,7 +926,7 @@ sitearea <- rast(file.path(siterpath,
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 150,
-             s_tdist = 0.5, s_xpos = 110, s_ypos = 50,  s_bheight = 0.25)
+             s_tdist = 0.5, s_xpos = 130, s_ypos = 70,  s_bheight = 0.25)
 
 ggsave(file = here("analysis/figures/nordby1.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -975,7 +1082,7 @@ ggsave(file = here("analysis/figures/rodbol54.png"), width = 250,
 
 ######### Rognlien #########
 sitename <- "Rognlien"
-date_groups <- c(1, 1, 2)
+date_groups <- group_dates(rcarb_sa, sitename)
 
 # output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
 #                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
