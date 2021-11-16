@@ -41,50 +41,62 @@ siterpath <- "/home/isak/phd/eaa_presentation/sitearea"
 sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
                     join = st_intersects, largest = TRUE)
 
-# Specify number of simluation runs
-nsamp = 1000
-
 # Prespecified height of plot (to be multiplied by number of phases)
 plot_height <- 76
 
 # Identifying number of simulation runs to perform per site by evaluating
-# when median distance values converges for a chose test site with complex
-# topographic surroundings and uncertaint date range
+# when mean distance values converges for a chosen test site with complex
+# topographic surroundings and uncertain date range.
 sitename <- "Hovland 5"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-
-# reps <- 100
-# simax <- 5000
+###### Uncomment to rerun simulation
+# sims <- 5000
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                             isobases, nsamp = sims, loc_bbox = 1000, siterpath)
+# simresults <- data.frame(output[[1]]$results, "simn" = 1:sims)
 #
-reps <- 10
-simax <- 100
-samplesizes <- seq(10, simax, reps)
+# simdat <- simresults %>%
+#   mutate(cmean_h = cummean(hordist),
+#          cmean_t = cummean(topodist),
+#          cmean_v = cummean(vertdist))
 
+# Load simulation results
+load(here("analysis/data/derived_data/05simdat.RData"))
 
-simresults <- data.frame(matrix(ncol = 7, nrow = simax))
-names(simresults) <- c("vertdist", "hordist", "topodist", "year",
-                       "rcarb_cor", "sitename", "simn")
+simplt1 <- ggplot(simdat) +
+  geom_line(aes(x = simn, y = cmean_h)) +
+  labs(x = "Number of simulations",
+       y = "Mean horisontal distance between site and shoreline") +
+  theme_classic()
 
-j <- 1
-for (i in 1:length(samplesizes)){
-  output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                            isobases, nsamp = reps, loc_bbox = 1000, siterpath)
-  simresults[j:samplesizes[i],] <- data.frame(output[[1]]$results,
-                                "simn" = j:(j + reps))
-  j <- j + reps
-}
+simplt2 <- ggplot(simdat) +
+  geom_line(aes(x = simn, y = cmean_t)) +
+  labs(x = "Number of simulations",
+     y = "Mean topographic distance between site and shoreline") +
+  theme_classic()
 
-simresults %>%
-  mutate(cmean = cummean(hordist))
+simplt3 <- ggplot(simdat) +
+  geom_line(aes(x = simn, y = cmean_v)) +
+  labs(x = "Number of simulations",
+       y = "Mean vertical distance between site and shoreline") +
+  theme_classic()
 
+simplt1 + simplt2 + simplt3 +
+plot_annotation("Test-run on Hovland 5 to inform sample size")
 
+ggsave(file = here("analysis/figures/sample_size.png"), width = 300,
+       height = 120,
+       units = "mm")
 
-# Both the digital terrain model and the radiocarbon dates required
-# manual inspection in case of inconsistencies (i.e. a highway running by the
-# site) and for defining necessary size of the window of analysis.
-# Each site was therefore first simulated 50 times and then rerun at 1000 when
-# these issues were handled.
+# Specify number of simulation runs based on convergence above
+# (1000 seems adequate as only minute variation is observable beyond this point)
+nsamp = 1000
+
+# Some manual inspection was necessary in case of inconsistencies in the DTM
+# (i.e. a highway running by the site) and for defining necessary size of the
+# window of analysis. Each site was therefore first simulated 50 times and then
+# rerun at 1000 when these issues were handled and parameters specified.
 
 ######### Adal vestre 1 #########
 sitename <- "Adal vestre 1"
@@ -113,7 +125,7 @@ sitename <- "Adal vestre 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/adalvestre2.RData"))
 # load(here("analysis/data/derived_data/adalvestre2.RData"))
@@ -197,7 +209,7 @@ sitename <- "Dybdalshei 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/dybdalshei1.RData"))
 load(here("analysis/data/derived_data/dybdalshei1.RData"))
@@ -240,7 +252,7 @@ sitename <- "Gunnarsrød 4"
 date_groups <- c(2, 1)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod4.RData"))
 load(here("analysis/data/derived_data/gunnarsrod4.RData"))
@@ -261,7 +273,7 @@ sitename <- "Gunnarsrød 5"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod5.RData"))
 load(here("analysis/data/derived_data/gunnarsrod5.RData"))
@@ -282,7 +294,7 @@ sitename <- "Gunnarsrød 6a"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod6a.RData"))
 load(here("analysis/data/derived_data/gunnarsrod6a.RData"))
@@ -303,7 +315,7 @@ sitename <- "Gunnarsrød 6b"
 date_groups <- 1
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod6b.RData"))
 load(here("analysis/data/derived_data/gunnarsrod6b.RData"))
@@ -324,7 +336,7 @@ sitename <- "Gunnarsrød 7"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod7.RData"))
 load(here("analysis/data/derived_data/gunnarsrod7.RData"))
@@ -345,7 +357,7 @@ sitename <- "Gunnarsrød 10"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/gunnarsrod10.RData"))
 load(here("analysis/data/derived_data/gunnarsrod10.RData"))
@@ -366,7 +378,7 @@ sitename <- "Hegna vest 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hegnavest1.RData"))
 load(here("analysis/data/derived_data/hegnavest1.RData"))
@@ -387,7 +399,7 @@ sitename <- "Hegna vest 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1200, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1200, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hegnavest2.RData"))
 load(here("analysis/data/derived_data/hegnavest2.RData"))
@@ -408,7 +420,7 @@ sitename <- "Hegna vest 3"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hegnavest3.RData"))
 load(here("analysis/data/derived_data/hegnavest3.RData"))
@@ -429,7 +441,7 @@ sitename <- "Hesthag C2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hesthagc2.RData"))
 load(here("analysis/data/derived_data/hesthagc2.RData"))
@@ -450,7 +462,7 @@ sitename <- "Hesthag C4"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hesthagc4.RData"))
 load(here("analysis/data/derived_data/hesthagc4.RData"))
@@ -471,7 +483,7 @@ sitename <- "Hovland 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hovland1.RData"))
 load(here("analysis/data/derived_data/hovland1.RData"))
@@ -513,7 +525,7 @@ sitename <- "Hovland 4"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1200, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1200, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hovland4.RData"))
 load(here("analysis/data/derived_data/hovland4.RData"))
@@ -534,7 +546,7 @@ sitename <- "Hovland 5"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 10, loc_bbox = 1000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hovland5.RData"))
 load(here("analysis/data/derived_data/hovland5.RData"))
@@ -555,7 +567,7 @@ sitename <- "Hydal 4"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/hydal4.RData"))
 load(here("analysis/data/derived_data/hydal4.RData"))
@@ -576,7 +588,7 @@ sitename <- "Krøgenes D1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/krogenesd1.RData"))
 
@@ -595,7 +607,7 @@ sitename <- "Krøgenes D2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/krogenesd2.RData"))
 
@@ -615,7 +627,7 @@ sitename <- "Kvastad A1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 
 save(output,
      file = here::here("analysis/data/derived_data/kvastada1.RData"))
@@ -636,7 +648,7 @@ sitename <- "Kvastad A2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 500, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 500, siterpath)
 # load(here("analysis/data/derived_data/kvastada2.RData"))
 
 save(output,
@@ -657,7 +669,7 @@ sitename <- "Kvastad A4"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/kvastada4.RData"))
 load(here("analysis/data/derived_data/kvastada4.RData"))
@@ -678,7 +690,7 @@ sitename <- "Kvastad A9"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/kvastada9.RData"))
 load(here("analysis/data/derived_data//kvastada9.RData"))
@@ -699,7 +711,7 @@ sitename <- "Langangen Vestgård 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/langangenv1.RData"))
 load(here("analysis/data/derived_data/langangenv1.RData"))
@@ -719,7 +731,7 @@ sitename <- "Langangen Vestgård 3"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/langangenv3.RData"))
 load(here("analysis/data/derived_data/langangenv3.RData"))
@@ -740,7 +752,7 @@ sitename <- "Langangen Vestgård 5"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 # load(here("analysis/data/derived_data/langangenv5.RData"))
 
 save(output,
@@ -761,7 +773,7 @@ sitename <- "Langangen Vestgård 6"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/langangenv6.RData"))
 load(here("analysis/data/derived_data/langangenv6.RData"))
@@ -782,7 +794,7 @@ sitename <- "Langangen Vestgård 7"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 200, siterpath,
+                          isobases, nsamp = nsamp, loc_bbox = 200, siterpath,
                           sitelimit = FALSE)
 save(output,
      file = here::here("analysis/data/derived_data/langangenv7.RData"))
@@ -804,7 +816,7 @@ sitename <- "Langemyr"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/langemyr.RData"))
 load(here("analysis/data/derived_data/langemyr.RData"))
@@ -824,7 +836,7 @@ sitename <- "Lunaveien"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 10, loc_bbox = 1000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/lunaveien.RData"))
 # load(here("analysis/data/derived_data/lunaveien.RData"))
@@ -845,7 +857,7 @@ sitename <- "Løvås 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/lovas1.RData"))
 load(here("analysis/data/derived_data/lovas1.RData"))
@@ -887,7 +899,7 @@ sitename <- "Løvås 3"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/lovas3.RData"))
 load(here("analysis/data/derived_data/lovas3.RData"))
@@ -908,7 +920,7 @@ sitename <- "Nauen A"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/nauena.RData"))
 load(here("analysis/data/derived_data/nauena.RData"))
@@ -929,7 +941,7 @@ sitename <- "Nauen C"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/nauenc.RData"))
 load(here("analysis/data/derived_data/nauenc.RData"))
@@ -950,7 +962,7 @@ sitename <- "Nordby 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/nordby1.RData"))
 load(here("analysis/data/derived_data/nordby1.RData"))
@@ -971,7 +983,7 @@ sitename <- "Nordby 52"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/nordby52.RData"))
 load(here("analysis/data/derived_data/nordby52.RData"))
@@ -992,7 +1004,7 @@ sitename <- "Pauler 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 2500, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 2500, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/pauler1.RData"))
 load(here("analysis/data/derived_data/pauler1.RData"))
@@ -1014,7 +1026,7 @@ sitename <- "Pauler 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 2500, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 2500, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/pauler2.RData"))
 load(here("analysis/data/derived_data/pauler2.RData"))
@@ -1035,7 +1047,7 @@ sitename <- "Pjonkerød R1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 
 save(output,
      file = here::here("analysis/data/derived_data/pjonkerodr1.RData"))
@@ -1057,7 +1069,7 @@ sitename <- "Prestemoen 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/prestemoen1.RData"))
 load(here("analysis/data/derived_data/prestemoen1.RData"))
@@ -1078,7 +1090,7 @@ sitename <- "Ragnhildrød"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 4000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 4000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/ragnhildrod.RData"))
 
@@ -1098,7 +1110,7 @@ sitename <- "Rødbøl 54"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/rodbol54.RData"))
 load(here("analysis/data/derived_data/rodbol54.RData"))
@@ -1119,7 +1131,7 @@ sitename <- "Rognlien"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/rognlien.RData"))
 load(here("analysis/data/derived_data/rognlien.RData"))
@@ -1140,7 +1152,7 @@ sitename <- "Sagene B1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/sageneb1.RData"))
 load(here("analysis/data/derived_data/sageneb1.RData"))
@@ -1161,7 +1173,7 @@ sitename <- "Sagene B2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 1000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/sageneb2.RData"))
 load(here("analysis/data/derived_data/sageneb2.RData"))
@@ -1182,7 +1194,7 @@ sitename <- "Solum 3"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 3500, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 3500, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/solum3.RData"))
 load(here("analysis/data/derived_data/solum3.RData"))
@@ -1203,7 +1215,7 @@ sitename <- "Stokke/Polland 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/stokkep1.RData"))
 load(here("analysis/data/derived_data/stokkep1.RData"))
@@ -1225,7 +1237,7 @@ sitename <- "Stokke/Polland 5"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/stokkep5.RData"))
 load(here("analysis/data/derived_data/stokkep5.RData"))
@@ -1247,7 +1259,7 @@ sitename <- "Stokke/Polland 8"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/stokkep8.RData"))
 load(here("analysis/data/derived_data/stokkep8.RData"))
@@ -1269,7 +1281,7 @@ sitename <- "Torstvet"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/torstvet.RData"))
 load(here("analysis/data/derived_data/torstvet.RData"))
@@ -1311,7 +1323,7 @@ sitename <- "Tverdal"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/tverdal.RData"))
 load(here("analysis/data/derived_data/tverdal.RData"))
@@ -1332,7 +1344,7 @@ sitename <- "Vallermyrene 1a"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/vallermyrene1a.RData"))
 load(here("analysis/data/derived_data/vallermyrene1a.RData"))
@@ -1353,7 +1365,7 @@ sitename <- "Vallermyrene 1b"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/vallermyrene1b.RData"))
 load(here("analysis/data/derived_data/vallermyrene1b.RData"))
@@ -1375,7 +1387,7 @@ date_groups <- group_dates(rcarb_sa, sitename)
 
 # Use dated feature instead of site limit
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 200, siterpath,
+                          isobases, nsamp = nsamp, loc_bbox = 200, siterpath,
                           sitelimit = FALSE)
 save(output,
      file = here::here("analysis/data/derived_data/vallermyrene2.RData"))
@@ -1397,7 +1409,7 @@ sitename <- "Vallermyrene 4a"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/vallermyrene4a.RData"))
 load(here("analysis/data/derived_data/vallermyrene4a.RData"))
@@ -1418,7 +1430,7 @@ sitename <- "Vallermyrene 4b"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/vallermyrene4b.RData"))
 load(here("analysis/data/derived_data/vallermyrene4b.RData"))
