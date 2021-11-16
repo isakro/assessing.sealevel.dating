@@ -506,25 +506,29 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       # Store distance (negative to indicate below sea-level)
       results$topodist[i] <- topodist[[1]]["loc", "sea"] * -1
 
-      # Retrieve path
-      tpath <- st_as_sf(topodist[[2]])
-      topopaths[[i]] <- tpath
+      # If statement required as the code will fail if the line is of
+      # length 0
+      if(results$topodist[i] != 0){
 
-      # Find end-points
-      endptns <- st_line_sample(tpath, sample = c(0, 1))
+        # Retrieve path
+        tpath <- st_as_sf(topodist[[2]])
+        topopaths[[i]] <- tpath
 
-      # Cast as line
-      hordistl <- st_cast(endptns, "LINESTRING")
+        # Find end-points
+        endptns <- st_line_sample(tpath, sample = c(0, 1))
 
-      # Find horisontal distance and make the value negative to indicate that
-      # the site is located below sea level. The reason for not doing this with
-      # distline defined above is that the topographic distance is measured to
-      # the adjacent cell.
-      results$hordist[i] <- st_length(hordistl) * -1
+        # Cast as line
+        hordistl <- st_cast(endptns, "LINESTRING")
 
+        # Find horisontal distance
+        results$hordist[i] <- st_length(hordistl) * -1
 
-      # Else, that is not overlapping slightly or completely, i.e. the site is
-      # located some distance from the sea, perform above steps bu without
+      } else{
+        results$hordist[i] <- 0
+      }
+
+      # Else, not overlapping slightly or completely, i.e. the site is
+      # located some distance from the sea, perform above steps but without
       # negative values
     } else {
       # Find the nearest points on the site- and seapolygons,
@@ -544,19 +548,24 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       # Store distance
       results$topodist[i] <- topodist[[1]]["loc", "sea"]
 
-      # Retrieve path
-      tpath <- st_as_sf(topodist[[2]])
-      topopaths[[i]] <- tpath
+      if(results$topodist[i] != 0){
 
-      # Find end-points
-      endptns <- st_line_sample(tpath, sample = c(0, 1))
+        # Retrieve path
+        tpath <- st_as_sf(topodist[[2]])
+        topopaths[[i]] <- tpath
 
-      # Cast as line
-      hordistl <- st_cast(endptns, "LINESTRING")
+        # Find end-points
+        endptns <- st_line_sample(tpath, sample = c(0, 1))
 
-      # Find horisontal distance
-      results$hordist[i] <- st_length(hordistl)
-    }
+        # Cast as line
+        hordistl <- st_cast(endptns, "LINESTRING")
+
+        # Find horisontal distance
+        results$hordist[i] <- st_length(hordistl)
+      } else{
+        results$hordist[i] <- 0
+      }
+  }
   }
   # If there are no topopaths at all, do not try to return these
   if(any(!(summary(topopaths)[,2]) %in% c("-none-", "sf"))){

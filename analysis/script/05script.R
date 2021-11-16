@@ -47,12 +47,6 @@ nsamp = 1000
 # Prespecified height of plot (to be multiplied by number of phases)
 plot_height <- 76
 
-# Both the digital terrain model and the radiocarbon dates required
-# manual inspection in case of inconsistencies (i.e. a highway running by the
-# site) and for defining necessary size of the window of analysis.
-# Each site was therefore first simulated 50 times and then rerun at 1000 when
-# these issues were handled.
-
 # Identifying number of simulation runs to perform per site by evaluating
 # when median distance values converges for a chose test site with complex
 # topographic surroundings and uncertaint date range
@@ -63,40 +57,34 @@ date_groups <- group_dates(rcarb_sa, sitename)
 # reps <- 100
 # simax <- 5000
 #
-# reps <- 10
-# simax <- 100
-# samplesizes <- seq(10, simax, reps)
+reps <- 10
+simax <- 100
+samplesizes <- seq(10, simax, reps)
 
 
-# data.frame(matrix(ncol = 7, nrow = simax))
-# names(simresults) <- c("vertdist", "hordist", "topodist", "year",
-#                        "rcarb_cor", "sitename", "simn")
-simresults <- list()
-for (i in 1:length(10)){
-   output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                             isobases, nsamp = 10, loc_bbox = 1000, siterpath)
-   simresults[[i]] <- data.frame(output[[1]]$results,
-                                 "simn" = i * 10)
+simresults <- data.frame(matrix(ncol = 7, nrow = simax))
+names(simresults) <- c("vertdist", "hordist", "topodist", "year",
+                       "rcarb_cor", "sitename", "simn")
+
+j <- 1
+for (i in 1:length(samplesizes)){
+  output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                            isobases, nsamp = reps, loc_bbox = 1000, siterpath)
+  simresults[j:samplesizes[i],] <- data.frame(output[[1]]$results,
+                                "simn" = j:(j + reps))
+  j <- j + reps
 }
 
+simresults %>%
+  mutate(cmean = cummean(hordist))
 
 
-save(output,
-     file = here::here("analysis/data/derived_data/hovland5.RData"))
-load(here("analysis/data/derived_data/hovland5.RData"))
 
-sitearea <- rast(file.path(siterpath,
-                           paste0(str_replace(sitename, " ", "_"), ".tif")))
-
-plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, date_groups, scale_dist = 300,
-             s_tdist = 2.5, s_xpos = 500, s_ypos = 200,  s_bheight = 2)
-
-ggsave(file = here("analysis/figures/hovland5.png"), width = 250,
-       height = plot_height + (plot_height * length(unique(date_groups))),
-       units = "mm")
-
-
+# Both the digital terrain model and the radiocarbon dates required
+# manual inspection in case of inconsistencies (i.e. a highway running by the
+# site) and for defining necessary size of the window of analysis.
+# Each site was therefore first simulated 50 times and then rerun at 1000 when
+# these issues were handled.
 
 ######### Adal vestre 1 #########
 sitename <- "Adal vestre 1"
@@ -125,10 +113,10 @@ sitename <- "Adal vestre 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/adalvestre2.RData"))
-load(here("analysis/data/derived_data/adalvestre2.RData"))
+# load(here("analysis/data/derived_data/adalvestre2.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -146,10 +134,10 @@ sitename <- "Anvik"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/anvik.RData"))
-load(here("analysis/data/derived_data/anvik.RData"))
+# load(here("analysis/data/derived_data/anvik.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -167,10 +155,10 @@ sitename <- "Bakke"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 3500, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 3500, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/bakke.RData"))
-load(here("analysis/data/derived_data/bakke.RData"))
+# load(here("analysis/data/derived_data/bakke.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -188,7 +176,7 @@ sitename <- "Dørdal"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 2000, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 2000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/dordal.RData"))
 load(here("analysis/data/derived_data/dordal.RData"))
@@ -878,7 +866,7 @@ sitename <- "Løvås 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 1000, loc_bbox = 400, siterpath)
+                          isobases, nsamp = 100, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/lovas2.RData"))
 load(here("analysis/data/derived_data/lovas2.RData"))
@@ -1385,7 +1373,7 @@ ggsave(file = here("analysis/figures/vallermyrene1b.png"), width = 250,
 sitename <- "Vallermyrene 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-Use dated feature instead of site limit
+# Use dated feature instead of site limit
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
                           isobases, nsamp = 1000, loc_bbox = 200, siterpath,
                           sitelimit = FALSE)
