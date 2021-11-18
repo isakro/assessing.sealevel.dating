@@ -44,6 +44,10 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 # Prespecified height of plot (to be multiplied by number of phases)
 plot_height <- 76
 
+# Specify number of simulation runs based on convergence below
+# (1000 seems adequate as only minute variation is observable beyond this point)
+nsamp = 1000
+
 # Identifying number of simulation runs to perform per site by evaluating
 # when mean distance values converges for a chosen test site with complex
 # topographic surroundings and uncertain date range.
@@ -83,15 +87,11 @@ simplt3 <- ggplot(simdat) +
   theme_classic()
 
 simplt1 + simplt2 + simplt3 +
-plot_annotation("Test-run on Hovland 5 to inform sample size")
+plot_annotation("Test-run on Hovland 5 to inform number of simulation runs")
 
 ggsave(file = here("analysis/figures/sample_size.png"), width = 300,
        height = 120,
        units = "mm")
-
-# Specify number of simulation runs based on convergence above
-# (1000 seems adequate as only minute variation is observable beyond this point)
-nsamp = 1000
 
 # Some manual inspection was necessary in case of inconsistencies in the DTM
 # (i.e. a highway running by the site) and for defining necessary size of the
@@ -587,7 +587,7 @@ ggsave(file = here("analysis/figures/hydal4.png"), width = 250,
 sitename <- "Krøgenes D1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, dtm, displacement_curves,
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/krogenesd1.RData"))
@@ -596,7 +596,7 @@ sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             sites_sa, isobases, output, scale_dist = 150)
+             sites_sa, isobases, output, date_groups, scale_dist = 150)
 
 ggsave(file = here("analysis/figures/krogenesd1.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -618,7 +618,7 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 150,
              s_tdist = 1.5, s_xpos = 135, s_ypos = 65,  s_bheight = 1)
 
-ggsave(file = here("analysis/figures/krogenesd2.png"), width = 250,
+ggsave(file = here("analysis/figures/krogenesd2.png"), width ad= 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 
@@ -878,7 +878,7 @@ sitename <- "Løvås 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 100, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/lovas2.RData"))
 load(here("analysis/data/derived_data/lovas2.RData"))
@@ -1302,7 +1302,7 @@ sitename <- "Trondalen"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = 100, loc_bbox = 400, siterpath)
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/trondalen.RData"))
 load(here("analysis/data/derived_data/trondalen.RData"))

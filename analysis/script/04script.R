@@ -447,7 +447,7 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
   results$rcarb_cor <- unique(na.omit(posteriorprobs$rcarb_cor))
   results$sitename <- unique(sitel$name)
   seapolygons <- list(length = samps)
-  topopaths <- list(length = samps)
+  # topopaths <- list(length = samps)
 
   for(i in 1:samps){
     # Set up sampling frame from sum of posterior densities
@@ -512,7 +512,7 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
         # Retrieve path
         tpath <- st_as_sf(topodist[[2]])
-        topopaths[[i]] <- tpath
+        # topopaths[[i]] <- tpath
 
         # Find end-points
         endptns <- st_line_sample(tpath, sample = c(0, 1))
@@ -552,7 +552,7 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
         # Retrieve path
         tpath <- st_as_sf(topodist[[2]])
-        topopaths[[i]] <- tpath
+        # topopaths[[i]] <- tpath
 
         # Find end-points
         endptns <- st_line_sample(tpath, sample = c(0, 1))
@@ -567,20 +567,26 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       }
   }
   }
-  # If there are no topopaths at all, do not try to return these
-  if(any(!(summary(topopaths)[,2]) %in% c("-none-", "sf"))){
-    return(list(
-      results = results,
-      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
-                        crs = st_crs(sitel)),
-      topop = st_as_sf(st_sfc(do.call(rbind, topopaths)),
-                       crs = st_crs(sitel))
-    ))
-  } else
-    return(list(
-      results = results,
-      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
-                        crs = st_crs(sitel))))
+
+  return(list(
+    results = results,
+    seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+                      crs = st_crs(sitel))))
+
+  # # If there are no topopaths at all, do not try to return these
+  # if(any(!(summary(topopaths)[,2]) %in% c("-none-", "sf"))){
+  #   return(list(
+  #     results = results,
+  #     seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+  #                       crs = st_crs(sitel)),
+  #     topop = st_as_sf(st_sfc(do.call(rbind, topopaths)),
+  #                      crs = st_crs(sitel))
+  #   ))
+  # } else
+  #   return(list(
+  #     results = results,
+  #     seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+  #                       crs = st_crs(sitel))))
 }
 
 # Define function to count the number of times the sea is simulated as present
