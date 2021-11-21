@@ -1093,6 +1093,7 @@ output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
                           isobases, nsamp = nsamp, loc_bbox = 4000, siterpath)
 save(output,
      file = here::here("analysis/data/derived_data/ragnhildrod.RData"))
+# load(here("analysis/data/derived_data/ragnhildrod.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
