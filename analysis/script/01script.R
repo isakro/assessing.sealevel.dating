@@ -71,5 +71,5 @@ rcarb_sa <- rcarb_features %>%  filter(sig_2_end_bc < -1700)
 # Stone Age.
 sites_sa <- site_limits %>% filter(name %in% unique(rcarb_sa$site_name))
 
-save(caldates, rcarb_sa, sites_sa,
+save(caldates, rcarb_sa, sites_sa, site_limits,
      file = here("analysis/data/derived_data/01data.RData"))

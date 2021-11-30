@@ -473,11 +473,6 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
     seapolygons[[i]] <- seapoly
 
-    # Retrieve highest elevation on polygon
-    siteelev <- extract(sitearea, vect(sitel), fun = max)[2]
-    # Find difference to sea level elevation
-    results$vertdist[i] <-  max(siteelev[1:nrow(siteelev),]) - sealevel
-
     # If these are at the same coordinate (i.e. the polygons are overlapping),
     # return all values as 0
     if(st_overlaps(seapoly, sitel, sparse = FALSE)){
@@ -487,6 +482,11 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
 
       # Else...if the entire site polygon is in the sea
     } else if(st_contains(seapoly, sitel, sparse = FALSE)){
+
+      # Retrieve highest elevation on polygon
+      siteelev <- extract(sitearea, vect(sitel), fun = max)[2]
+      # Find difference to sea level elevation
+      results$vertdist[i] <-  max(siteelev[1:nrow(siteelev),]) - sealevel
 
       # Find the nearest points on site- and seapolygons, making the sea a
       # multiline feature as it contains the site
@@ -531,6 +531,12 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       # located some distance from the sea, perform above steps but without
       # negative values
     } else {
+
+      # Retrieve lowest elevation on polygon
+      siteelev <- extract(sitearea, vect(sitel), fun = min)[2]
+      # Find difference to sea level elevation
+      results$vertdist[i] <-  min(siteelev[1:nrow(siteelev),]) - sealevel
+
       # Find the nearest points on the site- and seapolygons,
       distline <- st_nearest_points(sitel, seapoly)
 

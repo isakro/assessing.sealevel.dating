@@ -1,20 +1,16 @@
 ---
 title: "A simulation-based assessment of the relation between Stone Age sites and relative sea-level change along the Norwegian Skagerrak coast"
 author:
-  - Myfirstname Mylastname:
-      email: fl@oneplace.edu
+  - Isak Roalkvam:
+      email: isak.roalkvam@iakh.uio.no
       institute: [UofO]
       correspondence: true
-  - Yourfirstname Yourlastname:
-      email: fl@another.edu
-      institute: [UofA]
-      correspondence: false
 institute:
-  - UofO: University of One Place
-  - UofA: University of Another Place
+  - UofO: University of Oslo
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
-    bookdown::word_document2:
+    bookdown::pdf_document2:
+      toc: false
       fig_caption: yes
       reference_docx: "../templates/template.docx" # Insert path for the DOCX file
       pandoc_args:
@@ -23,17 +19,7 @@ output:
       - --lua-filter=../templates/pagebreak.lua
 bibliography: references.bib
 csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
-abstract: |
-  Text of abstract
-keywords: |
-  keyword 1; keyword 2; keyword 3
-highlights: |
-  These are the highlights. 
 ---
-
-Keywords: `r rmarkdown::metadata$keywords`
-
-Highlights: `r rmarkdown::metadata$highlights`
 
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(
@@ -47,57 +33,152 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r libraries, eval = TRUE, results = 'hide'}
+library(here)
+library(tidyverse)
+library(sf)
+library(ggridges)
+library(ggthemes)
+library(ggnewscale)
+library(patchwork)
+library(terra)
+library(raster)
+library(oxcAAR)
+library(vapour)
+library(topoDistance)
+library(IRanges)
+quickSetupOxcal()
+```
+
+```{r get-data-functions, include = FALSE}
+# Load all sites and radiocarbon data
+sites <- read.csv(here('analysis/data/raw_data/sites.csv'))
+rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
+
+# Background map
+bmap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
+
+# Digital terrain model
+dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
+
+# Load processed site and radiocarbon data
+load(here("analysis/data/derived_data/01data.RData"))
+load(here("analysis/data/derived_data/02data.RData"))
+source(here("analysis/script/04script.R"), local = knitr::knit_global())
+```
+
 # Introduction
 
-The post-glacial relative sea-level fall that characterises most areas of Fennoscandia is fundamental to its archaeology. This follows not only from the dramatic changes to the landscape that this process has represented throughout prehistory, but also from the fact that if archaeological phenomena were situated on or close to the contemporary shoreline when they were in use, a reconstruction of the trajectory of shoreline displacement can be used to date these phenomena based on their altitude relative to the present day sea-level. This method, also called shoreline dating, has long history of use in the region and is frequently applied to assign an approximate date to diverse archaeological phenomena such as rock art, grave cairns, various harbour and sea-side constructions and, as is the focus of this study, Stone Age sites.
+The post-glacial relative sea-level fall that characterises large areas of Fennoscandia is fundamental to its archaeology. This follows not only from the dramatic changes to the landscape that this process has represented throughout prehistory, but also from the fact that if archaeological phenomena were situated close to the contemporary shoreline when they were in use, a reconstruction of the trajectory of shoreline displacement can be used to date these phenomena based on their altitude relative to the present day sea-level. This method, also called shoreline dating, has long history of use in the region and is frequently applied to assign an approximate date to diverse archaeological phenomena such as rock art, grave cairns, various harbour and sea-side constructions and, as is the focus of this study, Stone Age sites [e.g. @berg-hansen2009; @bjerck2005; @sognnes2003].
 
-The close association between Norwegian Stone Age sites located in coastal regions and prehistoric shorelines was firmly established by the geologist W.C. Brøgger in 1905 (see the review by @maccurdy1906 for an early mention in english). Shoreline dating has been fundamental to Stone Age research in Norway ever since. The method is used both independently and to compliment the dating of sites where other sources of temporal data such as typological indicators or radiometric dates are either limited or not available. Given the coarse and fuzzy resolution of established typological frameworks, the vast amount of surveyed sites that only contain generic lithic debitage that could hail from any part of the period, and as the conditions for the preservation of organic material is typically poor in Norway, dating with reference to shoreline displacement is often the only and most precise and accurate method by which one can hope to date the sites. Shoreline dating is consequently fundamental to our understanding of the Norwegian Stone Age. This is both because it is fundamental to the temporal framework on which our understanding of the period is based, but also because the method is only applicable so long as the societies in question have continuously settled on or close to the contemporary shore-line. Consequently, adherence or deviation from this pattern also has major implications for the socio-economic foundations of the societies in question.
+The close association between Norwegian Stone Age sites located in coastal regions and prehistoric shorelines was firmly established by the geologist W.C. Brøgger in 1905 (see the review by @maccurdy1906 for an early mention in English). Shoreline dating has been fundamental to Stone Age research in Norway ever since [e.g. @berg-hansen2009; @nummedal1923; @bjerck1990]. The method is used both independently and to compliment the dating of sites where other sources of temporal data such as typological indicators or radiometric dates are either limited or not available. Given the coarse and fuzzy resolution of established typological frameworks, the vast amount of surveyed sites that only contain generic lithic debitage that could hail from any part of the period, and as the conditions for the preservation of organic material is typically poor in Norway, dating with reference to shoreline displacement is often the only and most accurate method by which one can hope to date the sites. Shoreline dating is consequently fundamental to our understanding of the Norwegian Stone Age. This is both because it is fundamental to the temporal framework on which our understanding of the period is based, but also because the method is only applicable so long as the societies in question have continuously settled on or close to the contemporary shore-line. Consequently, adherence or deviation from this pattern also has major implications for the socio-economic foundations of the societies in question.
 
 Despite the fundamental role of shoreline dating for Norwegian Stone Age archaeology, there have only been conducted relatively small scale investigations into the applicability of dating by means of shore-line displacement, and the relationship has only been evaluated using relatively coarse methods. The aim of this paper is to provide a systematic and comprehensive review of the degree to which radiocarbon dates correspond with the dates informed by our current knowledge of shoreline displacement in a larger area of south-eastern Norway, using a more refined methodological approach. The goal is to quantify the degree to which the assumption of shore-bound settlement holds through the Stone Age. As presented in more detail below, this problem involves the combined evaluation of three major analytical dimensions. One is the questions of when the sites were in use, the second pertains to the reconstruction of the contemporaneous sea-level, and the third follows from the fact that the relation between site and shore-line is inherently spatial. Taking inspiration from recent studies that have integrated various sources of spatio-temporal uncertainty through Monte Carlo simulation [e.g. @crema2010; @crema2012], a similar approach is adopted here.
 
 # Background
 
-Relative sea-level can be defined as the mean elevation of the surface of the sea relative to land, or, more formally, the difference in elevation between the geoid and the surface of the Earth as measured from the Earth's centre [@shennan2015\]. Variation in this relative distance follow from a range of effects \[e.g. @mörner1976; @milne2009]. Of central importance here is eustasy and glacial istostasy. The eustatic sea level is understood as the sea level if the water has been evenly distributed across the Earth's surface without adjusting for variation in the rigidity of the Earth, its rotation, or the self-gravitation inherent to the water body itself [@shennan2015]. The eustatic sea level is mainly impacted by glaciation and de-glaciation, which can bind or release large amounts of water into the oceans, as well as by changes in the Earth's crust that impact the volume of ocean basins. Istostasy, on the other hand, pertains to adjustments in the Earth's crust to regain gravitational equilibrium relative to the underlying viscous mantle. This is often the result of glacial istostasy, which follows from glaciation and de-glaciation and corresponding loading and unloading of weight, as well as from erosion of the crust, which causes its weight to be redistributed. These effects thus causes the lithosphere to either subside due to increased weight, or to rebound and lift upwards due to lower weight [@milne2015].
+Relative sea-level (RSL) can be defined as the mean elevation of the surface of the sea relative to land, or, more formally, the difference in elevation between the geoid and the surface of the Earth as measured from the Earth's centre [@shennan2015]. Variation in this relative distance follow from a range of effects [e.g. @mörner1976; @milne2009]. Of central importance here is eustasy and glacial istostasy. The eustatic sea level is understood as the sea level if the water has been evenly distributed across the Earth's surface without adjusting for variation in the rigidity of the Earth, its rotation, or the self-gravitation inherent to the water body itself [@shennan2015]. The eustatic sea level is mainly impacted by glaciation and de-glaciation, which can bind or release large amounts of water into the oceans, as well as by changes in the Earth's crust that impact the volume of ocean basins. Istostasy, on the other hand, pertains to adjustments in the crust to regain gravitational equilibrium relative to the underlying viscous mantle. This is often the result of glacial istostasy, which follows from glaciation and de-glaciation and corresponding loading and unloading of weight, as well as from erosion of the crust, which causes its weight to be redistributed. These effects thus causes the lithosphere to either subside due to increased weight, or to rebound and lift upwards due to lower weight [@milne2015].
 
-Following the end of the Weichselian and the final retreat of the Fennoscandian Ice Sheet, the isostatic rebound has been so severe that most areas of Norway have been subject to a continuous relative sea-level regression, despite corresponding eustatic sea-level rise. In other words, the relative sea level has been dropping throughout prehistory. As this process is the result of glacial loading, the rate of uplift is more severe towards the centre of the ice sheet. Thus, some areas on the outer coast have had a more stable relative sea-level, been subject to past marine transgression phases, or remain inundated to this day [e.g. @svendsen1987; @romundset2015]. The has direct archaeological impact. In areas where the sea-level has been stable over longer periods of time, people have often reused the coastal site locations multiple times and over long time-spans, creating palimpsests of settlement events that are difficult to disentangle. Transgression, on the other hand, can lead to complete destruction of the sites, or bury them in marine sediments, leading for example to a hiatus in the archaeological record for certain sub-phases in the impacted areas [@bjerck2008]. Comparatively, given a continuous and still ongoing shoreline regression from as high as c. 210 m above present sea level in the inner Oslo fjord, any one location in south-eastern Norway has only been shore-bound within a relatively limited time-span, and the sites have not been impacted by any transgressions. This makes the region especially useful for evaluating the assumption of a shore-bound settlement over time.
+Following the end of the Weichselian and the final retreat of the Fennoscandian Ice Sheet [e.g. @stroeven2016], the isostatic rebound has been so severe that most areas of Norway have been subject to a continuous relative sea-level regression, despite corresponding eustatic sea-level rise . In other words, the relative sea level has been dropping throughout prehistory. As this process is the result of glacial loading, the rate of uplift is more severe towards the centre of the ice sheet. Thus, some areas on the outer coast have had a more stable RSL or been subject to marine transgression [e.g. @svendsen1987; @romundset2015]. These conditions are directly reflected in the archaeological record. In areas where the sea-level has been stable over longer periods of time, people have often reused the coastal site locations multiple times and over long time-spans, creating palimpsests of settlement events that are difficult to disentangle [@reitan2009]. Transgression phases, on the other hand, can lead to complete destruction of the sites, or bury them in marine sediments, leading to a hiatus in the archaeological record for certain sub-phases in the impacted areas [@bjerck2008]. Comparatively, given a continuous and still ongoing shoreline regression from as high as c. 220 m above present sea level in the inner Oslo fjord, any one location in south-eastern Norway has only been shore-bound within a relatively limited time-span, and the sites have not been impacted by any transgressions [@hafsten1957; @hafsten1983; @sørensen1979]. This makes the region especially useful for evaluating the assumption of a shore-bound settlement over a long and continuous time-span.
 
 such as Lista in southern Norway has In the most perhipheral coastal areas the relative sea-level change has transitioned between regression and transgression phases, leading to a situation where
 
-Based on the generally accepted premise that most Stone Age sites located lower than the marine limit were situated on or close to the contemporaneous shoreline, it is common to err on the side of a shore-bound site location unless there is strong evidence to suggest otherwise. This is for example common in survey projects, which can be guided by a both a digital and mental reconstruction of past sea level. Following an excavation, the most common way to evaluate whether or not a site would have been shorebound is typically through an evaluation of typological indicators in the assemblages and its correspondence with available shoreline displacement curves. If this corresponds then it is common to assume a shore bound site location, even if the time-span of the dates provided by the typological indicators are too wide to decisively verify this.
+Based on the generally accepted premise that most Stone Age sites located lower than the marine limit were situated on or close to the contemporaneous shoreline, it is common to err on the side of a shore-bound site location unless there is strong evidence to suggest otherwise. This is for example common in survey projects, which are often guided by a both a digital and mental reconstruction of past sea levels. Following an excavation, the most common way to evaluate whether or not a site would have been shorebound is typically through an evaluation of typological indicators in the assemblages and its correspondence with available shoreline displacement curves. If this corresponds then it is common to assume a shore bound site location, even if the time-span of the dates provided by the typological indicators are too wide to decisively verify this.
 
-Another line of reasoning has been to combine these approaches with a qualitative consideration of the landscape surrounding the sites, and an evaluation of the degree to which the site location would have been sensible if the site was not shore bound [e.g. @jaksland2014]. This can for example pertain to accessibility. If the site is situated on a ledge in a steep and jagged area of the present day landscape, or if would have been located on an island, it would make intuitive sense that the site was used when the ocean reached close to its elevation, which would then have made the site accessible by means of watercraft. The evaluation of the degree to which sites were shore-bound is therefore typically conducted on a site-by-site or project-by-project basis, meaning the fundamental basis for assuming shore bound site location is largely based on a mosaic of smaller scale investigations. Although it appears that the arguments for such site locations is sensible, few attempts at a comprehensive evaluation and quantification of this tendency has been done.
+Another line of reasoning has been to combine these approaches with a qualitative consideration of the landscape surrounding the sites, and an evaluation of the degree to which the site location would have been sensible if the site was not shore bound [e.g. @jaksland2014]. This can for example pertain to accessibility. If the site is situated on a ledge in a steep and jagged area of the present day landscape, or if it would have been located on an island when the sea level was higher, it would make intuitive sense that the site was used when the ocean reached close to its elevation, as this would have made the site accessible by means of watercraft. The evaluation of the degree to which sites were shore-bound is therefore typically conducted on a site-by-site or project-by-project basis, meaning the fundamental basis for assuming shore bound site location is largely based on a mosaic of smaller scale investigations. Although it appears that the arguments for such site locations is sensible, few attempts at a comprehensive evaluation and quantification of this tendency has been done.
 
-Previous evaluations of the correspondence between dates informed by radiocarbon dates and shoreline dating have typically involved a visual inspection of radiocarbon probability distributions plotted against local shoreline displacement curves based on the site elevation [e.g. @breivik2018; @solheim2020; @åstveit2018\]. This approach has a couple of limitations. First of all, only a couple of studies have taken the variable uplift-rates into account when performing this comparison \[@fossum2020\]. Secondly, following this method, the wider the uncertainty range associated with either radiocarbon- or shoreline date, the higher the probability that the confidence intervals overlap, and the higher the probability that we conclude in favour of our hypothesis. While two overlapping confidence intervals means that one cannot conclude that the dates are different, this does not necessarily mean that they are the same. The question thus necessitates a flip from a null-hypothesis of no signficant difference to one of equivalence, as the question of interest in this case is effectively one of synchroneity \[cf. @parnell2008]. Another limitation of this often employed method is that it only takes into account the vertical distance between the sites and the shoreline. While this is the main parameter of interest for shoreline dating, the practical implications of a vertical difference in elevation will be highly dependent on local topography and bathymetry.
+One of the larger evaluations of this relationship has been done by Solheim and colleagues (@breivik2018; @solheim2020), who compared 102 radiocarbon dates from 29 Mesolithic sites on the western side of the Oslo fjord to the displacement curve for the Larvik area---data that are also included in this study. They found a overlap between the probability distribution of the radiocarbon dates with the shoreline displacement curve for 86.5 % of the sites. However, in the cases where there was a discrepancy, the original . As was exemplified in Solheims study, and which has been convincingly argued in several individual studies, many of the sites where there is a mismatch between the radiocarbon dates and the shoreline dates, the typological indicators in the assemblages are clearly unrelated to the radiocarbon dates. Whether these mismatches represent later shorter visits responsible for the younger radiocarbon dates, or whether they are entirely erroneous results of contamination can be difficult to evaluate, and will here be entirely dependent on the discretion of the original excavation report.
+
+While such evaluations can be difficult, it is nonetheless a necessity that will be held strictly separate from the formal equivalence tests in the analysis to follow.
+
+Previous evaluations of the correspondence between dates informed by radiocarbon dates and shoreline dating have typically followed the same structure as that of @breivik2018, involving a visual inspection of radiocarbon probability distributions plotted against local shoreline displacement curves based on the elevation of the site [e.g. @solheim2020; @åstveit2018]. This approach has a couple of limitations. First of all, the displacement curves are commonly applied directly to larger study areas, with only a couple of studies having taken the variable uplift-rates into account when performing this comparison [e.g. @møller1987; @fossum2020]. Secondly, with this method, the wider the uncertainty range associated with either radiocarbon date or displacement curve, the higher the probability that the confidence intervals overlap, and the higher the probability that we conclude in favour of our hypothesis. This thus leads to an inferential framework that favours uncertainty, which is hardly desirable. In statistical terms this follows from the fact that while one cannot conclude that two dates are different if their confidence intervals overlap, this does not necessarily mean that they are the same. The question thus necessitates a flip from a null-hypothesis of no significant difference, to one of equivalence [e.g. @lakens2018], as the question of interest is effectively one of synchroneity between events [cf. @parnell2008]. Another limitation of this often employed method is that it only takes into account the vertical distance between the sites and the sea level. While this is the main parameter of interest for shoreline dating, the practical implications of a vertical difference in RSL will be highly dependent on local topography and bathymetry. RSL-change can have more dramatic consequences in a landscape characterised by a low relief, as the horisontal displacement of the shoreline will be greater. Taking the spatial nature of the relationship between site and shoreline into account will consequently help get more directly at the behavioural dimension of the relation between site and shore line, and move the analysis beyond a purely instrumental consideration of the applicability of shoreline dating. Suggested ways to help mitigate and integrate the issues presented above into to the analysis are presented in the methods section.
 
 In the case that radiocarbon dates of site features are available, this is typically evaluated by means of a visual evaluation of the overlap between shoreline displacement curves and the radiocarbon probability distributions.
 
-One of the only larger scale evaulations of this relationship in Norwegian archaeology has been done by Solheim and colleagues (@solheim20, see also @solheim2020), who compared 102 radiocarbon dates from 29 Mesolithic sites on the western side of the Oslo fjord to the displacement curve for the Larvik area. They found a overlap between the probability distribution of the radiocarbon dates with the shoreline displacement curve for 86.5 % of the sites. However, in several of the cases where there was a discrepancy, the. As was exemplified in Solheims study, and which has been convincingly argued in several individual studies, many of the sites where there is a mismatch between the radiocarbon dates and the shoreline dates, the assemblages are clearly related to the shoreline date rather than the radiocarbon dates. Whether these mismatches represent later shorter visits responsible for the younger radiocarbon dates or whether they are the result of contaminated samples can be difficult to evaluate and will here be entirely dependent on the discretion of the original excavation report. While such evaluations can be difficult, it is nonetheless a necessity that will be held strictly separate from the formal equivalence tests in the analysis to follow.
+Given that the aim of this study is to test whether or not there is a match between dates provided by means of shoreline displacement curves and 14C-dates, it is appropriate to evaluate this relationship by means of statistical equivalence tests. This effectively shifts the common direction of the null-hypothesis, giving H0: The date given by means of radiocarbon dating and by shoreline displacement are different. Ha: The date given by means of radiocarbon dating and by shoreline displacement are the same. While this consitutes the formal dimension of the study, there must necessarily also be a qualitative and more subjectivly driven dimension as well.
 
-Given that the aim of this study is to test whether or not there is a match between dates provided by means of shoreline displaceent curves and radiocarbon dates, it is appropriate to evaulate this relationship by means of statistical equivalence tests. This effectively shifts the common direction of the null-hypothesis, giving H0: The date given by means of radiocarbon dating and by shoreline displacement are different. Ha: The date given by means of radiocarbon dating and by shoreline displacement are the same. While this consitutes the formal dimension of the study, there must necessarily also be a qualitative and more subjectivly driven dimension as well.
-
-This study necessaitated the compilation of multiple relative sea-level curves developed for different parts of the region. Most of the curves come provided with a confidence interval which is largely based on an evaluation by the geologists who developed the curve. The reason why these confidence intervals are not strictly mathematically derived is that the curves do not only contain uncertainy as related to radiometric dates, which are fairly well understood, but also hold potential error as related to the interpretation of sediment cores, placement of samples, as well as direction and adjustment to a common isobase based on the direction and gradient in rebound intensity, to name but a few. The error bands are consequently complex, and cannot necessarily be directly compared between curves as these have been developed at different times, using a wide range of different methods. However, any reinterpretation and standardisation of the curves is also hampered by a range of issues. The original data or necessary details about the sampling processes are not always available, and a reinterpretation based soley on radiometric dates, without taking into account the considerations and evaluations of the field geologists can be entirely misleading. In a rudimentary attempt to account for these differences when compiling the curves, the width of the confidence band for the sea level at a single date across the entire region is given as the largerst uncertainty of any one of the curves at that point in time. This averages to an uncertainty of +/- calendar years. This uncertainty is uniformly distributed within the confidence band.
+cannot necessarily be directly compared between curves as these have been developed at different times, using a wide range of different methods. However, any reinterpretation and standardisation of the curves is also hampered by a range of issues. The original data or necessary details about the sampling processes are not always available, and a reinterpretation based soley on radiometric dates, without taking into account the considerations and evaluations of the field geologists can be entirely misleading. In a rudimentary attempt to account for these differences when compiling the curves, the width of the confidence band for the sea level at a single date across the entire region is given as the largerst uncertainty of any one of the curves at that point in time. This averages to an uncertainty of +/- calendar years. This uncertainty is uniformly distributed within the confidence band.
 
 # Data
 
-All data that are required to run the analyses and the derived data are freely available in an online repository. The dataset is slightly more extensive, including excavated sites without radiocarbon dates, and radiocarbon dates to periods other than the Stone Age.
+All data and R programming code [@rcoreteam2021] required to run the analyses, as well as the derived data are freely available in an online repository at <https://osf.io/7f9su/>, organised as a digital research compendium following @marwick2018. The dataset is slightly more extensive than what is directly utilised in the study, and includes excavated sites without ^14^C-dates, as well as ^14^C-dates to periods other than the Stone Age.
 
-The data compiled for the analysis consists of all excavated Stone Age sites from the region between Horten county in the north-east, to Arendal in the south-west. These number a total nrow() sites, of which nrow() have radiocarbon dates. Of these, in turn, nrow() sites have radiocarbon dates to the Stone Age. Spatial data in the form of features and site limits as defined by the excavating archaeologists was retrieved from local databases at the Museum of Cultural History. Each radiocarbon date has been associated with site features or, where these weren't available, the spatial limit of the entire site. Due to somewhat variable practices between excavations, what spatial geometry best represents the site limit was decided based on an evaluation of the excavation reports. This means that the limits are variably given as area de-turfed before excavation, area stripped with excavator following the excavation, manually excavated area, or convex hulls generated around the site features.
+To get at the relationship between sites and contemporaneous shoreline, the analysis is dependent on a study area with good control of the trajectory of prehistoric shoreline displacement. While there is displacement data available for other areas of south eastern Norway [e.g. @hafsten1957; @sørensen1979; @sørensen1999], considerable methodological developments in recent years means that the most well-established displacement curves are from the region stretching from Halden county in the north-east, to Arendal in the south-west. This area has newly compiled displacement curves for Skoppum in Halden [@romundset2021], Larvik [@sørensen2014; @sørensen2014b], Hanto in Tvedestrand [@romundset2018; @romundset2018b], and Bjørnebu in Arendal [@romundset2018b].
+
+The employed shoreline displacement curves are all based on the so-called isolation basin method, which represents an extremely precise method compared to other [@romundset2019]. This involves extracting cores from a series of basins situated on bedrock in a constrained area of the landscape, and dating the transition from marine to lacustrine . Each curve is thus construed from a series of cored basins located at different elevations, each representing a sea-level index point. The reason why these confidence intervals are not strictly mathematically derived is that the curves do not only contain uncertainty as related to radiometric dates, which are well understood, but also hold potential error as related to the interpretation and analysis of sediment cores, the nature and condition of the basin outlets, the adjustment to a common isobase based on the direction and gradient in rebound intensity, to name but a few [e.g. @romundset2010]. The error bands and their trajectory are consequently quite complex constructs, and are the integrated result of both expert knowledge and more objectively quantifiable parameters. For more details and evaluations done for the compilation of each curve, the reader is therefore referred to the individual publications (see above).
+
+The archaeological data compiled for the analysis consists of all excavated Stone Age sites with available spatial data from the coastal region between Horten county in the north-east, to Arendal in the south-west (Figure \@ref(fig:map-iso)). These number a total `r nrow(sites)` sites, of which `r length(unique(rcarbon$site_name))` sites are associated with the total of `r nrow(rcarbon)` radiocarbon dates. Of these, in turn, `r nrow(sites_sa)` sites are related to the `r nrow(rcarb_sa)` radiocarbon dates that fall within the Stone Age (9500--1700 BCE) with 95 % probability. These sites form the basis for the analysis. Spatial data in the form of site limits and features, as defined by the excavating archaeologists, were retrieved from local databases at the Museum of Cultural History---the institution responsible for archaeological excavations in the region. In the compiled dataset, each radiocarbon date has been associated with the site features or excavation unit from where they originate, or, where these weren't available, the spatial limit of the entire site. Due to somewhat variable practices between excavations, what available spatial geometry best represents the site limit was decided based on an evaluation of the excavation reports. This means that the limits are variably given as area de-turfed before excavation, area stripped with excavator following the excavation, manually excavated area, or convex hull polygons generated around the site features.
+
+```{r map-iso,  fig.cap = "A) Distribution of the 70 analysed sites relative to the isobases of the displacement curves, B) Displacement curves. Note the higher  steepness of the curves that are situated towards the north-east.", fig.height = 13}
+bboxsites <- st_bbox(sites_sa)
+bboxsites[1] <- bboxsites[1] - 15000
+bboxsites[3] <- bboxsites[3] + 15000
+bboxsites[2] <- bboxsites[2] - 5000
+bboxsites[4] <- bboxsites[4] + 5000
+bboxsitespoly <- st_as_sf(st_as_sfc(bboxsites))
+
+bound_reproj <- st_transform(bboxsitespoly, st_crs(bmap))
+bmap2 <- bmap %>%
+    filter(st_intersects(., bound_reproj, sparse = FALSE))
+bmap_reproj <- st_transform(bmap2, st_crs(sites_sa))
+
+anc <- as.numeric(c(bboxsites$ymin, bboxsites$xmax))
+overview_map <- ggplot() +
+  geom_sf(data = bmap_reproj, fill = "grey", colour = NA) +
+  geom_sf(data = isobases, aes(colour = name)) +
+  geom_sf(data = st_centroid(sites_sa), fill = "red",
+          size = 2.25, shape = 21,
+          colour = "black") +
+  ggsn::scalebar(data = sites_sa, dist = 20, dist_unit = "km",
+                 transform = FALSE, st.size = 4, height = 0.02,
+                 border.size = 0.1, st.dist = 0.03,
+                 anchor = c(x = anc[2] - 15500, y = anc[1]) + 8000) +
+  coord_sf(xlim = c(bboxsites[1], bboxsites[3]),
+           ylim = c(bboxsites[2], bboxsites[4]),
+           expand = FALSE) +
+  scale_colour_manual(values = c("Arendal" = "black",
+                                   "Larvik" = "darkgreen",
+                                   "Tvedestrand" = "blue",
+                                   "Halden" = 'red')) +
+  theme_bw() + theme(axis.title=element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.text.x = element_blank(),
+                     rect = element_rect(),
+                     axis.ticks = element_blank(),
+                     panel.grid.major = element_blank(),
+                     legend.position = "none") 
+
+disp_curves <- ggplot(displacement_curves, aes(x = years, col = name)) +
+  geom_line(aes(y =  upperelev)) +
+  geom_line(aes(y = lowerelev)) +
+  ylab("Meters above present sea level") +
+  xlab("cal BCE/CE") +
+  scale_colour_manual(values = c("Arendal" = "black",
+                                   "Larvik" = "darkgreen",
+                                   "Tvedestrand" = "blue",
+                                   "Halden" = 'red')) +
+  theme_bw() +
+  theme(legend.title = element_blank(), legend.position = "bottom",
+        legend.direction = "horizontal")
+
+
+overview_map / disp_curves
+```
 
 # Methods
 
 The goal of this study is effectively to evaluate the spatial relationship between two phenomena, sites and shore-lines, each associated with their own range of temporal uncertainty. The first task was therefore to ascribe likely date ranges and associated uncertainty to the two phenomena.
 
-Due to the dsfg there is a gradient in the rate of isostatic rebound, with increasing rebound rates towards the north-east. To take account of this, the shoreline displacement curves were adjusted to each site location by taking into account the distance to the closest isobase. This was done by first finding the difference between the elevation values of the two closest displacement curves for each year along the entirety of the curves. Each value was then divided by the meter distance between the isobases. To find the adjusted displacement curve for a given site location, the distance between the site polygon and closest isobase was multiplied with the values for difference per meter. If the site is located south-west of the closest isobase, the elevation values were then subtracted from the original displacement curve, and if the site is located to the north-east, the values were instead added to the original curve. The result of this process is shown for an example site in .
+Due to the dsfg there is a gradient in the rate of isostatic rebound, with increasing rebound rates towards the north-east. To take account of this, the shoreline displacement curves were adjusted to each site location by taking into account the distance to the closest isobase. This was done by first finding the difference between the elevation values of the two closest displacement curves for each year along the entirety of the curves. Each value was then divided by the distance between the isobases. To find the adjusted displacement curve for a given site location, the distance between the site polygon and closest isobase was multiplied with the values for difference per meter. If the site is located south-west of the closest isobase, the elevation values were then subtracted from the original displacement curve, and if the site is located to the north-east, the values were instead added to the original curve. The result of this process is shown for an example site in .
 
-For the date ranges associated with the sites, all radiocarbon dates were first individually calibrated using the IntCal20 calibration curve using OxCal v. . All dates not younger than 1700 BCE with 99.7 % probability were then excluded from further analysis. Radiocarbon dates associated with each site were then grouped if they overlapped with 99.7 % probability, meaning these were effectively taken to represent the same settlement phase. In the case were there are multiple dates believed to belong to a single phase, these were subjected to Bayesian modelling using the Boundary function in OxCal. Multiple phases at a single site were treated as independent of each other (Figure x).
+For the date ranges associated with the sites, all radiocarbon dates were first individually calibrated using the IntCal20 calibration curve [@reimer2020] using OxCal v. [@bronkramsey2009] through the oxAAR package for R. All dates not older than 1700 BCE with 99.7 % probability were then excluded from further analysis. Radiocarbon dates associated with each site were then grouped if they overlapped with 99.7 % probability, meaning these were effectively taken to represent the same settlement phase. In the case were there are multiple dates believed to belong to a single phase, these were subjected to Bayesian modelling using the Boundary function in OxCal. Multiple phases at a single site were treated as independent of each other (Figure x).
 
-As the excavation of archaeological sites typically follow from residential and commercial development, and the expansion of infrastructure, the area immediately surrounding the sites have sometimes been severely impacted by modern disturbances. In addition to employing 10 m resolution DTM to alleviate some of these issues, this also necessitated some additional editing of the elevation raster. This involved manually defining the extent of problem areas such as railways, highways, quarries and the like. The DTM values on these were then set to missing, and new elevation values were interpolated from the surrounding terrain. This was done using regularised spline interpolation with tension, using the default settings of r.fillnulls from GRASS GIS in R through the package rgrass7. In addition to code and original spatial data being available in the research compendium for this paper, it has also been noted in the supplementary material when the area surrounding a site has been edited in this manner.
+As the excavation of archaeological sites typically follow from residential and commercial development, as well as the expansion of infrastructure, the area immediately surrounding the sites have sometimes been severely impacted by modern disturbances. In addition to employing 10 m resolution DTM to alleviate some of these issues, this also necessitated some additional editing of the elevation raster. This involved manually defining the extent of problem areas such as railways, highways, quarries and the like. The DTM values on these were then set to missing, and new elevation values were interpolated from the surrounding terrain. This was done using regularised spline interpolation with tension, using the default settings of r.fillnulls from GRASS GIS in R through the package rgrass7 [@bivand2021]. In addition to code and original spatial data being available in the research compendium for this paper, it has also been noted in the supplementary material when the area surrounding a site has been edited in this manner.
 
-Armed with a likely date range for the occupation(s) of each site, an estimated trajectory of relative sea-level change at that location, and an DTM edited to remove substantial modern disturbances, the simulations were performed. A single simulation run involved first drawing a single year from the posterior density estimate of a given occupation phase of a site. This year then has a corresponding likely elevation range for the contemporaneous shoreline. An elevation value was then drawn uniformly from this range, using intervals of 5 cm. The sea-level was then raised to this elevation on the DTM by defining all elevation values at or below this altitude as missing. Polygons were then created from the resulting areas with missing values. The horisontal distance was then found by measuring the shortest distance between site and sea polygons, and the vertical distance by subtracting the elevation of the sea level from the lowest elevation of the site polygon. The topographic distance between site and sea was also found by measuring the shortest distance while taking into account the slope of the terrain on the DTM. This was done using a topoDist package for R. The topographic distance was measured between site polygon and the point on the shoreline found to be horisontally closest. The shortest path was found using the Queen's case neighbourhood of eight cells. In the case where the sea-polygons intersects the site polygon, all distance measures were set to zero. In the case that the sea-polygon completely contain the site, the horisontal and topographic distance measures were made negative. While its safe to assume that an archaeological site was not occupied when it was located beneath sea level, a negative result can reflect the inherent uncertainty in this procedure, and might also help identify discrepancies in displacement data or radiocarbon dates. Negative values where therefore retained.
+Armed with a likely date range for the occupation(s) of each site, an estimated trajectory of relative sea-level change at that location, and an DTM edited to remove substantial modern disturbances, the simulations were performed. A single simulation run involved first drawing a single year from the posterior density estimate of a given occupation phase of a site. This year then has a corresponding likely elevation range for the contemporaneous shoreline. An elevation value was then drawn uniformly from this range, using intervals of 5 cm. The sea-level was then raised to this elevation on the DTM by defining all elevation values at or below this altitude as missing. Polygons were then created from the resulting areas with missing values. The horisontal distance was then found by measuring the shortest distance between site and sea polygons, and the vertical distance by subtracting the elevation of the sea level from the lowest elevation of the site polygon. The topographic distance between site and sea was also found by measuring the shortest distance while taking into account the slope of the terrain on the DTM. This was done using the topoDistance package for R. The topographic distance was measured between site polygon and the point on the shoreline found to be closest measured horisontally. The shortest topographic path was found using the Queen's case neighbourhood of eight cells. In the case where the sea-polygons intersects the site polygon, all distance measures were set to zero. In the case that the sea-polygon completely contain the site, the horisontal and topographic distance measures were made negative, and the vertical distance was instead measured to the highest point on the site polygon. While it is safe to assume that an archaeological site was not occupied when it was located beneath sea level, a negative result can reflect the inherent uncertainty in this procedure, and might also help identify discrepancies in displacement data or radiocarbon dates. Negative values where therefore retained unless otherwise stated.
 
 Some sources of likely variation and uncertainty have not been considered here. First of all the DTM has only been corrected for major modern disturbances. This means that erosion, although likely not that prevalent, have not been taken into account. Secondly, the DTM has a vertical error of. Thirdly, the tidal range has not been considered. This is around 0.5 m within the study area today, and there is no reason to think this was substantially different in the past. Fourthly, the exposure of the sites to wave action is also likely to have been of concern, and will presumably have implications for how close to the shoreline people settled.
 
-\
 This process was repeated 1000 times for each phase for each site. The choice of 1000 simulation runs follows from an evaluation of when the mean distances between site and shoreline converged when running 5000 iterations on the example site Hovland 5, which has a uncertain date range and is located in area of quite complex topography. At 1000 simulation runs the analysis of each site ranged from hours, depending on the distance to the simulated shorelines and consequently the necessary size of the window of analysis.
 
 The distances were then measured.
@@ -106,17 +187,330 @@ The occupation of a site and shifting sea-levels. The synchroneity of these proc
 
 Here the approach was only used to inform the question of the distance between sites and shorelines, but this method can also be extended to a wide range of use-cases where one needs to visualise as well as quantitatively or qualitatively evaluate the relationship between archaeological phenomena, the prehistoric shore line, and the uncertainty inherent in this reconstruction.
 
-```{r get-data, eval = FALSE}
-my_data <- read.csv(here::here('analysis/data/raw_data/my_csv_file.csv'))
+```{r example-site, fig.show='hide'}
+
+# Assign closest isobases to site data.
+sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
+                    join = st_intersects, largest = TRUE)
+
+# Specify site name
+sitename <- "Hegna vest 1"
+
+# Group dates that overlap with 99.7 % probability using the group_dates()
+# function. All functions in this chunk where package isnt specified are defined 
+# in 04script.R
+date_groups <- group_dates(rcarb_sa, sitename)
+
+# Retrieve site limit and site features
+siter <- dplyr::filter(rcarb_sa, site_name == sitename)
+sitel <- dplyr::filter(sites_sa, name == sitename)
+
+# Creating bounding box at 400 meters
+location_bbox <- bboxpoly(sitel, 400)
+
+# Clip DTM with the bbox
+sitearea <- terra::crop(dtm, location_bbox)
+
+# Model dates using the Boundary function
+datedat <- model_dates(sitedates = siter, date_groups = date_groups)
+
+# Find local displacement curve
+sitecurve <- interpolate_curve(years = xvals,
+                                 isobase1 = sitel$isobase1,
+                                 isobase2 = sitel$isobase2,
+                                 target = sitel,
+                                 dispdat = displacement_curves,
+                                 isodat = isobases,
+                                 direction_rel_curve1 = sitel$dir_rel_1)
+# Add site name
+sitecurve$name <- sitename
+
+# Plot of dates
+date_plot <- plot_dates(datedat, sitename, title = FALSE)
+site_map <- site_plot(sitearea, sitel, 150, date_groups,
+                      s_tdist = 0.5, s_xpos = 175,
+                       s_ypos = 85,  s_bheight = 0.3, s_tsize = 3)
+overview_map <- overview_plot(bmap, sitel, sites_sa, isobases,
+                               os_tdist = 0.03, os_xpos = 20000, os_ypos = 8000,
+                               os_bheight = 0.02, os_tsize = 3)
+
+dispdata <- filter(displacement_curves, name %in% c("Larvik", "Tvedestrand"))
+
+curve_plot <- ggplot() + 
+              geom_line(data = dispdata, 
+                        aes(x = years, y = upperelev, col = name)) +
+  geom_line(data = dispdata, 
+                        aes(x = years, y = lowerelev, col = name)) +
+  geom_line(data = sitecurve,
+            aes(x = years, y = upperelev, col = name)) +
+  geom_line(data = sitecurve,
+            aes(x = years, y = lowerelev, col = name)) +
+  scale_colour_manual(values = c("Larvik" = "darkgreen",
+                                  "Tvedestrand" = "blue",
+                                 "Hegna vest 1" = "hotpink2")) +
+  ylab("Meters above present sea level") +
+  xlab("Cal BCE/CE") +
+  theme_bw() +
+  theme(legend.title = element_blank(), legend.position = "bottom",
+        legend.direction = "horizontal")
+
+
+plt <- (site_map + date_plot) /
+(overview_map + curve_plot) +
+  plot_annotation(tag_levels = 'A')
+
+# It was easier to get correct dimensions by saving and then 
+ggsave(file = here("analysis/figures/example_map.png"), plot = plt, width = 250,
+       height = 76 + (76 * length(unique(date_groups))),
+       units = "mm")
+
 ```
 
-```{r demo-plot, fig.cap="A plot of random numbers"}
-plot(rnorm(10))
+```{r example-1, echo = FALSE, fig.cap = "Example site Hegna vest 1. A) Location of the site in the present day landscape. The red outline is the site limit. B) Radiocarbon dates associated with the site. Fill colour indicates what dates are assumed to belong to the same settlement phase. Multiple dates are modelled using the Boundary function in OxCal and then summed. The red outline indicates that the date does not match the typological indicators in the artefact assemblage of the site. C) The location of the site within the study area relative to isobases of the employed displacement curves. D) Displacement curve interpolated to the site location based on the distance between the site and the isobases of the two closest displacement curves.", out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/example_map.png"))
 ```
 
-```{r demo-inline-code}
-x <- round(pi, 2)
+```{r example-site-cont2, fig.show='hide'}
+set.seed(1)
+
+# Retrieve example date to be used. The posterior sum of date group 1
+posteriorprobs <- filter(datedat, group == 1 & class == "sum")
+
+# Set up to sample a single year
+samplingframe <- list(x = posteriorprobs[["dates"]],
+                      y = posteriorprobs[["probabilities"]])
+
+# Draw a single year
+sdate <- round(with(samplingframe, sample(x, size = 1, prob = y)))
+
+# Create plot showing the year drawn from the posterior sum
+datsamp <- ggplot(posteriorprobs) +
+  ggridges::geom_ridgeline(aes(x = dates, y = name,
+                               height = probabilities * 50),
+                           fill = "lightgrey") +
+  # Create segment to indicate which year was drawn
+  geom_segment(aes(x = sdate, xend = sdate, y = as.numeric(as.factor(name)),
+                   yend = as.numeric(as.factor(name)) +
+                     (posteriorprobs[round(dates) == sdate,
+                                     "probabilities"]) * 50),
+               colour = "red") +
+  labs(x = "cal BCE")  +
+  #scale_y_discrete(expand = c(0.01, 0)) +
+  theme_bw() + theme(
+    legend.position = "none",
+    panel.border = element_blank(),
+    axis.line = element_line("black"),
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  scale_x_continuous(breaks = sort(c(-8200, -8000, sdate, -7600)))
+
+# Find upper and lower shoreline elevation at sdate
+uppers <- round(approx(sitecurve[,"years"], sitecurve[,"upperelev"],
+                       xout = sdate)[["y"]], 1)
+lowers <- round(approx(sitecurve[,"years"], sitecurve[,"lowerelev"],
+                       xout = sdate)[["y"]], 1)
+
+# Draw sealevel uniformly from elevation range, intervals of 5 cm
+sealevel <- sample(seq(lowers, uppers, 0.05), 1)
+
+# Plot the drawn elevation
+elevsamp <- ggplot(sitecurve, aes(x = years)) +
+  geom_line(aes(y =  upperelev), colour = "hotpink2") +
+  geom_line(aes(y = lowerelev), colour = "hotpink2") +
+  ylab("Meters above present sea level") +
+  xlab("cal BCE/CE") +
+  theme_bw() +
+  theme(legend.title = element_blank(), legend.position = "bottom",
+        legend.direction = "horizontal") +
+  geom_segment(aes(x = sdate, xend = sdate, y = uppers,
+                                           yend = -Inf), col = "black",
+               linetype = "solid") +
+  geom_segment(aes(x = -Inf, xend = sdate, y = uppers,
+                   yend = uppers), col = "black", size = 0.25) +
+  geom_segment(aes(x = -Inf, xend = sdate, y = lowers,
+                   yend = lowers), col = "black", size = 0.25) +
+  geom_segment(aes(x = -Inf, xend = sdate, y = lowers,
+                   yend = lowers), col = "black", size = 0.25) +
+  geom_segment(aes(x = -Inf, xend = sdate, y = sealevel,
+                   yend = sealevel), col = "red", size = 0.25,
+               linetype = "dashed") +
+  annotate("text", x = -8700, y = uppers + 2, label = as.character(uppers)) +
+  annotate("text", x = -8700, y = lowers - 2, label = as.character(lowers)) +
+  scale_x_continuous(breaks = sort(c(-9000, sdate, -6000, -3000, 0))) +
+  scale_y_continuous(breaks = sort(c(0, sealevel, 100)))
+
+# Adjust sea level on DTM
+rclmat <- matrix(c(sealevel, Inf, NA, 0, sealevel, 1),
+                 ncol = 3, byrow = TRUE)
+classarea <- terra::classify(sitearea, rclmat)
+seapoly <- st_combine(st_as_sf(terra::as.polygons(classarea)))
+
+
+# Retrieve lowest elevation on polygon
+siteelev <- extract(sitearea, vect(sitel), fun = min)[2]
+# Find difference to sea-level elevation
+vertdist <-  min(siteelev[1:nrow(siteelev),]) - sealevel
+
+# Find the nearest points on the site- and seapolygons,
+distline <- st_nearest_points(sitel, seapoly)
+
+# Retrieve the two points
+distpts <- st_cast(distline, "POINT")
+
+# Find topographic distance
+coords <- rbind(st_coordinates(distpts[1]),
+                st_coordinates(distpts[2]))
+rownames(coords) <- c("loc", "sea")
+
+# Find topographic distance (retrieve path)
+topodist <- topoDist(raster::raster(sitearea), coords,
+                     paths = TRUE)
+# Store distance
+tdist <- topodist[[1]]["loc", "sea"]
+
+# Retrieve path
+tpath <- st_as_sf(topodist[[2]])
+
+# Find end-points
+endptns <- st_line_sample(tpath, sample = c(0, 1))
+
+# Cast as line
+hordistl <- st_cast(endptns, "LINESTRING")
+
+# Find horisontal distance
+hordist <- st_length(hordistl)
+
+# Create label for map
+dist_label <- paste0("Horisontal distance = ", round(hordist, 1), "m", 
+                "\nTopographic distance = ", round(tdist, 1), "m",
+                "\nVertical distance = ", round(vertdist, 1), "m")
+
+# Anchor for scale bar
+anc <- as.numeric(c(st_bbox(location_bbox)$ymin, st_bbox(location_bbox)$xmax))
+
+# Create plot showing single simulation of sea level
+seasamp <- ggplot() +
+  geom_sf(data = seapoly, fill = "grey", colour = NA) +
+  geom_sf(data = sitel, fill = NA, colour = "red") +
+  #labs(title =  paste0("Sealevel at ", sealevel, " m above present")) +
+  coord_sf(xlim = c(st_bbox(location_bbox)[1], st_bbox(location_bbox)[3]),
+           ylim = c(st_bbox(location_bbox)[2], st_bbox(location_bbox)[4]),
+           expand = FALSE) +
+  ggsn::scalebar(data = sitel, dist = 150, dist_unit = "m",
+                 transform = FALSE, st.size = 3, height = 0.3,
+                 border.size = 0.1, st.dist = 0.5,
+                 anchor = c(x = anc[2] - 500, y = anc[1] + 800)) +
+  # Uncomment to annotate with distance measures
+  # annotate("text", x = st_bbox(location_bbox)[1] + 20,
+  #          y = st_bbox(location_bbox)[4] - 100,
+  #          label = dist_label, hjust = 0) +
+  theme_bw() + theme(axis.title=element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.text.x = element_blank(),
+                     rect = element_rect(),
+                     axis.ticks = element_blank(),
+                     panel.grid.major = element_blank(),
+                     legend.position = "none")
+
+anot <- ggplot() +
+  theme_bw() +
+  annotate("text", x = 0,  y = 0, label = dist_label,
+           hjust = 0.5, size = 7)
+
+simplot <- (datsamp + elevsamp) / 
+  (seasamp + anot) + plot_annotation(tag_levels = 'A')
+
+ggsave(file = here("analysis/figures/example_sim_map.png"), plot = simplot, 
+       width = 300, height = 76 + (76 * 2),
+       units = "mm")
+
 ```
+
+```{r example-2, echo = FALSE, fig.cap = "Example of a single simulation run on the site Hegna vest 1. A) The simulation starts by drawing a single year from the posterior density esimate.  B) This then corresponds to an elevation range on the interpolated displacement curve. A single elevation is drawn uniformly from this range using 5cm intervals. C) The sea level is then adjusted on the DTM to this elevation and the various distance mesaures are found. D) The numerical result of the simulation run.", out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/example_sim_map.png"))
+```
+
+```{r example-site-cont3}
+# Load results from running 1000 simulations
+load(here("analysis/data/derived_data/hegnavest1.RData"))
+
+dat1 <- datsamp <- ggplot(posteriorprobs) +
+  ggridges::geom_ridgeline(aes(x = dates, y = name,
+                               height = probabilities * 50),
+                           fill = "lightgrey") +
+  labs(x = "")  +
+  #scale_y_discrete(expand = c(0.01, 0)) +
+  theme_bw() + theme(
+    legend.position = "none",
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) 
+
+# Map of simulated sea-levels, date group 1
+simsea_plot1 <- shore_plot(output[[1]]$simsea, sitel, 150, date_groups,
+                      s_tdist = 0.5, s_xpos = 1300, s_ypos = 800,
+                      s_bheight = 0.3, s_tsize = 3)
+
+# Boxplot of distances from site to sea, date group 1
+simdist_plot1 <- distance_plot(output[[1]]$results)
+
+
+# Retrieve date group 2
+probsdat2 <- filter(datedat, group == 2 & class == "bposterior")
+
+dat2 <- ggplot(probsdat2) +
+  ggridges::geom_ridgeline(aes(x = dates, y = name,
+                                   height = probabilities * 50,
+                                   fill = as.factor(group),
+                                   alpha = class,
+                                   colour = as.factor(rcarb_cor))) +
+  labs(x = "cal BCE")  +
+  #scale_y_discrete(expand = c(0.01, 0)) +
+  theme_bw() + theme(
+    legend.position = "none",
+    axis.title.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+      scale_colour_manual(breaks = c("f", "t", NA),
+                         values = c("red", "black", "yellow")) +
+      scale_alpha_manual(values = c("aprior" = 0.05,
+                                    "bposterior" = 0.4,
+                                    "sum" = 1)) +
+  scale_fill_manual(
+      values = as.character(ggthemes_data$colorblind[2, 2]))
+
+
+
+# Plot of date group 2
+
+# Map of simulated sea-levels, date group 2
+simsea_plot2 <- shore_plot(output[[2]]$simsea, sitel, 150, date_groups,
+                      s_tdist = 0.5, s_xpos = 1300, s_ypos = 800,
+                      s_bheight = 0.3, s_tsize = 3)
+
+# Boxplot of distances from site to sea
+simdist_plot2 <- distance_plot(output[[2]]$results)
+
+simresultplot <- (dat1 + simsea_plot1 + simdist_plot1) /
+(dat2 + simsea_plot2 + simdist_plot2) 
+
+ggsave(file = here("analysis/figures/example_sim_result.png"),
+       plot = simresultplot,  width = 250, height = 76 + (76 * 2),
+       units = "mm")
+
+```
+
+
+```{r example-3, echo = FALSE, fig.cap = "The result of 1000 simulation runs for each of the two grops of dates on the site Hegna vest 1. The first column of plots shows the radiocarbon probability density estimate from where dates were drawn during simulation. The second column displays the result of simulating the raised sea-level 1000 times. The darker the colour, the more times the sea-level was simulated to that location. The third column shows violin plots of the different distance measures across all simulations.", out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/example_sim_result.png"))
+```
+
+
+```{r results, echo = FALSE, fig.cap = "The result of running the analysis across all sites. Each data point is plotted with some transparency, meaning that the darker the colour, the more often those values occured. The first row shows the result of including all dates the Stone Age, including those seen as otherwise  unrelated to the main occupation of the sites. The second row shows the result of excluding these. The table under each plot lists some corresponding measures for central tendency and dispersion.", out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/results.png"))
+```
+
 
 \newpage
 

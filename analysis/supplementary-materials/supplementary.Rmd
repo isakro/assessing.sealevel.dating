@@ -3,26 +3,375 @@ title: "Supplementary material"
 author: "Isak Roalkvam"
 date: "10/27/2021"
 output: pdf_document
+bibliography: references.bib
 ---
 
-This document includes some notes and shows the simulation results for each individual site analysed in the study. The first plot on the first row for each site shows all calibrated radiocarbon dates from the Stone Age associated with the site (see analysis/data/raw_data/radiocarbon.csv for all dates, including those falling outside of the Stone Age). The fill colour of the radiocarbon dates indicates whether they are interpreted as belonging to the same phase, and each sum indicates that the dates for a phase have been modelled using the Boundary function and then summed using OxCal. Each phase is assumed to be independent of other phases. A red outline indicates that the date(s) were not seen as related to the artefact inventory in the original report (see also main text). The second plot on the first row displays the site location in the present day landscape on the edited DTM (i.e. highways and railways impacting the adjusted sea-level have been removed, and elevation values are interpolated from the surroundings; see main text and analysis/script/03script.R). The third plot on the first row shows the site location within the study area relative to the isobases of the shoreline displacement curves in use.
+```{r,  echo = FALSE, results = 'hide'}
+library(here)
+
+```
+
+This document shows the simulation results for each individual site analysed in the study with some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order.
+
+The first figure shows the result of a test run for the site Hovland 5 where the simulations where run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving a wide uncertainty range, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
+
+```{r sample_size,  echo = FALSE, out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/sample_size.png"))
+
+```
+
+Below follows the presentation of the individual sites. The first plot on the first row for each site shows all calibrated radiocarbon dates from the Stone Age associated with the site (see analysis/data/raw_data/radiocarbon.csv for all dates, including those falling outside of the period). The fill colour of the radiocarbon dates indicates whether they are interpreted as belonging to the same phase, and each sum indicates that multiple dates for a phase have been modelled using the Boundary function and then summed using OxCal. Each phase is assumed to be independent of other phases. A red outline indicates that the date(s) were not seen as related to the artefact inventory in the original report. The second plot on the first row displays the site location in the present day landscape on the edited DTM (i.e. highways and railways impacting the adjusted sea-level have been removed, and elevation values are interpolated from the surroundings; see main text and analysis/script/03script.R). The third plot on the first row shows the site location within the study area relative to the isobases of the shoreline displacement curves in use.
 
 Subsequent rows for each site then show the simulation results. The first plot on these rows shows the probability density function from which site dates were drawn during simulation. The second plot shows the result of the simulation runs, where the intensity of the colour indicates the number of times the sea was simulated to be present at any given location. The third plot displays a violin plot of the measured distances between site and shore-line across all simulation runs. Measures for central tendency and dispersion associated with these are then given in the table.
 
-```{r anvik, include=FALSE}
+```{r adalvestre1,  echo = FALSE, out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/adalvestre1.png"))
 
 ```
 
-Anvik is situated by the highway and a smaller road. Neither appear to significantly impact the simulation results. The dated fireplace is not seen as related to lithic material, which is believed to hail from the latest part of the Early Mesolithc (c. 8500-8250 BCE).
+Adal vestre 1 is situated close to a field, but this does not appear to have resulted in any relevant changes to the terrain.
 
-```{r gunnarsrod4, include=FALSE}
-
-```
-
-Gunnarsrød 4 situated right by the railway (see also Gunnarsrød 5 below). The date was seen as possibly the result of old-wood effect, a notion that is in line with the simulation results here, as this date would have the site located beneath the sea-level.
-
-```{r gunnarsrod5, include=FALSE}
+```{r dalvestre2,  echo = FALSE, out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/adalvestre2.png"))
 
 ```
 
-Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated. While the interpolation appears to give reasonable results for the rest of the flatter marsh area where the railway runs today, the site itself would thus have been situated slightly higher, likely leading to the negative values on the distance measures. As the simulation results compared to the site map in the report [@reitan2014d], in combination indicate that the site would not have been situated any significant distance from the shoreline, the values have been set to zero for the final aggregative analysis. A note can also be made on the date that is seen as unrelated to the artefact inventory. This was done on charcoal from a pit with ceramics which had a far younger date. The date was therefore interpreted as the result of contamination of some kind [@reitan2014d].
+Adal vestre 2 as a similar location in the present day landscape to that of Adal vestre 1.
+
+```{r anvik,  echo = FALSE, out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/anvik.png"))
+
+```
+
+Anvik [@eymundsson2014a] is situated by the highway and a smaller road. Neither appear to impact the simulation results. The dated fireplace is not seen as related to lithic material, which is believed to hail from the latest part of the Early Mesolithc (c. 8500-8250 BCE).
+
+```{r bakke, echo = FALSE, out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/bakke.png"))
+
+
+```
+
+The radiocarbon date is seen as unrelated to the site inventory, which is distinctly Early Mesolithic in character [@nyland2012b].
+
+```{r dordal, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/dordal.png"))
+
+```
+
+The ^14^C-dates from two fireplaces at Dørdal are not related to the lithic inventory, where there are no typological indicators pointing the Late Mesolithic. The report suggest that the results might reflect a contamination through a natural process of some sort [@solheim2017].
+
+```{r dybdalshei1, echo = FALSE, out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/dybdalshei1.png"))
+
+```
+
+Dybdalshei 1 was subject to a very limited excavation [@granum2018], and the lack of data might therefore lead one to question whether or not the site actually represent a settlement area. Furthermore, what little lithic material was retrieved is too generic to offer any typological support to the radiocarbon dates of the dated cooking pits. Nonetheless, the site and the ^14^C-dates are still treated the same way as the other sites here. This is based on the spatial relation between the lithic artefacts and the features, which offers some additional support to the fact that the cooking pits do in fact represent remnants from visits in the Mesolithic.
+
+```{r dybdalshei2, echo = FALSE, out.width = "500px"}
+knitr::include_graphics(here("analysis/figures/dybdalshei2.png"))
+
+```
+
+The situation on Dybdalshei 2 is similar to that on Dybdalshei 1 [@granum2018], but with only a single date from a single feature and no lithics, the site is not included in the final results.
+
+```{r gunnarsrod4, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/gunnarsrod4.png"))
+
+```
+
+Gunnarsrød 4 situated right by the railway (see also Gunnarsrød 5 below). The date was seen as possibly the result of old-wood effect, a notion that is in line with the simulation results here, as this date would have the site located beneath the sea-level [@reitan2014k].
+
+```{r gunnarsrod5, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/gunnarsrod5.png"))
+
+```
+
+Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated [@reitan2014d],. While the editing and interpolation of the DTM appears to give reasonable results for the rest of the flatter marsh area where the railway runs today, the site itself would thus have been situated slightly higher, likely leading to the negative values on the distance measures. In combination the simulation results and the site map in the report indicate that the site would not have been situated any significant distance from the shoreline. The values have been set to zero for the final aggregative analysis. A note can also be made on the date that is seen as unrelated to the artefact inventory. This was done on charcoal from a pit with ceramics which had a far younger date. The date was therefore interpreted as the result of contamination of some kind.
+
+```{r gunnarsrod6a, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/gunnarsrod6a.png"))
+
+```
+
+The ^14^C-date is not related to the lithic inventory on the site [@carrasco2014].
+
+```{r gunnarsrod6b, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/gunnarsrod6b.png"))
+
+```
+
+```{r gunnarsrod7, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/gunnarsrod7.png"))
+
+```
+
+```{r gunnarsrod10, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/gunnarsrod10.png"))
+
+```
+
+```{r hegnavest1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hegnavest1.png"))
+```
+
+```{r hegnavest2, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hegnavest2.png"))
+```
+
+```{r hegnavest3, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hegnavest3.png"))
+```
+
+```{r hesthagc2, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hesthagc2.png"))
+```
+
+```{r hesthagc4, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hesthagc4.png"))
+```
+
+```{r hovland1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hovland1.png"))
+```
+
+```{r hovland3, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hovland3.png"))
+```
+
+```{r hovland4, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hovland4.png"))
+```
+
+```{r hovland5, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hovland5.png"))
+```
+
+```{r hydal4, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/hydal4.png"))
+```
+
+```{r krogenesd1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/krogenesd1.png"))
+```
+
+```{r krogenesd2, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/krogenesd2.png"))
+```
+
+```{r kvastada1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/kvastada1.png"))
+```
+
+```{r kvastada2, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/kvastada2.png"))
+```
+
+```{r kvastada4, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/kvastada4.png"))
+```
+
+```{r kvastada9, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/kvastada9.png"))
+```
+
+```{r langangenv1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/langangenv1.png"))
+```
+
+```{r langangenv3, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/langangenv3.png"))
+```
+
+```{r langangenv5, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/langangenv5.png"))
+```
+
+```{r langangenv6, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/langangenv6.png"))
+```
+
+```{r langangenv7, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/langangenv7.png"))
+```
+
+```{r langemyr, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/langemyr.png"))
+```
+
+```{r lovas1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/lovas1.png"))
+```
+
+```{r lovas2, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/lovas2.png"))
+```
+
+```{r lovas3, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/lovas3.png"))
+```
+
+```{r lunaveien, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/lunaveien.png"))
+```
+
+Lunaveien is a grave cairn site, and the report states that it is unlikely that any of the finds could relate to a settlement predating the construction of the cairn [@reitan2010]. The results have therefore been excluded from the aggregative analysis.
+
+```{r nauena, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/nauena.png"))
+```
+
+A section of the highway located a few hundred meters to the south was pre-emptively edited in the DTM. This does not appear to be relevant for the simulated sea-level.
+
+```{r nauenc, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/nauenc.png"))
+```
+
+```{r nordby1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/nordby1.png"))
+```
+
+```{r nordby52, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/nordby52.png"))
+```
+
+```{r pauler1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/pauler1.png"))
+```
+
+```{r pauler2, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/pauler2.png"))
+```
+
+```{r pjonkerodr1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/pjonkerodr1.png"))
+```
+
+```{r prestemoen1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/prestemoen1.png"))
+```
+
+```{r ragnhildrod, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/ragnhildrod.png"))
+```
+
+```{r rodbol54, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/rodbol54.png"))
+```
+
+```{r rognlien, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/rognlien.png"))
+```
+
+```{r sageneb1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/sageneb1.png"))
+```
+
+```{r sageneb2, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/sageneb2.png"))
+```
+
+```{r solum3, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/solum3.png"))
+```
+
+```{r stokkep1, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/stokkep1.png"))
+```
+
+```{r stokkep5, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/stokkep5.png"))
+```
+
+```{r stokkep8, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/stokkep8.png"))
+```
+
+```{r torstvet, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/torstvet.png"))
+```
+
+```{r trondalen, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/trondalen.png"))
+```
+
+```{r tverdal, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/tverdal.png"))
+```
+
+```{r vallermyrene1a, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/vallermyrene1a.png"))
+```
+
+```{r vallermyrene1b, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/vallermyrene1b.png"))
+```
+
+```{r vallermyrene2, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/vallermyrene2.png"))
+```
+
+```{r vallermyrene4a, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/vallermyrene4a.png"))
+```
+
+```{r vallermyrene4b, echo = FALSE, out.width = "500px"}
+
+knitr::include_graphics(here("analysis/figures/vallermyrene4b.png"))
+```

@@ -4,8 +4,6 @@ library(sf)
 library(ggridges)
 library(ggthemes)
 library(ggnewscale)
-library(tmap)
-library(tmaptools)
 library(patchwork)
 library(terra)
 library(raster)
@@ -618,7 +616,7 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 150,
              s_tdist = 1.5, s_xpos = 135, s_ypos = 65,  s_bheight = 1)
 
-ggsave(file = here("analysis/figures/krogenesd2.png"), width ad= 250,
+ggsave(file = here("analysis/figures/krogenesd2.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 
