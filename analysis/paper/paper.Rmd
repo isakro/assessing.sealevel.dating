@@ -82,7 +82,7 @@ Relative sea-level (RSL) can be defined as the mean elevation of the surface of 
 
 Following the end of the Weichselian and the final retreat of the Fennoscandian Ice Sheet [e.g. @hughes2016; @stroeven2016], the isostatic rebound has been so severe that most areas of Norway have been subject to a continuous relative sea-level regression, despite corresponding eustatic sea-level rise [e.g. @lambeck1998; @svendsen1987]. In other words, the RSL has been dropping throughout prehistory. As this process is the result of glacial loading, the rate of uplift is more severe towards the centre of the ice sheet. Thus, some areas on the outer coast have had a more stable RSL or been subject to marine transgression [e.g. @romundset2015; @svendsen1987]. These conditions are directly reflected in the archaeological record. In areas where the sea-level has been stable over longer periods of time, people have often reused the coastal site locations multiple times and over long time-spans, creating palimpsests of settlement events that are difficult to disentangle [@reitan2009]. Transgression phases, on the other hand, can lead to complete destruction of the sites, or bury them in marine sediments, leading to a hiatus in the archaeological record for certain sub-phases in the impacted areas [@bjerck2008]. Comparatively, given a continuous and still ongoing shoreline regression from as high as c. 220 m above present sea-level in the inner Oslo fjord, any one location in south-eastern Norway has only been shore-bound within a relatively limited time-span, and the sites have not been impacted by any transgressions [@hafsten1957; @hafsten1983; @sørensen1979]. This makes the region especially useful for evaluating the assumption of a shore-bound settlement over a long and continuous time-span.
 
-```{r deglaciation, echo = FALSE, fig.cap = "Deglaciation at 1000 year intervals from 18-10 ka (Hughes et al. 2016). The studyarea defined later in the text is given a red outline.", out.width = "400px", fig.align="center"}
+```{r deglaciation, echo = FALSE, fig.cap = "Deglaciation at 1000 year intervals from 19-10 ka (data from Hughes et al. 2016). The studyarea defined later in the text is given a red outline.", out.width = "400px", fig.align="center"}
 
 knitr::include_graphics(here("analysis/figures/deglaciation.png"))
 
@@ -98,7 +98,7 @@ Other previous evaluations of the correspondence between dates informed by radio
 
 All data and R programming code [@rcoreteam2021] required to run the analyses, as well as the derived data are freely available in an online repository at <https://osf.io/7f9su/>, organised as a digital research compendium following @marwick2018. The dataset is slightly more extensive than what is directly utilised in the study, and includes excavated sites without ^14^C-dates, as well as ^14^C-dates to periods other than the Stone Age.
 
-To get at the relationship between sites and contemporaneous shoreline, the analysis is dependent on a study area with good control of the trajectory of prehistoric shoreline displacement. While there is displacement data available for other areas of south-eastern Norway [e.g. @hafsten1957; @sørensen1979; @sørensen1999], considerable methodological developments in recent years means that the most well-established displacement curves are from the region stretching from Halden county in the north-east, to Arendal in the south-west. This area has newly compiled displacement curves for Halden [@romundset2021], Larvik [@sørensen2014; @sørensen2014b], Tvedestrand [@romundset2018; @romundset2018b], and Arendal [@romundset2018b].
+To get at the relationship between sites and contemporaneous shoreline, the analysis is dependent on a study area with good control of the trajectory of prehistoric shoreline displacement. While there is displacement data available for other areas of south-eastern Norway [e.g. @hafsten1957; @sørensen1979; @sørensen1999], considerable methodological developments in recent years means that the most well-established displacement curves are from the region stretching from Horten county in the north-east, to Arendal in the south-west. This area has newly compiled displacement curves for Horten [@romundset2021], Larvik [@sørensen2014; @sørensen2014b], Tvedestrand [@romundset2018; @romundset2018b], and Arendal [@romundset2018b].
 
 The employed shoreline displacement curves are all based on the so-called isolation basin method [@romundset2011]. This involves extracting cores from a series of basins located beneath the marine limit situated on bedrock in a constrained area of the landscape, and dating the transition from marine to lacustrine sediments in the cores. Each curve is thus construed from a series of cored basins located at different elevations, each representing a high precision sea-level index point. The confidence bands of the displacement curves and their trajectory are quite complex constructs, and are the integrated result of both expert knowledge and more objectively quantifiable parameters. The reason for this is in part that the curves do not only contain uncertainty as related to radiometric dates, which are well defined, but also hold potential error as related to the interpretation and analysis of sediment cores, the nature and condition of the basin outlets, the adjustment to a common isobase based on the direction and gradient in rebound intensity, to name but a few [e.g. @romundset2011; @romundset2019]. For more details and evaluations done for the compilation of each curve, the reader is therefore referred to the individual publications (see above).
 
@@ -139,7 +139,7 @@ overview_map <- ggplot() +
   scale_colour_manual(values = c("Arendal" = "black",
                                    "Larvik" = "darkgreen",
                                    "Tvedestrand" = "blue",
-                                   "Halden" = 'red')) +
+                                   "Horten" = 'red')) +
   theme_bw() + theme(axis.title=element_blank(),
                      axis.text.y = element_blank(),
                      axis.text.x = element_blank(),
@@ -156,7 +156,7 @@ disp_curves <- ggplot(displacement_curves, aes(x = years, col = name)) +
   scale_colour_manual(values = c("Arendal" = "black",
                                    "Larvik" = "darkgreen",
                                    "Tvedestrand" = "blue",
-                                   "Halden" = 'red')) +
+                                   "Horten" = 'red')) +
   theme_bw() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.direction = "horizontal")

@@ -51,12 +51,12 @@ tvedestrand <- curve_interval(xvals, tvedestrand_raw)
 tvedestrand$name <- "Tvedestrand"
 arendal <- curve_interval(xvals, arendal_raw)
 arendal$name <- "Arendal"
-halden <-  curve_interval(xvals, skoppum_raw)
-halden$name <- "Halden"
+horten <-  curve_interval(xvals, skoppum_raw)
+horten$name <- "Horten"
 
 # Transform to BCE/CE using Joe Roe's era package and make BCE negative
 # to corresponds to oxcAAR later on
-displacement_curves <- rbind(larvik, tvedestrand, arendal, halden)
+displacement_curves <- rbind(larvik, tvedestrand, arendal, horten)
 displacement_curves$years <- yr(displacement_curves$years, "cal BP")
 displacement_curves$years <- yr_transform(displacement_curves$years, "BCE") * -1
 xvals <- yr_transform(yr(xvals, "cal BP"), "BCE") * -1
@@ -65,7 +65,7 @@ isocurves_plot <- ggplot(displacement_curves, aes(x = years, col = name)) +
   geom_line(aes(y =  upperelev)) +
   geom_line(aes(y = lowerelev)) +
   ylab("Meters above present sea level") +
-  scale_color_manual(values = c("Halden" = "red",
+  scale_color_manual(values = c("Horten" = "red",
                                 "Larvik" = "darkgreen",
                                 "Tvedestrand" = "blue",
                                 "Arendal" = "black")) +
@@ -128,7 +128,7 @@ iso_map <- tmap_grob(
            palette=c("Arendal" = "black",
                      "Larvik" = "darkgreen",
                      "Tvedestrand" = "blue",
-                     "Halden" = 'red'), stretch.palette = FALSE,
+                     "Horten" = 'red'), stretch.palette = FALSE,
                      legend.col.show = FALSE, lwd = 2) +
   tm_shape(st_centroid(sites_sa)) +
   tm_dots(size = 0.3, shape = 21, col = "red") +
@@ -145,7 +145,7 @@ outline <- st_as_sf(st_as_sfc(centpts_bb))
 isopolys <- st_collection_extract(lwgeom::st_split(outline, isobases))
 # Then assign isobasenames to the polygons and the direction (in case both are
 # to the north-east).
-isopolys$isobase1 <- c("Arendal", "Tvedestrand", "Larvik", "Halden", "Halden")
+isopolys$isobase1 <- c("Arendal", "Tvedestrand", "Larvik", "Horten", "Horten")
 isopolys$isobase2 <- c("Tvedestrand", "Arendal", "Tvedestrand", "Larvik",
                        "Larvik")
 isopolys$dir_rel_1 <- c("sw", "sw", "sw", "sw", "nw")

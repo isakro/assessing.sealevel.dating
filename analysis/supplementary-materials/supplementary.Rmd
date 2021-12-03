@@ -8,7 +8,11 @@ bibliography: references.bib
 
 ```{r,  echo = FALSE, results = 'hide'}
 library(here)
+library(tidyverse)
 
+# Read in radiocarbon dates to be plotted alongside analysis for
+# each site.
+rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
 ```
 
 This document shows the simulation results for each individual site analysed in the study with some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order.
@@ -25,8 +29,11 @@ Below follows the presentation of the individual sites. The first plot on the fi
 Subsequent rows for each site then show the simulation results. The first plot on these rows shows the probability density function from which site dates were drawn during simulation. The second plot shows the result of the simulation runs, where the intensity of the colour indicates the number of times the sea was simulated to be present at any given location. The third plot displays a violin plot of the measured distances between site and shore-line across all simulation runs. Measures for central tendency and dispersion associated with these are then given in the table.
 
 ```{r adalvestre1,  echo = FALSE, out.width = "500px"}
-knitr::include_graphics(here("analysis/figures/adalvestre1.png"))
 
+c14 <- filter(rcarbon, site_name  == "Adal vestre 1") %>% 
+  select(lab_code, c14_bp, error, material, context)
+
+knitr::include_graphics(here("analysis/figures/adalvestre1.png"))
 ```
 
 Adal vestre 1 is situated close to a field, but this does not appear to have resulted in any relevant changes to the terrain.

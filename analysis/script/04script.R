@@ -786,7 +786,7 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
     scale_colour_manual(values = c("Arendal" = "black",
                                    "Larvik" = "darkgreen",
                                    "Tvedestrand" = "blue",
-                                   "Halden" = 'red')) +
+                                   "Horten" = 'red')) +
     theme_bw() + theme(axis.title=element_blank(),
                        axis.text.y = element_blank(),
                        axis.text.x = element_blank(),
