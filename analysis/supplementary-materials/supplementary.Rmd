@@ -9,6 +9,8 @@ bibliography: references.bib
 ```{r,  echo = FALSE, results = 'hide'}
 library(here)
 library(tidyverse)
+library(knitr)
+library(kableExtra)
 
 # Read in radiocarbon dates to be plotted alongside analysis for
 # each site.
@@ -20,7 +22,7 @@ This document shows the simulation results for each individual site analysed in 
 The first figure shows the result of a test run for the site Hovland 5 where the simulations where run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving a wide uncertainty range, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
 
 ```{r sample_size,  echo = FALSE, out.width = "500px"}
-knitr::include_graphics(here("analysis/figures/sample_size.png"))
+include_graphics(here("analysis/figures/sample_size.png"))
 
 ```
 
@@ -30,10 +32,16 @@ Subsequent rows for each site then show the simulation results. The first plot o
 
 ```{r adalvestre1,  echo = FALSE, out.width = "500px"}
 
-c14 <- filter(rcarbon, site_name  == "Adal vestre 1") %>% 
-  select(lab_code, c14_bp, error, material, context)
+include_graphics(here("analysis/figures/adalvestre1.png"))
 
-knitr::include_graphics(here("analysis/figures/adalvestre1.png"))
+filter(rcarbon, site_name  == "Adal vestre 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Adal vestre 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 Adal vestre 1 is situated close to a field, but this does not appear to have resulted in any relevant changes to the terrain.
@@ -41,12 +49,31 @@ Adal vestre 1 is situated close to a field, but this does not appear to have res
 ```{r dalvestre2,  echo = FALSE, out.width = "500px"}
 knitr::include_graphics(here("analysis/figures/adalvestre2.png"))
 
+filter(rcarbon, site_name  == "Adal vestre 2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Adal vestre 2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
+
 ```
 
-Adal vestre 2 as a similar location in the present day landscape to that of Adal vestre 1.
+Adal vestre 2 has a similar location in the present day landscape to that of Adal vestre 1 (above).
 
 ```{r anvik,  echo = FALSE, out.width = "500px"}
-knitr::include_graphics(here("analysis/figures/anvik.png"))
+include_graphics(here("analysis/figures/anvik.png"))
+
+filter(rcarbon, site_name  == "Anvik") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Anvik", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
+
 
 ```
 
@@ -55,330 +82,836 @@ Anvik [@eymundsson2014a] is situated by the highway and a smaller road. Neither 
 ```{r bakke, echo = FALSE, out.width = "500px"}
 knitr::include_graphics(here("analysis/figures/bakke.png"))
 
-
+filter(rcarbon, site_name  == "Bakke") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Bakke", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-The radiocarbon date is seen as unrelated to the site inventory, which is distinctly Early Mesolithic in character [@nyland2012b].
+The radiocarbon date to the Stone Age is not related to the site inventory, which is distinctly Early Mesolithic in character [@nyland2012b].
 
 ```{r dordal, echo = FALSE, out.width = "500px"}
 
-knitr::include_graphics(here("analysis/figures/dordal.png"))
+include_graphics(here("analysis/figures/dordal.png"))
+
+filter(rcarbon, site_name  == "Dørdal") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Dørdal", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
 
 The ^14^C-dates from two fireplaces at Dørdal are not related to the lithic inventory, where there are no typological indicators pointing the Late Mesolithic. The report suggest that the results might reflect a contamination through a natural process of some sort [@solheim2017].
 
 ```{r dybdalshei1, echo = FALSE, out.width = "500px"}
-knitr::include_graphics(here("analysis/figures/dybdalshei1.png"))
+include_graphics(here("analysis/figures/dybdalshei1.png"))
+
+filter(rcarbon, site_name  == "Dybdalshei 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Dybdalshei 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
 
-Dybdalshei 1 was subject to a very limited excavation [@granum2018], and the lack of data might therefore lead one to question whether or not the site actually represent a settlement area. Furthermore, what little lithic material was retrieved is too generic to offer any typological support to the radiocarbon dates of the dated cooking pits. Nonetheless, the site and the ^14^C-dates are still treated the same way as the other sites here. This is based on the spatial relation between the lithic artefacts and the features, which offers some additional support to the fact that the cooking pits do in fact represent remnants from visits in the Mesolithic.
+Dybdalshei 1 was subject to a very limited excavation [@granum2018], and the lack of data might therefore lead one to question whether or not the site actually represent a settlement area. Furthermore, what little lithic material was retrieved is too generic to offer any typological support to the radiocarbon dates of the dated cooking pits. Nonetheless, the site and the ^14^C-dates are still treated the same way as the other sites. This is based on the spatial relation between the lithic artefacts and the features, which offers some additional support to the fact that the cooking pits do in fact represent remnants from visits in the Mesolithic.
 
 ```{r dybdalshei2, echo = FALSE, out.width = "500px"}
-knitr::include_graphics(here("analysis/figures/dybdalshei2.png"))
+include_graphics(here("analysis/figures/dybdalshei2.png"))
+
+filter(rcarbon, site_name  == "Dybdalshei 2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Dybdalshei 2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
 
-The situation on Dybdalshei 2 is similar to that on Dybdalshei 1 [@granum2018], but with only a single date from a single feature and no lithics, the site is not included in the final results.
+The situation on Dybdalshei 2 is similar to that on Dybdalshei 1 [above, @granum2018], but with only a single date from a single feature and no lithics, the site is not included in the final results.
 
 ```{r gunnarsrod4, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/gunnarsrod4.png"))
 
-knitr::include_graphics(here("analysis/figures/gunnarsrod4.png"))
+filter(rcarbon, site_name  == "Gunnarsrød 4") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Gunnarsrød 4", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
 
-Gunnarsrød 4 situated right by the railway (see also Gunnarsrød 5 below). The date was seen as possibly the result of old-wood effect, a notion that is in line with the simulation results here, as this date would have the site located beneath the sea-level [@reitan2014k].
+Gunnarsrød 4 [@reitan2014k], and Gunnarsrød 5 (below), were situated close to where the railway runs today, and therefore required editing of the DTM. Based on maps from the report, this appears to have given adequate, although not perfect results [@reitan2014k, fig.14.7.1]. The date from the bottom of the cultural layer was seen as possibly impacted by old-wood effect, a notion that is in line with the simulation results, as this date would have the site located beneath the sea-level [@reitan2014k].
 
 ```{r gunnarsrod5, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/gunnarsrod5.png"))
 
-knitr::include_graphics(here("analysis/figures/gunnarsrod5.png"))
+filter(rcarbon, site_name  == "Gunnarsrød 5") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Gunnarsrød 5", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
 
-Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated [@reitan2014d],. While the editing and interpolation of the DTM appears to give reasonable results for the rest of the flatter marsh area where the railway runs today, the site itself would thus have been situated slightly higher, likely leading to the negative values on the distance measures. In combination the simulation results and the site map in the report indicate that the site would not have been situated any significant distance from the shoreline. The values have been set to zero for the final aggregative analysis. A note can also be made on the date that is seen as unrelated to the artefact inventory. This was done on charcoal from a pit with ceramics which had a far younger date. The date was therefore interpreted as the result of contamination of some kind.
+The location of Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated [@reitan2014d]. While the editing and interpolation of the DTM appears to give reasonable results for the rest of the flatter marsh area where the railway runs today (see also Gunnarsrød 4, above), the site itself would thus have been situated slightly higher. This has likely led to the negative values on the distance measures. In combination, the simulation results and the site map in the report indicate that the site would not have been situated any significant distance from the shoreline. The values have therefore been set to zero for the final aggregative analysis. A note can also be made on the date that is seen as unrelated to the artefact inventory. This is from charcoal from a pit with ceramics which had a far younger date. The date was therefore interpreted as the result of contamination of some kind.
 
 ```{r gunnarsrod6a, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/gunnarsrod6a.png"))
 
-knitr::include_graphics(here("analysis/figures/gunnarsrod6a.png"))
+filter(rcarbon, site_name  == "Gunnarsrød 6a") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Gunnarsrød 6a", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
 
-The ^14^C-date is not related to the lithic inventory on the site [@carrasco2014].
+The ^14^C-date to the Stone Age from Gunnarsrød 6a is not related to the lithic inventory on the site, which is clearly Mesolithic [@carrasco2014].
 
 ```{r gunnarsrod6b, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/gunnarsrod6b.png"))
 
-knitr::include_graphics(here("analysis/figures/gunnarsrod6b.png"))
+filter(rcarbon, site_name  == "Gunnarsrød 6b") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Gunnarsrød 6b", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
+
+As with Gunnarsrød 6a above, the ^14^C-date to the Stone Age from Gunnarsrød 6b are not related to the Mesolithic inventory on the site [@carrasco2014].
 
 ```{r gunnarsrod7, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/gunnarsrod7.png"))
 
-knitr::include_graphics(here("analysis/figures/gunnarsrod7.png"))
+filter(rcarbon, site_name  == "Gunnarsrød 7") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Gunnarsrød 7", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
+
+Gunnarsrød 7 is situated on a slope, stretching from 55 masl up to 59 [@fossum2014b]. The lithic inventory is of a Middle Mesolithic character and does not match the ^14^C-dates.
 
 ```{r gunnarsrod10, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/gunnarsrod10.png"))
 
-knitr::include_graphics(here("analysis/figures/gunnarsrod10.png"))
+filter(rcarbon, site_name  == "Gunnarsrød 10") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Gunnarsrød 10", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 
 ```
+
+Based on the location of Gunnarsrød 10 on a steep ledge, and the site inventory, the ^14^C-date is not believed to be related to the main occupation of the site [@reitan2014l].
 
 ```{r hegnavest1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hegnavest1.png"))
 
-knitr::include_graphics(here("analysis/figures/hegnavest1.png"))
+filter(rcarbon, site_name  == "Hegna vest 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hegna vest 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+Example site from the main text. Hegna vest 1 has been visited multiple times throughout prehistory. The lithic inventory is distinctly Middle Mesolithic and Neolithic in character, with some finds that might be even younger. This is also reflected in the pottery finds, which are deemed to be from the Bronze Age--Early Iron Age. The ^14^C-date to the Late Mesolithic is therefore considered unrelated to the main occupation of the site, as it cannot be related to any elements of the site inventory [@fossum2017a]. The highway runs right by Hegna vest 1 and has been removed. This seem successful in that it doesn't appear to impact the simulated sea-levels. 
 
 ```{r hegnavest2, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hegnavest2.png"))
 
-knitr::include_graphics(here("analysis/figures/hegnavest2.png"))
+filter(rcarbon, site_name  == "Hegna vest 2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hegna vest 2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+As with Hegna vest 1 (above), Hegna vest 2 has been used throughout prehistory. This includes the Middle Mesolithic, the Neolithc, the Bronze Age and the Early Iron Age. The ^14^C-dates are believed to be related to the site activities [@fossum2017]. Hegna vest 2 is located where the highway runs today. This was removed, which appears to have been successful in relation to the simulation results.
 
 ```{r hegnavest3, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hegnavest3.png"))
 
-knitr::include_graphics(here("analysis/figures/hegnavest3.png"))
+filter(rcarbon, site_name  == "Hegna vest 3") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hegna vest 3", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+Along with Hegna vest 2 (above), Hegna vest 3 was situated where the highway runs today. The highway has been removed, and it would seem successfully so, as related to the sea-level adjustments. The ^14^C-date to the Middle Mesolithic fits well with the lithic inventory [@eigeland2017]. 
 
 ```{r hesthagc2, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hesthagc2.png"))
 
-knitr::include_graphics(here("analysis/figures/hesthagc2.png"))
+filter(rcarbon, site_name  == "Hesthag C2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hesthag C2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+Hesthag C2 has seen repeated use, as evidenced both by ^14^C-dates and the artefact inventory [@viken2018e]. While only a few finds can be typologically dated to the Late Mesolithic, these were deemed substantial enough to trust the two ^14^C-dates to the period [@viken2018e, 271]. No editing of the DTM was necessary.
 
 ```{r hesthagc4, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hesthagc4.png"))
 
-knitr::include_graphics(here("analysis/figures/hesthagc4.png"))
+filter(rcarbon, site_name  == "Hesthag C4") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hesthag C4", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r hovland1, echo = FALSE, out.width = "500px"}
+Hesthag C4
 
-knitr::include_graphics(here("analysis/figures/hovland1.png"))
+```{r hovland1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hovland1.png"))
+
+filter(rcarbon, site_name  == "Hovland 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hovland 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r hovland3, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hovland3.png"))
 
-knitr::include_graphics(here("analysis/figures/hovland3.png"))
+filter(rcarbon, site_name  == "Hovland 3") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hovland 3", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r hovland4, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hovland4.png"))
 
-knitr::include_graphics(here("analysis/figures/hovland4.png"))
+filter(rcarbon, site_name  == "Hovland 4") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hovland 4", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r hovland5, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hovland5.png"))
 
-knitr::include_graphics(here("analysis/figures/hovland5.png"))
+filter(rcarbon, site_name  == "Hovland 5") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hovland 5", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r hydal4, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/hydal4.png"))
 
-knitr::include_graphics(here("analysis/figures/hydal4.png"))
+filter(rcarbon, site_name  == "Hydal 4") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Hydal 4", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r krogenesd1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/krogenesd1.png"))
 
-knitr::include_graphics(here("analysis/figures/krogenesd1.png"))
+filter(rcarbon, site_name  == "Krøgenes D1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Krøgenes D1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r krogenesd2, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/krogenesd2.png"))
 
-knitr::include_graphics(here("analysis/figures/krogenesd2.png"))
+filter(rcarbon, site_name  == "Krøgenes D2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Krøgenes D2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r kvastada1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/kvastada1.png"))
 
-knitr::include_graphics(here("analysis/figures/kvastada1.png"))
+filter(rcarbon, site_name  == "Kvastad A1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Kvastad A1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r kvastada2, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/kvastada2.png"))
 
-knitr::include_graphics(here("analysis/figures/kvastada2.png"))
+filter(rcarbon, site_name  == "Kvastad A2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Kvastad A2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r kvastada4, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/kvastada4.png"))
 
-knitr::include_graphics(here("analysis/figures/kvastada4.png"))
+filter(rcarbon, site_name  == "Kvastad A4") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Kvastad A4", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r kvastada9, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/kvastada9.png"))
 
-knitr::include_graphics(here("analysis/figures/kvastada9.png"))
+filter(rcarbon, site_name  == "Kvastad A9") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Kvastad A9", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r langangenv1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/langangenv1.png"))
 
-knitr::include_graphics(here("analysis/figures/langangenv1.png"))
+filter(rcarbon, site_name  == "Langangen Vestgård 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Langangen Vestgård 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r langangenv3, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/langangenv3.png"))
 
-knitr::include_graphics(here("analysis/figures/langangenv3.png"))
+filter(rcarbon, site_name  == "Langangen Vestgård 3") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Langangen Vestgård 3", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r langangenv5, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/langangenv5.png"))
 
-knitr::include_graphics(here("analysis/figures/langangenv5.png"))
+filter(rcarbon, site_name  == "Langangen Vestgård 5") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Langangen Vestgård 5", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r langangenv6, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/langangenv6.png"))
 
-knitr::include_graphics(here("analysis/figures/langangenv6.png"))
+filter(rcarbon, site_name  == "Langangen Vestgård 6") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Langangen Vestgård 6", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r langangenv7, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/langangenv7.png"))
 
-knitr::include_graphics(here("analysis/figures/langangenv7.png"))
+filter(rcarbon, site_name  == "Langangen Vestgård 7") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Langangen Vestgård 7", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r langemyr, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/langemyr.png"))
 
-knitr::include_graphics(here("analysis/figures/langemyr.png"))
+filter(rcarbon, site_name  == "Langemyr") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Langemyr", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r lovas1, echo = FALSE, out.width = "500px"}
-
 knitr::include_graphics(here("analysis/figures/lovas1.png"))
+
+filter(rcarbon, site_name  == "Løvås 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Løvås 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r lovas2, echo = FALSE, out.width = "500px"}
-
 knitr::include_graphics(here("analysis/figures/lovas2.png"))
+
+filter(rcarbon, site_name  == "Løvås 2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Løvås 2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r lovas3, echo = FALSE, out.width = "500px"}
-
 knitr::include_graphics(here("analysis/figures/lovas3.png"))
+
+filter(rcarbon, site_name  == "Løvås 3") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Løvås 3", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r lunaveien, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/lunaveien.png"))
 
-knitr::include_graphics(here("analysis/figures/lunaveien.png"))
+filter(rcarbon, site_name  == "Lunaveien") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Lunaveien", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 Lunaveien is a grave cairn site, and the report states that it is unlikely that any of the finds could relate to a settlement predating the construction of the cairn [@reitan2010]. The results have therefore been excluded from the aggregative analysis.
 
 ```{r nauena, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/nauena.png"))
 
-knitr::include_graphics(here("analysis/figures/nauena.png"))
+filter(rcarbon, site_name  == "Nauen A") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Nauen A", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 A section of the highway located a few hundred meters to the south was pre-emptively edited in the DTM. This does not appear to be relevant for the simulated sea-level.
 
 ```{r nauenc, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/nauenc.png"))
 
-knitr::include_graphics(here("analysis/figures/nauenc.png"))
+filter(rcarbon, site_name  == "Nauen C") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Nauen C", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r nordby1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/nordby1.png"))
 
-knitr::include_graphics(here("analysis/figures/nordby1.png"))
+filter(rcarbon, site_name  == "Nordby 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Nordby 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r nordby52, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/nordby52.png"))
 
-knitr::include_graphics(here("analysis/figures/nordby52.png"))
+filter(rcarbon, site_name  == "Nordby 52") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Nordby 52", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r pauler1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/pauler1.png"))
 
-knitr::include_graphics(here("analysis/figures/pauler1.png"))
+filter(rcarbon, site_name  == "Pauler 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Pauler 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r pauler2, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/pauler2.png"))
 
-knitr::include_graphics(here("analysis/figures/pauler2.png"))
+filter(rcarbon, site_name  == "Pauler 2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Pauler 2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r pjonkerodr1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/pjonkerodr1.png"))
 
-knitr::include_graphics(here("analysis/figures/pjonkerodr1.png"))
+filter(rcarbon, site_name  == "Pjonkerød R1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Pjonkerød R1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r prestemoen1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/prestemoen1.png"))
 
-knitr::include_graphics(here("analysis/figures/prestemoen1.png"))
+filter(rcarbon, site_name  == "Prestemoen 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Prestemoen 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r ragnhildrod, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/ragnhildrod.png"))
 
-knitr::include_graphics(here("analysis/figures/ragnhildrod.png"))
+filter(rcarbon, site_name  == "Ragnhildrød") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Ragnhildrød", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r rodbol54, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/rodbol54.png"))
 
-knitr::include_graphics(here("analysis/figures/rodbol54.png"))
+filter(rcarbon, site_name  == "Rødbøl 54") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Rødbøl 54", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r rognlien, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/rognlien.png"))
 
-knitr::include_graphics(here("analysis/figures/rognlien.png"))
+filter(rcarbon, site_name  == "Rognlien") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Rognlien", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r sageneb1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/sageneb1.png"))
 
-knitr::include_graphics(here("analysis/figures/sageneb1.png"))
+filter(rcarbon, site_name  == "Sagene B1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Sagene B1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r sageneb2, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/sageneb2.png"))
 
-knitr::include_graphics(here("analysis/figures/sageneb2.png"))
+filter(rcarbon, site_name  == "Sagene B2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Sagene B2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r solum3, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/solum3.png"))
 
-knitr::include_graphics(here("analysis/figures/solum3.png"))
+filter(rcarbon, site_name  == "Solum 3") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Solum 3", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r stokkep1, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/stokkep1.png"))
 
-knitr::include_graphics(here("analysis/figures/stokkep1.png"))
+filter(rcarbon, site_name  == "Stokke/Polland 1") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Stokke/Polland 1", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r stokkep5, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/stokkep5.png"))
 
-knitr::include_graphics(here("analysis/figures/stokkep5.png"))
+filter(rcarbon, site_name  == "Stokke/Polland 5") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Stokke/Polland 5", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r stokkep8, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/stokkep8.png"))
 
-knitr::include_graphics(here("analysis/figures/stokkep8.png"))
+filter(rcarbon, site_name  == "Stokke/Polland 8") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Stokke/Polland 8", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r torstvet, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/torstvet.png"))
 
-knitr::include_graphics(here("analysis/figures/torstvet.png"))
+filter(rcarbon, site_name  == "Torstvet") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Torstvet", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r trondalen, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/trondalen.png"))
 
-knitr::include_graphics(here("analysis/figures/trondalen.png"))
+filter(rcarbon, site_name  == "Trondalen") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Trondalen", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r tverdal, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/tverdal.png"))
 
-knitr::include_graphics(here("analysis/figures/tverdal.png"))
+filter(rcarbon, site_name  == "Tverdal") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Tverdal", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r vallermyrene1a, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/vallermyrene1a.png"))
 
-knitr::include_graphics(here("analysis/figures/vallermyrene1a.png"))
+filter(rcarbon, site_name  == "Vallermyrene 1a") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Vallermyrene 1a", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r vallermyrene1b, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/vallermyrene1b.png"))
 
-knitr::include_graphics(here("analysis/figures/vallermyrene1b.png"))
+filter(rcarbon, site_name  == "Vallermyrene 1b") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Vallermyrene 1b", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r vallermyrene2, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/vallermyrene2.png"))
 
-knitr::include_graphics(here("analysis/figures/vallermyrene2.png"))
+filter(rcarbon, site_name  == "Vallermyrene 2") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Vallermyrene 2", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r vallermyrene4a, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/vallermyrene4a.png"))
 
-knitr::include_graphics(here("analysis/figures/vallermyrene4a.png"))
+filter(rcarbon, site_name  == "Vallermyrene 4a") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Vallermyrene 4a", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
 ```{r vallermyrene4b, echo = FALSE, out.width = "500px"}
+include_graphics(here("analysis/figures/vallermyrene4b.png"))
 
-knitr::include_graphics(here("analysis/figures/vallermyrene4b.png"))
+filter(rcarbon, site_name  == "Vallermyrene 4b") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Vallermyrene 4b", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
