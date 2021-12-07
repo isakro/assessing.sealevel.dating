@@ -153,4 +153,3 @@ isopolys$dir_rel_1 <- c("sw", "sw", "sw", "sw", "nw")
 # Save required data
 save(displacement_curves, isobases, isopolys, xvals,
      file = here("analysis/data/derived_data/02data.RData"))
-

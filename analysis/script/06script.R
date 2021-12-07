@@ -6,6 +6,11 @@ library(grid)
 library(gridExtra)
 library(gtable)
 
+
+# VAlues to be set to 0:
+# Gunnarsrød
+# Pjonkerød R1
+
 # List all files except those starting with a number.
 # That is, all data files associated with sites
 datfiles <- grep("^[0-9]", list.files(here("analysis/data/derived_data")),
