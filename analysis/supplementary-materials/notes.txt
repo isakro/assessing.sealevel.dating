@@ -2,6 +2,9 @@ Vestffoldbaneprosjektet, Lågerød(åsen) er ikke Intrasis v.3 (fikset vestfoldb
 Rugtvedt-Dørdal ser ikke ut til å ha lag 1 inkludert i Intrasis 
 Skljelsø 1 & 2 ser ikke ut til å Intrasis-prosjekter
 
+En senmesolittisk boplass på Skavli i Borre kommune, Vestfold og dens plass i forhistorien. Uni-
+versitetets Oldsaksamling Årbok 1997/98:63–82.
+
 Sjekk to registreringsdateringer Krøgenes D1
 
 \\lagringshotell.uio.no\khm-kart\Kartavlevering\Avlevert_2010\Vestfoldbaneprosjektet_08_22814
@@ -11,8 +14,6 @@ Marum mellom 4 og Førstad store 1: Det var ingen .prj fil med disse dataene. Et
 Missing spatial:
 
 Hegna øst 2, stripped
-	
-
 
 Nymølldammen	38.4	259733.83, 6627264.1
 

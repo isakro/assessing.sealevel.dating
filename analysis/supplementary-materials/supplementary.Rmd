@@ -689,7 +689,7 @@ filter(rcarbon, site_name  == "Nordby 52") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Nordby 52 is a rock-shelter tat has been visited throughout prehistory [@gjerpe2008]. Clear typological date to both of the Stone Age periods defined by the ^14^C-dates treated here. The site is located by where the highway runs today (see also Nordby 1 above). Edit appears to have been successful.
+Nordby 52 is a rock-shelter that has been visited throughout prehistory [@gjerpe2008]. Clear typological date to both of the Stone Age periods defined by the ^14^C-dates treated here. The site is located by where the highway runs today (see also Nordby 1 above). Edit appears to have been successful.
 
 ```{r pauler1, echo = FALSE, out.width = "500px"}
 include_graphics(here("analysis/figures/pauler1.png"))
@@ -734,7 +734,7 @@ filter(rcarbon, site_name  == "Pjonkerød R1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Pjonkerød R1. Situated by a quarry today which has been fairly successfully edited. However, as the few negative values across the results are likely to result from the interpolation process and the fact that this is a quite large area, and not issues with the displacement curves or ^14^C-dates, the negative values were forced to zero for the aggregative analsysis.
+The lithic inventory from Pjonkerød R1 is consistent with the ^14^C-date [@carrasco2015]. The site is situated by a gravel pit today, which has been fairly successfully edited. However, as the few negative values in the results are likely to result from the interpolation process and the fact that this is a quite large area, as opposed to issues with the displacement curves or ^14^C-dates, the negative values were forced to zero for the aggregative analysis.
 
 ```{r prestemoen1, echo = FALSE, out.width = "500px"}
 include_graphics(here("analysis/figures/prestemoen1.png"))
@@ -748,6 +748,8 @@ filter(rcarbon, site_name  == "Prestemoen 1") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+Prestemoen 1 has a lithic inventory consistent with the ^14^C-dates [@persson2014]. The site is situated by a gravel pit that is clearly visible on the DTM to the north-east of the site. This was not edited as it has not impacted the simulated distance between site and sea. The landscape surrounding the site would, however, have been substantially different in the Mesolithic [@persson2014, fig. 10.20].
 
 ```{r ragnhildrod, echo = FALSE, out.width = "500px"}
 include_graphics(here("analysis/figures/ragnhildrod.png"))
