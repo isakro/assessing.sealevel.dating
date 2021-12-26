@@ -55,7 +55,8 @@ date_groups <- group_dates(rcarb_sa, sitename)
 ###### Uncomment to rerun simulation
 # sims <- 5000
 # output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-#                             isobases, nsamp = sims, loc_bbox = 1000, siterpath)
+#                             isobases, nsamp = sims, loc_bbox = 1000,
+#                             siterpath)
 # simresults <- data.frame(output[[1]]$results, "simn" = 1:sims)
 #
 # simdat <- simresults %>%
@@ -139,6 +140,27 @@ ggsave(file = here("analysis/figures/adalvestre2.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 
+######### Alveberget 8 #########
+sitename <- "Alveberget 8"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/alveberget8.RData"))
+# load(here("analysis/data/derived_data/alveberget8.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 1, s_xpos = 150, s_ypos = 70, s_bheight = 0.75)
+
+ggsave(file = here("analysis/figures/alveberget8.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
 ######### Anvik #########
 sitename <- "Anvik"
 date_groups <- group_dates(rcarb_sa, sitename)
@@ -178,6 +200,48 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              s_tdist = 3, s_xpos = 1250, s_ypos = 500,  s_bheight = 1.5)
 
 ggsave(file = here("analysis/figures/bakke.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
+######### Brunstad 24 #########
+sitename <- "Brunstad 24"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/brunstad24.RData"))
+# load(here("analysis/data/derived_data/brunstad24.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 3, s_xpos = 1250, s_ypos = 500,  s_bheight = 1.5)
+
+ggsave(file = here("analysis/figures/brunstad24.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
+######### Brunstad 25 #########
+sitename <- "Brunstad 25"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/brunstad25.RData"))
+# load(here("analysis/data/derived_data/brunstad25.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 3, s_xpos = 1250, s_ypos = 500,  s_bheight = 1.5)
+
+ggsave(file = here("analysis/figures/brunstad25.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 

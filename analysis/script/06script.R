@@ -5,10 +5,11 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(gtable)
+library(cowplot)
 
 
 # VAlues to be set to 0:
-# Gunnarsrød
+# Gunnarsrød 5
 # Pjonkerød R1
 
 # List all files except those starting with a number.
@@ -56,8 +57,8 @@ sum_cor <- distances %>% filter(rcarb_cor == "t") %>%
 h1 <- ggplot(distances) + geom_point(aes(x = year, y = hordist),
                                      shape = 21,
                                      alpha = 0.01,
-                                     fill = scales::viridis_pal()(3)[1],
-                                     colour = scales::viridis_pal()(3)[1]) +
+                                     fill = "#00ba38",
+                                     colour = "#00ba38") +
   labs(y = "Horisontal distance (m)", x = "cal BCE",
        title = "All dates") +
   theme_bw()
@@ -68,28 +69,19 @@ th1 <- tableGrob(sum_all[c("hordist_fn1", "hordist_fn2",
                           "SD", "IQR"),
                  rows = NULL, theme = ttheme_minimal())
 
-# # Line under column names
-# th1 <- gtable_add_grob(th1,
-#         grobs =  segmentsGrob(
-#           x0 = unit(0,"npc"),
-#           y0 = unit(0,"npc"),
-#           x1 = unit(1,"npc"),
-#           y1 = unit(0,"npc"),
-#           gp = gpar(lwd = 1)),
-#          t = 1, b =1, l = 1, r = ncol(th1))
-
 # Find table height for plotting
 th <- sum(th1$heights)
 # Arrange plot and table
 hor1 <- grid.arrange(h1, th1, heights = unit.c(unit(1, "null"), th))
 
+# Horisontal distance, dates corresponding to inventory
 h2 <- distances %>%  filter(rcarb_cor == "t") %>%
   ggplot() +
   geom_point(aes(x = year, y = hordist),
                         shape = 21,
                         alpha = 0.01,
-                        fill = scales::viridis_pal()(3)[1],
-                        colour = scales::viridis_pal()(3)[1]) +
+                        fill = "#00ba38",
+                        colour = "#00ba38") +
   labs(y = "Horisontal distance (m)", x = "cal BCE",
        title = "Corresponding dates") +
   theme_bw()
@@ -100,15 +92,6 @@ th2 <- tableGrob(sum_cor[c("hordist_fn1", "hordist_fn2",
                           "SD", "IQR"),
                  rows = NULL, theme = ttheme_minimal())
 
-# th2 <- gtable_add_grob(th2,
-#                        grobs =  segmentsGrob(
-#                          x0 = unit(0,"npc"),
-#                          y0 = unit(0,"npc"),
-#                          x1 = unit(1,"npc"),
-#                          y1 = unit(0,"npc"),
-#                          gp = gpar(lwd = 1)),
-#                        t = 1, b =1, l = 1, r = ncol(th2))
-
 hor2 <- grid.arrange(h2, th2, heights = unit.c(unit(1, "null"), th))
 
 # Repeat for topographic distance
@@ -116,8 +99,8 @@ t1 <- ggplot(distances) +
   geom_point(aes(x = year, y = topodist),
              shape = 21,
              alpha = 0.01,
-             fill = scales::viridis_pal()(3)[2],
-             colour = scales::viridis_pal()(3)[2]) +
+             fill = "#fad510",
+             colour = "#fad510") +
   labs(y = "Topographic distance (m)", x = "cal BCE") +
   theme_bw()
 
@@ -127,15 +110,6 @@ tt1 <- tableGrob(sum_all[c("topodist_fn1", "topodist_fn2",
                           "SD", "IQR"),
                  rows = NULL, theme = ttheme_minimal())
 
-# tt1 <- gtable_add_grob(tt1,
-#                        grobs =  segmentsGrob(
-#                          x0 = unit(0,"npc"),
-#                          y0 = unit(0,"npc"),
-#                          x1 = unit(1,"npc"),
-#                          y1 = unit(0,"npc"),
-#                          gp = gpar(lwd = 1)),
-#                        t = 1, b =1, l = 1, r = ncol(tt1))
-
 topo1 <- grid.arrange(t1, tt1, heights = unit.c(unit(1, "null"), th))
 
 # Topograhic distance, corresponding dates
@@ -144,8 +118,8 @@ t2 <- distances %>%  filter(rcarb_cor == "t") %>%
   geom_point(aes(x = year, y = topodist),
              shape = 21,
              alpha = 0.01,
-             fill = scales::viridis_pal()(3)[2],
-             colour = scales::viridis_pal()(3)[2]) +
+             fill = "#fad510",
+             colour = "#fad510") +
   labs(y = "Topographic distance (m)", x = "cal BCE") +
   theme_bw()
 
@@ -170,8 +144,8 @@ topo2 <- grid.arrange(t2, tt2, heights = unit.c(unit(1, "null"), th))
 v1 <- ggplot(distances) +
   geom_point(aes(x = year, y = vertdist), shape = 21,
              alpha = 0.01,
-             fill = scales::viridis_pal()(3)[3],
-             colour = scales::viridis_pal()(3)[3]) +
+             fill = "#046c9a",
+             colour = "#046c9a") +
   labs(y = "Vertical distance (m)", x = "cal BCE") +
   ylim(-30, 90) +
   theme_bw()
@@ -182,15 +156,6 @@ vt1 <- tableGrob(sum_all[c("vertdist_fn1", "vertdist_fn2",
                           "SD", "IQR"),
                  rows = NULL, theme = ttheme_minimal())
 
-# vt1 <- gtable_add_grob(vt1,
-#                        grobs =  segmentsGrob(
-#                          x0 = unit(0,"npc"),
-#                          y0 = unit(0,"npc"),
-#                          x1 = unit(1,"npc"),
-#                          y1 = unit(0,"npc"),
-#                          gp = gpar(lwd = 1)),
-#                        t = 1, b =1, l = 1, r = ncol(vt1))
-
 vert1 <- grid.arrange(v1, vt1, heights = unit.c(unit(1, "null"), th))
 
 # Vertical distance, corresponding dates
@@ -199,8 +164,8 @@ v2 <- distances %>%  filter(rcarb_cor == "t") %>%
   geom_point(aes(x = year, y = vertdist),
              shape = 21,
              alpha = 0.01,
-             fill = scales::viridis_pal()(3)[3],
-             colour = scales::viridis_pal()(3)[3]) +
+             fill = "#046c9a",
+             colour = "#046c9a") +
   labs(y = "Vertical distance (m)", x = "cal BCE") +
   ylim(-30, 90) +
   theme_bw()
@@ -211,24 +176,10 @@ vt2 <- tableGrob(sum_cor[c("vertdist_fn1", "vertdist_fn2",
                           "SD", "IQR"),
                  rows = NULL, theme = ttheme_minimal())
 
-# vt2 <- gtable_add_grob(vt2,
-#                        grobs =  segmentsGrob(
-#                          x0 = unit(0,"npc"),
-#                          y0 = unit(0,"npc"),
-#                          x1 = unit(1,"npc"),
-#                          y1 = unit(0,"npc"),
-#                          gp = gpar(lwd = 1)),
-#                        t = 1, b =1, l = 1, r = ncol(vt2))
-
 vert2 <- grid.arrange(v2, vt2, heights = unit.c(unit(1, "null"), th))
 
 grd1 <- grid.arrange(hor1, topo1, vert1, nrow = 1)
-# gb <- rectGrob(height = 0.999, width = 0.999, gp = gpar(fill = NA))
-# grd1 <- gTree(children = gList(grd, gb))
-
 grd2 <- grid.arrange(hor2, topo2, vert2, nrow = 1)
-# gb <- rectGrob(height = 0.999, width = 0.999, gp = gpar(fill = NA))
-# grd2 <- gTree(children = gList(grd, gb))
 
 grd <- plot_grid(grd1, grd2, ncol = 1, scale = 0.9)
 
@@ -252,7 +203,7 @@ sum_cor2 <- distances %>% filter(year <= -2500 & rcarb_cor == "t") %>%
 # Histogram for horisontal distance
 histhor <- distances %>%  filter(year <= -2500 & rcarb_cor == "t") %>%
   ggplot() + geom_histogram(aes(hordist), binwidth = 20,
-                            fill = scales::viridis_pal()(3)[1],
+                            fill = "#00ba38",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
@@ -270,7 +221,7 @@ hor3 <- grid.arrange(histhor, tabhor3, heights = unit.c(unit(1, "null"), th))
 
 histtopo <- distances %>%  filter(year <= -2500 & rcarb_cor == "t") %>%
   ggplot() + geom_histogram(aes(topodist), binwidth = 20,
-                            fill = scales::viridis_pal()(3)[2],
+                            fill = "#fad510",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
@@ -286,7 +237,7 @@ topo3 <- grid.arrange(histtopo, tabtopo3, heights = unit.c(unit(1, "null"), th))
 
 histvert <- distances %>%  filter(year <= -2500 & rcarb_cor == "t") %>%
   ggplot() + geom_histogram(aes(vertdist), binwidth = 1,
-                            fill = scales::viridis_pal()(3)[3],
+                            fill = "#046c9a",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +

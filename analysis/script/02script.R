@@ -61,21 +61,6 @@ displacement_curves$years <- yr(displacement_curves$years, "cal BP")
 displacement_curves$years <- yr_transform(displacement_curves$years, "BCE") * -1
 xvals <- yr_transform(yr(xvals, "cal BP"), "BCE") * -1
 
-isocurves_plot <- ggplot(displacement_curves, aes(x = years, col = name)) +
-  geom_line(aes(y =  upperelev)) +
-  geom_line(aes(y = lowerelev)) +
-  ylab("Meters above present sea level") +
-  scale_color_manual(values = c("Horten" = "red",
-                                "Larvik" = "darkgreen",
-                                "Tvedestrand" = "blue",
-                                "Arendal" = "black")) +
-  xlab("Cal. BCE/CE") +
-  theme_bw() +
-  theme(legend.title = element_blank(), legend.position = "bottom",
-        legend.direction = "horizontal")
-
-#### Setting up isobases and plotting sites ####
-
 # Specify arbitrarily long distance of the line to represent the isobase at
 # each centre-point.
 isodist <- 9000000
@@ -117,25 +102,6 @@ isobases$name <- centpts$name
 centpts_bb <- st_bbox(centpts)
 centpts_bb[1:2] <- centpts_bb[1:2] - 20000
 centpts_bb[3:4] <- centpts_bb[3:4] + 20000
-
-# Plot isobases
-iso_map <- tmap_grob(
-  tm_shape(coast, bbox = centpts_bb) +
-  tm_fill(col = "lightgrey") +
-  tm_borders(col = "black") +
-  tm_shape(isobases) +
-  tm_lines(col = "name",
-           palette=c("Arendal" = "black",
-                     "Larvik" = "darkgreen",
-                     "Tvedestrand" = "blue",
-                     "Horten" = 'red'), stretch.palette = FALSE,
-                     legend.col.show = FALSE, lwd = 2) +
-  tm_shape(st_centroid(sites_sa)) +
-  tm_dots(size = 0.3, shape = 21, col = "red") +
-  tm_scale_bar(breaks = c(0, 10, 20), text.size = 1))
-
-
-plot_grid(isocurves_plot, iso_map)
 
 # Split study area into a series of polygons to assign correct displacement
 # curve to sites to be analysed

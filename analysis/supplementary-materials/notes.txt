@@ -15,6 +15,8 @@ Missing spatial:
 
 Hegna øst 2, stripped
 
+This for example pertains to flint tool types such as scrapers, burins, drills, knives and otherwise indeterminate artefacts with retouch. These have all been combined into the single category "small flint tools". (A full overview of the aggregated variables and their constituent parts is provided in the supplementary material). While aggregating artefact categories in this manner could potentially subsume important variation, it does also reduce the possibility that any conclusions are not simply the result of employing erroneous units of analysis.
+
 Nymølldammen	38.4	259733.83, 6627264.1
 
 

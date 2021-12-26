@@ -372,7 +372,7 @@ filter(rcarbon, site_name  == "Hovland 5") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Hovland 5 is situated more withdrawn from the highway than the other Hovland sites (above). It only has a single ^14^C-date, but this does match the typological indicators of the assemblage [@mansrud2013]. 
+Hovland 5 is situated more withdrawn from the highway than the other Hovland sites (above), and the DTM did therefore not require any edits here. The site only has a single ^14^C-date to the Stone Age, but this does match the typological indicators of the assemblage [@mansrud2013]. 
 
 ```{r hydal4, echo = FALSE, out.width = "500px"}
 include_graphics(here("analysis/figures/hydal4.png"))
@@ -417,7 +417,7 @@ filter(rcarbon, site_name  == "Krøgenes D2") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-The oldest date is not seen as relevant for the main occupation on the site, in part also due to the large error [@mansrud2018b]. The site location is similar to that of Krøgenes D1 (above), and did not require any editing.
+The oldest date is not seen as relevant for the main occupation on Krøgenes D2, in part also due to the large error [@mansrud2018b]. The site location is similar to that of Krøgenes D1 (above), and did not require any editing.
 
 ```{r kvastada1, echo = FALSE, out.width = "500px"}
 include_graphics(here("analysis/figures/kvastada1.png"))
@@ -776,6 +776,8 @@ filter(rcarbon, site_name  == "Rødbøl 54") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+Lithic inventory match the ^14^C-date from Rødbøl 54 [@mansrud2008]. 
 
 ```{r rognlien, echo = FALSE, out.width = "500px"}
 include_graphics(here("analysis/figures/rognlien.png"))

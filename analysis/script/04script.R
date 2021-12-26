@@ -772,7 +772,7 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
   anc <- as.numeric(c(bboxsites$ymin, bboxsites$xmax))
 
   ggplot() +
-    geom_sf(data = bmap_reproj, fill = "grey", colour = NA) +
+    geom_sf(data = bmap_reproj, fill = "#fbecdc", colour = "black") +
     geom_sf(data = isobases, aes(colour = name)) +
     geom_sf(data = st_centroid(sitelimit), size = 1.5, shape = 21,
             colour = "black", fill = "red") +
@@ -791,6 +791,8 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
                        axis.text.y = element_blank(),
                        axis.text.x = element_blank(),
                        rect = element_rect(),
+                       panel.background = element_rect(fill = "#dbe3f3",
+                                                       colour = "black"),
                        axis.ticks = element_blank(),
                        panel.grid.major = element_blank(),
                        legend.position = "none")
@@ -832,7 +834,7 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
                        legend.position = "none")
 }
 
-# Define function to plot boxplots of distance from site to shoreline across
+# Define function to plot violin plot of distance from site to shoreline across
 # simulation runs
 distance_plot <- function(data) {
   pivot_longer(data, c(vertdist, hordist, topodist)) %>%
@@ -842,8 +844,11 @@ distance_plot <- function(data) {
     #                   justification = -0.2, .width = 0, point_colour = NA) +
     # geom_boxplot(width = 0.12, outlier.size = 0.5) +
     labs(y = "Distance from shoreline (m)", x = "") +
-    scale_x_discrete(labels = c('Horisontal', 'Topographic', 'Vertical')) +
-    viridis::scale_fill_viridis(discrete = TRUE) +
+    scale_x_discrete(labels = c('Horizontal', 'Topographic', 'Vertical')) +
+    # viridis::scale_fill_viridis(discrete = TRUE) +
+    scale_fill_manual(values = c("hordist" = "#00ba38",
+                                  "topodist" = "#fad510",
+                                  "vertdist" = "#046c9a")) +
     theme_bw() +
     theme(legend.position = "none")
 }
