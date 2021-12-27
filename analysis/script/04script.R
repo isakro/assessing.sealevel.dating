@@ -731,11 +731,12 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
   ggplot() +
     geom_raster(data = raster::as.data.frame(hill, xy = TRUE),
                 aes(x = x, y = y, fill = layer)) +
-    scale_fill_gradient(low = "black", high = "grey", na.value = NA) +
+    scale_fill_gradient(low = "black", high = "grey40", na.value = NA) +
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
-                alpha = 0.4) +
-    scale_fill_gradient(low = "darkgrey", high = "grey", na.value = NA) +
+                alpha = 0.3) +
+    scale_fill_gradient(low = "#fffcfc", high = "#f2dcd0", na.value = NA) +
+    # scale_fill_gradient(low = "darkgrey", high = "grey", na.value = NA) +
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
     scale_fill_gradient(low = NA, high = NA, na.value = "white") +
@@ -799,7 +800,7 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
 }
 
 # Define function to plot site relative to simulated sea-levels
-shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
+shore_plot <- function(locationraster, overlapgrid, sitelimit, dist, date_groups,
                        s_tdist, s_xpos, s_ypos, s_bheight, s_tsize) {
 
   bboxgrid <- st_bbox(overlapgrid)
@@ -810,16 +811,56 @@ shore_plot <- function(overlapgrid, sitelimit, dist, date_groups,
   overlapgrid <- mutate(overlapgrid, overlaps = ifelse(overlaps == 0,
                                                        NA, overlaps))
 
+  # Make present day sea-level 0 (for hillshade)
+  locationraster[locationraster <= 0] <- 0
+
+  # Retrieve bounding box for scale bar placement
+  bboxraster <- st_bbox(locationraster)
+  anc <- as.numeric(c(bboxraster$ymin, bboxraster$xmax))
+
+  # Create hillshade
+  # For some reason the terra version returned pathchy hillshade
+  slope <- raster::terrain(raster(locationraster), 'slope')
+  aspect <- raster::terrain(raster(locationraster), 'aspect')
+  hill <- raster::hillShade(slope, aspect, 40, 270)
+
+  # Now make sea-level NA
+  locationraster[locationraster <= 0] <- NA
+
+  # Make the raster amenable for plotting with ggplot (as.data.frame with terra
+  # returned some strange errors)
+  raster_df <- raster::as.data.frame(raster(locationraster), xy = TRUE)
+  names(raster_df) <- c("x", "y", "value")
+
   # scols <- c("#f2fbff", "#86a6d4")
   scols <- c("grey98", "grey40")
+  scols <- c("#59bfff30", "#59bffff0")
+  scols <- c("#bfe6ff", "#59bfff")
+  scols <- c("#c7e3ff", "#59bfff")
+  #scols <- c("#accbff40","#accbf0")
+
 
   ggplot() +
-    geom_sf(data = overlapgrid, aes(colour = overlaps, fill = overlaps)) +
+    geom_raster(data = raster::as.data.frame(hill, xy = TRUE),
+                aes(x = x, y = y, fill = layer)) +
+    scale_fill_gradient(low = "black", high = "grey40", na.value = NA) +
+    new_scale_fill() +
+    geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
+                alpha = 0.3) +
+    scale_fill_gradient(low = "#fffcfc", high = "#f2dcd0", na.value = NA) +
+    # scale_fill_gradient(low = "#fbecdc", high = "#e1bf92", na.value = NA) +
+    new_scale_fill() +
+    geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+    scale_fill_gradient(low = NA, high = NA, na.value = "white") +
+    new_scale_fill() +
+    geom_sf(data = overlapgrid, aes(alpha = overlaps), col = NA,
+            fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff
     geom_sf(data = sitelimit, colour = "red", fill = NA) +
-    scale_fill_gradient(low = scols[1], high = scols[2],
-                         na.value = "grey99") +
-    scale_colour_gradient(low = scols[1], high = scols[2],
-                          na.value = "grey99") +
+    # scale_fill_gradient(low = scols[1], high = scols[2],
+    #                      na.value = NA) +
+    # scale_colour_gradient(low = scols[1], high = scols[2],
+    #                       na.value = NA) +
+    scale_alpha_continuous(range = c(0.01, 1), na.value = 0) +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
                    transform = FALSE, st.size = s_tsize, height = s_bheight,
                    border.size = 0.1, st.dist = s_tdist,
@@ -945,7 +986,7 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
         datedata, sitename, multigroup = FALSE, group = i, title = FALSE)
 
       # Map of simulated sea-levels
-      plots[[paste0("seaplot_", i)]] <- shore_plot(
+      plots[[paste0("seaplot_", i)]] <- shore_plot(sitearea,
         simulation_output[[i]]$simsea, sitelimit, scale_dist, date_groups,
         s_tdist, s_xpos, s_ypos, s_bheight, s_tsize)
 
