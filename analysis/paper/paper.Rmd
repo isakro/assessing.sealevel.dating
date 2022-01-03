@@ -98,7 +98,7 @@ Based on the generally accepted premise that most pre-Late Neolithic sites in so
 
 One of the more comprehensive evaluations of this relationship was done by Solheim and colleagues (@breivik2018; @solheim2020), who compared 102 ^14^C-dates from 29 Mesolithic sites on the western side of the Oslo fjord to the displacement curve for the Larvik area. They found an overlap between the probability distribution of the radiocarbon dates with the shoreline displacement curve for 86.5% of the sites. However, where there was a discrepancy, the main occupation of the sites are still believed to have been shore-bound rather than associated with the deviating ^14^C-dates. This is based on typological and technological characteristics of the assemblages. Whether these mismatches represent later shorter visits that are responsible for the younger radiocarbon dates, or whether they are entirely erroneous results of contamination can be difficult to evaluate. Here this will be entirely dependent on, and follow the discretion of the original excavation reports.
 
-Other previous evaluations of the correspondence between dates informed by radiocarbon dates and shoreline dating have typically followed the same structure as that of @breivik2018, involving a visual inspection of radiocarbon probability distributions plotted against local shoreline displacement curves based on the elevation of the site [e.g. @solheim2020; @åstveit2018]. This approach has a couple of limitations. First of all, the displacement curves are commonly applied directly to larger study areas, with only a couple of studies having taken the variable uplift-rates into account when performing this comparison [e.g. @fossum2020; @møller1987; @persson2008]. Secondly, with this method, the wider the uncertainty range associated with either radiocarbon date or displacement curve, the higher the probability that the confidence intervals overlap, and the higher the probability that we conclude in favour of our hypothesis. This thus leads to an inferential framework that favours uncertainty, which is hardly desirable. In statistical terms this follows from the fact that while one cannot conclude that two dates are different if their confidence intervals overlap, this does not necessarily mean that they are the same. The question thus necessitates a flip from a null-hypothesis of no significant difference, to one of equivalence [e.g. @lakens2018], as the question of interest is effectively one of synchroneity between events [cf. @parnell2008]. Another limitation of this often-employed method is that it only takes into account the vertical distance between the sites and the sea-level. While this is the main parameter of interest for shoreline dating, the practical implications of a vertical difference in RSL will be highly dependent on local topography and bathymetry. RSL-change can have more dramatic consequences in a landscape characterised by a low relief, as the horizontal displacement of the shoreline will be greater. Taking the spatial nature of the relationship between site and shoreline into account will consequently help get more directly at the behavioural dimension of this relation, and move the analysis beyond a purely instrumental consideration of the applicability of shoreline dating. Suggested ways to help mitigate and integrate the issues presented above into to the analysis are presented in the methods section.
+Other previous evaluations of the correspondence between dates informed by radiocarbon dates and shoreline dating have typically followed the same structure as that of @breivik2018, involving a visual inspection of radiocarbon probability distributions plotted against local shoreline displacement curves based on the elevation of the site [e.g. @åstveit2018; @solheim2020]. This approach has a couple of limitations. First of all, the displacement curves are commonly applied directly to larger study areas, with only a couple of studies having taken the variable uplift-rates into account when performing this comparison [e.g. @fossum2020; @møller1987; @persson2008]. Secondly, with this method, the wider the uncertainty range associated with either radiocarbon date or displacement curve, the higher the probability that the confidence intervals overlap, and the higher the probability that we conclude in favour of our hypothesis. This thus leads to an inferential framework that favours uncertainty, which is hardly desirable. In statistical terms this follows from the fact that while one cannot conclude that two dates are different if their confidence intervals overlap, this does not necessarily mean that they are the same. The question thus necessitates a flip from a null-hypothesis of no significant difference, to one of equivalence [e.g. @lakens2018], as the question of interest is effectively one of synchroneity between events [cf. @parnell2008]. Another limitation of this often-employed method is that it only takes into account the vertical distance between the sites and the sea-level. While this is the main parameter of interest for shoreline dating, the practical implications of a vertical difference in RSL will be highly dependent on local topography and bathymetry. RSL-change can have more dramatic consequences in a landscape characterised by a low relief, as the horizontal displacement of the shoreline will be greater. Taking the spatial nature of the relationship between site and shoreline into account will consequently help get more directly at the behavioural dimension of this relation, and move the analysis beyond a purely instrumental consideration of the applicability of shoreline dating. Suggested ways to help mitigate and integrate the issues presented above into to the analysis are presented in the methods section.
 
 # Data
 
@@ -115,7 +115,7 @@ The archaeological data compiled for the analysis consists of all excavated Ston
 
 The elevation data used for the analysis is a digital terrain model (DTM) freely available from the Norwegian Mapping Authority [@mapping2019]. After evaluating the options I opted for the 10m resolution DTM rather than the higher-resolution 1m version. In addition to resulting in considerably less processing time, the higher resolution elevation model is more vulnerable to smaller-scale modern disturbances that the 10m version is not impacted by. The 10m DTM is a down-sampled version of the 1m resolution DTM, which is based on aerial laser scanning using a minimum of two and up to five points per m^2^ [@mapping2019].  
 
-```{r map-iso,  fig.cap = paste("A) Distribution of the ", nrow(sites_sa), " analysed sites relative to the isobases of the displacement curves. The isobases have a direction of 327$^{\\circ}$ (Romundset el al. 2018), B) Displacement curves. Note the increasing steepness of the curves towards the north-east."), fig.height = 13}
+```{r map-iso,  fig.cap = paste("A) Distribution of the ", nrow(sites_sa), " analysed sites relative to the isobases of the displacement curves. The isobases have a direction of 327$^{\\circ}$ (Romundset et al. 2018), B) Displacement curves. Note the increasing steepness of the curves towards the north-east."), fig.height = 13}
 bboxsites <- st_bbox(sites_sa)
 bboxsites[1] <- bboxsites[1] - 15000
 bboxsites[3] <- bboxsites[3] + 15000
@@ -130,7 +130,7 @@ bmap_reproj <- st_transform(bmap2, st_crs(sites_sa))
 
 anc <- as.numeric(c(bboxsites$ymin, bboxsites$xmax))
 overview_map <- ggplot() +
-  geom_sf(data = bmap_reproj, fill = "#fbecdc", colour = "black") +
+  geom_sf(data = bmap_reproj, fill = "grey", colour = NA) +
   geom_sf(data = isobases, aes(colour = name)) +
   geom_sf(data = st_centroid(sites_sa), fill = "red",
           size = 2.25, shape = 21,
@@ -149,8 +149,6 @@ overview_map <- ggplot() +
   theme_bw() + theme(axis.title=element_blank(),
                      axis.text.y = element_blank(),
                      axis.text.x = element_blank(),
-                     panel.background = element_rect(fill = "#dbe3f3", 
-                                                    colour = "black"),
                      rect = element_rect(),
                      axis.ticks = element_blank(),
                      panel.grid.major = element_blank(),
@@ -177,7 +175,7 @@ overview_map / disp_curves
 
 The goal of this study is effectively to evaluate the spatial relationship between two phenomena, sites and shorelines, each associated with their own range of temporal uncertainty. The first task was therefore to ascribe likely date ranges and associated uncertainty to the two phenomena.
 
-To take account of the gradient in the isostatic rebound, the shoreline displacement curves were adjusted to each site location by taking into account the distance to the closest isobase. This was done for each site by first finding the difference between the elevation values of the two closest displacement curves for each year along the entirety of the curves. Each value was then divided by the distance between the isobases. To find the adjusted displacement curve for a given site location, the distance between the site polygon and closest isobase was multiplied with the values for difference per meter. These values were then subtracted from the dsiplacement curve located to the south-west of the site. The result of this process is shown for an example site in Figure \@ref(fig:example-1).
+To take account of the gradient in the isostatic rebound, the shoreline displacement curves were adjusted to each site location by taking into account the distance to the closest isobase. This was done for each site by first finding the difference between the elevation values of the two closest displacement curves for each year along the entirety of the curves. Each value was then divided by the distance between the isobases. To find the adjusted displacement curve for a given site location, the distance between the site polygon and closest isobase was multiplied with the values for difference per meter. These values were then subtracted from the displacement curve located to the south-west of the site, and in the few cases where the site was located south-west of all isobases, the values were instead added. The result of this process is shown for an example site in Figure \@ref(fig:example-1).
 
 For the date ranges associated with the sites, all radiocarbon dates were first individually calibrated using the IntCal20 calibration curve [@reimer2020] using OxCal v4.4.4 [@bronkramsey2009] through the oxcAAR package for R [@hinz2021]. Radiocarbon dates associated with each site were then grouped if they overlapped with 99.7 % probability, meaning these were effectively taken to represent the same settlement phase. In the case where there are multiple dates believed to belong to a single phase, these were subjected to Bayesian modelling using the Boundary function in OxCal and then summed. Multiple phases at a single site were treated as independent of each other.
 
@@ -313,7 +311,7 @@ lowers <- round(approx(sitecurve[,"years"], sitecurve[,"lowerelev"],
 # Draw sea-level uniformly from elevation range, intervals of 5 cm
 sealevel <- sample(seq(lowers, uppers, 0.05), 1)
 
-# Plot the drawn elevation
+# Plot the drawn elevation on the displacement curve
 elevsamp <- ggplot(sitecurve, aes(x = years)) +
   geom_line(aes(y =  upperelev), colour = "red") +
   geom_line(aes(y = lowerelev), colour = "red") +
@@ -380,16 +378,34 @@ hordistl <- st_cast(endptns, "LINESTRING")
 # Find horizontal distance
 hordist <- st_length(hordistl)
 
-# Create label for map
-dist_label <- paste0("Horizontal distance = ", round(hordist, 1), "m", 
-                "\nTopographic distance = ", round(tdist, 1), "m",
-                "\nVertical distance = ", round(vertdist, 1), "m")
+# Create hillshade
+# For some reason the terra version returned pathchy hillshade (probably due 
+# to the defaults - I didn't bother experimenting too much as this is simply for
+# the purposes of visualisation).
+slope <- raster::terrain(raster(sitearea), 'slope')
+aspect <- raster::terrain(raster(sitearea), 'aspect')
+hill <- raster::hillShade(slope, aspect, 40, 270)
+
+# Make the raster amenable for plotting with ggplot (as.data.frame with terra
+# returned some strange errors)
+raster_df <- raster::as.data.frame(raster(sitearea), xy = TRUE)
+names(raster_df) <- c("x", "y", "value")
 
 # Anchor for scale bar
 anc <- as.numeric(c(st_bbox(location_bbox)$ymin, st_bbox(location_bbox)$xmax))
 
 # Create plot showing single simulation of sea-level
 seasamp <- ggplot() +
+  geom_raster(data = raster::as.data.frame(hill, xy = TRUE),
+                aes(x = x, y = y, fill = layer)) +
+  scale_fill_gradient(low = "black", high = "grey40", na.value = NA) +
+  new_scale_fill() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
+                alpha = 0.3) +
+  scale_fill_gradient(low = "grey", high = "white", na.value = NA) +
+  new_scale_fill() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+  scale_fill_gradient(low = NA, high = NA, na.value = "white") +
   geom_sf(data = seapoly, fill = "#dbe3f3", colour = NA) +
   geom_sf(data = sitel, fill = NA, colour = "red") +
   #labs(title =  paste0("Sea-level at ", sealevel, " m above present")) +
@@ -400,10 +416,6 @@ seasamp <- ggplot() +
                  transform = FALSE, st.size = 3, height = 0.3,
                  border.size = 0.1, st.dist = 0.5,
                  anchor = c(x = anc[2] - 500, y = anc[1] + 800)) +
-  # Uncomment to annotate with distance measures
-  # annotate("text", x = st_bbox(location_bbox)[1] + 20,
-  #          y = st_bbox(location_bbox)[4] - 100,
-  #          label = dist_label, hjust = 0) +
   theme_bw() + theme(axis.title=element_blank(),
                      axis.text.y = element_blank(),
                      axis.text.x = element_blank(),
@@ -411,6 +423,11 @@ seasamp <- ggplot() +
                      axis.ticks = element_blank(),
                      panel.grid.major = element_blank(),
                      legend.position = "none")
+
+# Create label of distance measures
+dist_label <- paste0("Horizontal distance = ", round(hordist, 1), "m", 
+                "\nTopographic distance = ", round(tdist, 1), "m",
+                "\nVertical distance = ", round(vertdist, 1), "m")
 
 anot <- ggplot() +
   theme_void() +
@@ -530,7 +547,7 @@ Some sources of likely variation and uncertainty have not been considered here. 
 
 The most immediate contribution of this paper is a confirmation of previous research into the relation between coastal Norwegian Stone Age sites and the prehistoric shoreline, which has largely been verified. Furthermore, the typical application of shoreline dating as an approximate method where date ranges are often for example rounded off to 200-year intervals, means that most previous research based on the method is given support by the findings reported here. However, the findings also suggest that simply using the method as a terminus ante quem for the occupation of the sites is, at least in my view, overly conservative and would stand to unnecessarily loose important chronological information. Attempting to move these considerations further through an explicit quantification has here resulted in a concrete recommendation of applying an offset of 0-15m when shoreline dating sites where no other information is available.
 
-This quantification was achieved by means of Monte Carlo-simulation, integrating multiple sources of spatio-temporal uncertainty. Here the approach was simply used to inform the question of the distance between sites and shorelines. However, this method can be extended to a wide range of use-cases where one needs to visualise and both quantitatively or qualitatively evaluate the relationship between archaeological phenomena, the prehistoric shore-line, and the uncertainty inherent in this reconstruction.
+This quantification was achieved by means of Monte Carlo-simulation, integrating multiple sources of spatio-temporal uncertainty. Here the approach was simply used to inform the question of the distance between sites and shorelines. However, this method can be extended to a wide range of use-cases where one needs to visualise and quantitatively or qualitatively evaluate the relationship between archaeological phenomena, the prehistoric shore-line, and the uncertainty inherent in this reconstruction.
 
 \newpage
 

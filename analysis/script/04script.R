@@ -735,7 +735,7 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
                 alpha = 0.3) +
-    scale_fill_gradient(low = "#fffcfc", high = "#f2dcd0", na.value = NA) +
+    scale_fill_gradient(low = "grey", high = "white", na.value = NA) +
     # scale_fill_gradient(low = "darkgrey", high = "grey", na.value = NA) +
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
@@ -773,7 +773,7 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
   anc <- as.numeric(c(bboxsites$ymin, bboxsites$xmax))
 
   ggplot() +
-    geom_sf(data = bmap_reproj, fill = "#fbecdc", colour = "black") +
+    geom_sf(data = bmap_reproj, fill = "grey", colour = NA) +
     geom_sf(data = isobases, aes(colour = name)) +
     geom_sf(data = st_centroid(sitelimit), size = 1.5, shape = 21,
             colour = "black", fill = "red") +
@@ -792,8 +792,6 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
                        axis.text.y = element_blank(),
                        axis.text.x = element_blank(),
                        rect = element_rect(),
-                       panel.background = element_rect(fill = "#dbe3f3",
-                                                       colour = "black"),
                        axis.ticks = element_blank(),
                        panel.grid.major = element_blank(),
                        legend.position = "none")
@@ -832,14 +830,6 @@ shore_plot <- function(locationraster, overlapgrid, sitelimit, dist, date_groups
   raster_df <- raster::as.data.frame(raster(locationraster), xy = TRUE)
   names(raster_df) <- c("x", "y", "value")
 
-  # scols <- c("#f2fbff", "#86a6d4")
-  scols <- c("grey98", "grey40")
-  scols <- c("#59bfff30", "#59bffff0")
-  scols <- c("#bfe6ff", "#59bfff")
-  scols <- c("#c7e3ff", "#59bfff")
-  #scols <- c("#accbff40","#accbf0")
-
-
   ggplot() +
     geom_raster(data = raster::as.data.frame(hill, xy = TRUE),
                 aes(x = x, y = y, fill = layer)) +
@@ -847,8 +837,7 @@ shore_plot <- function(locationraster, overlapgrid, sitelimit, dist, date_groups
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
                 alpha = 0.3) +
-    scale_fill_gradient(low = "#fffcfc", high = "#f2dcd0", na.value = NA) +
-    # scale_fill_gradient(low = "#fbecdc", high = "#e1bf92", na.value = NA) +
+    scale_fill_gradient(low = "grey", high = "white", na.value = NA) +
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
     scale_fill_gradient(low = NA, high = NA, na.value = "white") +
@@ -856,10 +845,6 @@ shore_plot <- function(locationraster, overlapgrid, sitelimit, dist, date_groups
     geom_sf(data = overlapgrid, aes(alpha = overlaps), col = NA,
             fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff
     geom_sf(data = sitelimit, colour = "red", fill = NA) +
-    # scale_fill_gradient(low = scols[1], high = scols[2],
-    #                      na.value = NA) +
-    # scale_colour_gradient(low = scols[1], high = scols[2],
-    #                       na.value = NA) +
     scale_alpha_continuous(range = c(0.01, 1), na.value = 0) +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
                    transform = FALSE, st.size = s_tsize, height = s_bheight,
