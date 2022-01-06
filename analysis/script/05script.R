@@ -877,10 +877,10 @@ ggsave(file = here("analysis/figures/langangenv7.png"), width = 250,
 sitename <- "Langemyr"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/langemyr.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/langemyr.RData"))
 load(here("analysis/data/derived_data/langemyr.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -897,18 +897,18 @@ ggsave(file = here("analysis/figures/langemyr.png"), width = 250,
 sitename <- "Lunaveien"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 2500, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/lunaveien.RData"))
-# load(here("analysis/data/derived_data/lunaveien.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 3000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/lunaveien.RData"))
+load(here("analysis/data/derived_data/lunaveien.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
-             scale_dist = 200,  s_tdist = 0.5, s_xpos = 135, s_ypos = 65,
-             s_bheight = 0.25)
+             sites_sa, isobases, output, date_groups,  scale_dist = 1250,
+             s_tdist = 9, s_xpos = 1250, s_ypos = 500,  s_bheight = 4)
 
 ggsave(file = here("analysis/figures/lunaveien.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -981,10 +981,10 @@ ggsave(file = here("analysis/figures/lovas3.png"), width = 250,
 sitename <- "Nauen A"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/nauena.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/nauena.RData"))
 load(here("analysis/data/derived_data/nauena.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1002,10 +1002,10 @@ ggsave(file = here("analysis/figures/nauena.png"), width = 250,
 sitename <- "Nauen C"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/nauenc.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/nauenc.RData"))
 load(here("analysis/data/derived_data/nauenc.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1023,10 +1023,10 @@ ggsave(file = here("analysis/figures/nauenc.png"), width = 250,
 sitename <- "Nordby 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/nordby1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/nordby1.RData"))
 load(here("analysis/data/derived_data/nordby1.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1044,10 +1044,10 @@ ggsave(file = here("analysis/figures/nordby1.png"), width = 250,
 sitename <- "Nordby 52"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/nordby52.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/nordby52.RData"))
 load(here("analysis/data/derived_data/nordby52.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1065,10 +1065,10 @@ ggsave(file = here("analysis/figures/nordby52.png"), width = 250,
 sitename <- "Pauler 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 2500, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/pauler1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 2500, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/pauler1.RData"))
 load(here("analysis/data/derived_data/pauler1.RData"))
 
 
@@ -1077,7 +1077,7 @@ sitearea <- rast(file.path(siterpath,
 
 plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              sites_sa, isobases, output, date_groups, scale_dist = 1000,
-             s_tdist = 2, s_xpos = 110, s_ypos = 50,  s_bheight = 1)
+             s_tdist = 2, s_xpos = 1200, s_ypos = 500,  s_bheight = 1.5)
 
 ggsave(file = here("analysis/figures/pauler1.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
@@ -1087,10 +1087,10 @@ ggsave(file = here("analysis/figures/pauler1.png"), width = 250,
 sitename <- "Pauler 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 2500, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/pauler2.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 2500, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/pauler2.RData"))
 load(here("analysis/data/derived_data/pauler2.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1108,11 +1108,11 @@ ggsave(file = here("analysis/figures/pauler2.png"), width = 250,
 sitename <- "Pjonkerød R1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-
-save(output,
-     file = here::here("analysis/data/derived_data/pjonkerodr1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+#
+# save(output,
+#      file = here::here("analysis/data/derived_data/pjonkerodr1.RData"))
 load(here("analysis/data/derived_data/pjonkerodr1.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1130,10 +1130,10 @@ ggsave(file = here("analysis/figures/pjonkerodr1.png"), width = 250,
 sitename <- "Prestemoen 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/prestemoen1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/prestemoen1.RData"))
 load(here("analysis/data/derived_data/prestemoen1.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1151,11 +1151,11 @@ ggsave(file = here("analysis/figures/prestemoen1.png"), width = 250,
 sitename <- "Ragnhildrød"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 4000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/ragnhildrod.RData"))
-# load(here("analysis/data/derived_data/ragnhildrod.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 4000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/ragnhildrod.RData"))
+load(here("analysis/data/derived_data/ragnhildrod.RData"))
 
 sitearea <- rast(file.path(siterpath,
                            paste0(str_replace(sitename, " ", "_"), ".tif")))
@@ -1172,10 +1172,10 @@ ggsave(file = here("analysis/figures/ragnhildrod.png"), width = 250,
 sitename <- "Rødbøl 54"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/rodbol54.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/rodbol54.RData"))
 load(here("analysis/data/derived_data/rodbol54.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1193,10 +1193,10 @@ ggsave(file = here("analysis/figures/rodbol54.png"), width = 250,
 sitename <- "Rognlien"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/rognlien.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/rognlien.RData"))
 load(here("analysis/data/derived_data/rognlien.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1214,10 +1214,10 @@ ggsave(file = here("analysis/figures/rognlien.png"), width = 250,
 sitename <- "Sagene B1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/sageneb1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/sageneb1.RData"))
 load(here("analysis/data/derived_data/sageneb1.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1235,10 +1235,10 @@ ggsave(file = here("analysis/figures/sageneb1.png"), width = 250,
 sitename <- "Sagene B2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/sageneb2.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 1000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/sageneb2.RData"))
 load(here("analysis/data/derived_data/sageneb2.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1256,10 +1256,10 @@ ggsave(file = here("analysis/figures/sageneb2.png"), width = 250,
 sitename <- "Solum 3"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 3500, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/solum3.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 3500, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/solum3.RData"))
 load(here("analysis/data/derived_data/solum3.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1277,10 +1277,10 @@ ggsave(file = here("analysis/figures/solum3.png"), width = 250,
 sitename <- "Stokke/Polland 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/stokkep1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/stokkep1.RData"))
 load(here("analysis/data/derived_data/stokkep1.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1299,10 +1299,10 @@ ggsave(file = here("analysis/figures/stokkep1.png"), width = 250,
 sitename <- "Stokke/Polland 5"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/stokkep5.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/stokkep5.RData"))
 load(here("analysis/data/derived_data/stokkep5.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1321,10 +1321,10 @@ ggsave(file = here("analysis/figures/stokkep5.png"), width = 250,
 sitename <- "Stokke/Polland 8"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/stokkep8.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/stokkep8.RData"))
 load(here("analysis/data/derived_data/stokkep8.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1343,10 +1343,10 @@ ggsave(file = here("analysis/figures/stokkep8.png"), width = 250,
 sitename <- "Torstvet"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/torstvet.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/torstvet.RData"))
 load(here("analysis/data/derived_data/torstvet.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1364,10 +1364,10 @@ ggsave(file = here("analysis/figures/torstvet.png"), width = 250,
 sitename <- "Trondalen"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/trondalen.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/trondalen.RData"))
 load(here("analysis/data/derived_data/trondalen.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1385,10 +1385,10 @@ ggsave(file = here("analysis/figures/trondalen.png"), width = 250,
 sitename <- "Tverdal"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/tverdal.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/tverdal.RData"))
 load(here("analysis/data/derived_data/tverdal.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1406,10 +1406,10 @@ ggsave(file = here("analysis/figures/tverdal.png"), width = 250,
 sitename <- "Vallermyrene 1a"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene1a.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene1a.RData"))
 load(here("analysis/data/derived_data/vallermyrene1a.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1427,10 +1427,10 @@ ggsave(file = here("analysis/figures/vallermyrene1a.png"), width = 250,
 sitename <- "Vallermyrene 1b"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene1b.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene1b.RData"))
 load(here("analysis/data/derived_data/vallermyrene1b.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1449,11 +1449,11 @@ sitename <- "Vallermyrene 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
 # Use dated feature instead of site limit
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 200, siterpath,
-                          sitelimit = FALSE)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene2.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 200, siterpath,
+#                           sitelimit = FALSE)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene2.RData"))
 load(here("analysis/data/derived_data/vallermyrene2.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1471,10 +1471,10 @@ ggsave(file = here("analysis/figures/vallermyrene2.png"), width = 250,
 sitename <- "Vallermyrene 4a"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene4a.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene4a.RData"))
 load(here("analysis/data/derived_data/vallermyrene4a.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1492,10 +1492,10 @@ ggsave(file = here("analysis/figures/vallermyrene4a.png"), width = 250,
 sitename <- "Vallermyrene 4b"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene4b.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene4b.RData"))
 load(here("analysis/data/derived_data/vallermyrene4b.RData"))
 
 sitearea <- rast(file.path(siterpath,
