@@ -7,11 +7,6 @@ library(gridExtra)
 library(gtable)
 library(cowplot)
 
-
-# VAlues to be set to 0:
-# Gunnarsrød 5
-# Pjonkerød R1
-
 # List all files except those starting with a number.
 # That is, all data files associated with sites
 datfiles <- grep("^[0-9]", list.files(here("analysis/data/derived_data")),
@@ -30,18 +25,32 @@ for(i in 1:length(datfiles)){
 
 # results_list is a list of lists of variable length...
 # Anyway, these need to be unpacked. Might be a smoother purrr solution to
-# all of this.
+# do all of this.
 results <- list()
 for(i in 1:length(results_list)){
   dat <- results_list[[i]]
+  tmp <- list()
   for(j in 1:length(dat)){
-    results[[i]] <- dat[[j]]["results"]
+    tmp[[j]] <- dat[[j]]["results"]
   }
+  results[[i]] <- tmp
 }
 
 # Collapse list of lists into a single data frame
 distances <- results %>% bind_rows()
 distances <-  distances$results
+
+# Negative values for Gunnarsrød 5 and Pjonkerød R1 are to be set to zero
+# (see evaluation in supplementary material)
+distances <- distances %>%
+  mutate(vertdist = ifelse(sitename %in% c("Gunnarsrød 5", "Pjonkerød R1")
+                           & vertdist < 0,  0, vertdist),
+         hordist = ifelse(sitename %in% c("Gunnarsrød 5", "Pjonkerød R1")
+                          & hordist < 0,  0, hordist),
+         topodist = ifelse(sitename %in% c("Gunnarsrød 5", "Pjonkerød R1")
+                           & topodist < 0,  0, topodist))
+
+max(distances[distances$sitename == "Gunnarsrød 5",]$vertdist, na.rm = TRUE)
 
 sum_all <- distances %>%
   summarise_at(c("hordist", "topodist", "vertdist"),

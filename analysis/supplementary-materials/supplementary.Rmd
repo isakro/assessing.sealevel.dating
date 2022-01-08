@@ -973,3 +973,5 @@ filter(rcarbon, site_name  == "Vallermyrene 4b") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+Bratsberg was originally two sites [@wenn2012]. [@nielsen2021] has interpreted this as an indicator of early farming.
