@@ -8,14 +8,14 @@ library(gtable)
 library(cowplot)
 
 # List all files except those starting with a number.
-# That is, all data files associated with sites
+# That is, all data files resulting from analysis in 05script.R
 datfiles <- grep("^[0-9]", list.files(here("analysis/data/derived_data")),
      invert = TRUE, value = TRUE)
 
 # Create empty list to hold results
 results_list <- list()
 
-# loop over, load results and assign them to the list
+# Loop over, load results and assign them to the list
 for(i in 1:length(datfiles)){
   # Load results
   load(file.path(here("analysis/data/derived_data", datfiles[i])))
@@ -23,9 +23,8 @@ for(i in 1:length(datfiles)){
                              c("datedat", "sitel", "sitecurve"))]
 }
 
-# results_list is a list of lists of variable length...
-# Anyway, these need to be unpacked. Might be a smoother purrr solution to
-# do all of this.
+# results_list is a list of lists of variable length that need to be unpacked.
+# (Might be a smoother purrr solution to do all of this?)
 results <- list()
 for(i in 1:length(results_list)){
   dat <- results_list[[i]]
@@ -41,7 +40,7 @@ distances <- results %>% bind_rows()
 distances <-  distances$results
 
 # Negative values for Gunnarsrød 5 and Pjonkerød R1 are to be set to zero
-# (see evaluation in supplementary material)
+# (see site evaluations in the supplementary material)
 distances <- distances %>%
   mutate(vertdist = ifelse(sitename %in% c("Gunnarsrød 5", "Pjonkerød R1")
                            & vertdist < 0,  0, vertdist),
@@ -49,8 +48,6 @@ distances <- distances %>%
                           & hordist < 0,  0, hordist),
          topodist = ifelse(sitename %in% c("Gunnarsrød 5", "Pjonkerød R1")
                            & topodist < 0,  0, topodist))
-
-max(distances[distances$sitename == "Gunnarsrød 5",]$vertdist, na.rm = TRUE)
 
 sum_all <- distances %>%
   summarise_at(c("hordist", "topodist", "vertdist"),
@@ -194,12 +191,6 @@ grd <- plot_grid(grd1, grd2, ncol = 1, scale = 0.9)
 
 ggsave(file = here("analysis/figures/results.png"), grd,
        bg = "white")
-
-# ggsave(file = here("analysis/figures/results_cor.png"), grd2,
-#        width = 275, height = 120, units = "mm")
-#
-# grd <- arrangeGrob(grd1, grd2, nrow = 2)
-# ggsave(file = here("analysis/figures/results.png"), grd)
 
 # Exclude data younger than 2500 BCE and only use corresponding 14C-dates.
 

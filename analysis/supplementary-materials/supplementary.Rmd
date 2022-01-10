@@ -2,24 +2,51 @@
 title: "Supplementary material"
 author: "Isak Roalkvam"
 date: "10/27/2021"
+header-includes:
+  - \usepackage{placeins}
 output: pdf_document
 bibliography: references.bib
 ---
 
-```{r,  echo = FALSE, results = 'hide'}
+```{r,  include=FALSE, message=FALSE, warning=FALSE}
 library(here)
 library(tidyverse)
 library(knitr)
 library(kableExtra)
+knitr::opts_chunk$set(echo = FALSE, cache=FALSE)
 
+# Set up so that I can call floatbarrier using regfloat=TRUE in the chunk 
+# headings. See: 
+# https://gist.github.com/burchill/8873d2ade156b27e92a238a774ce2758
+knitr::knit_hooks$set(plot = function (x, options) {
+  float_correct <- function(f, y, opts)  {
+    if (is.null(opts$regfloat) || opts$regfloat==FALSE)
+      paste0(f(y, opts), "\n\n\\FloatBarrier\n")
+    else
+      f(y, opts)
+  }
+  if (!is.null(options$out.width) || !is.null(options$out.height) ||
+      !is.null(options$out.extra) || options$fig.align != "default" ||
+      !is.null(options$fig.subcap)) {
+    if (is.null(options$fig.scap))
+      options$fig.scap = NA
+    return(float_correct(knitr:::hook_plot_tex, x, options))
+  }
+  return(float_correct(knitr:::hook_plot_md_base, x, options))
+})
+```
+
+```{r}
 # Read in radiocarbon dates to be plotted alongside analysis for
 # each site.
 rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
 ```
 
-This document shows the simulation results for each individual site analysed in the study with some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order.
+This document shows the simulation results for each individual site analysed in the study with some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order. Tables holding data on excavated sites and radiocarbon dates, and spatial data for site limits and site features are available in the online repoistory for the paper at https://osf.io/7F9SU
 
-The first figure shows the result of a test run for the site Hovland 5 where the simulations where run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving a wide uncertainty range, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
+Sites with ^14^C-dates to the Stone Age, but for which no spatial data was readily available are Frebergsvik A--C [@mikkelsen1975], Nedre Holtan, Rugtvedt [@odgaard1994], Auve [@østmo2008] and Torsrød [@østmo1975]. These sites are therefore not included in the analysis.  
+
+The first figure shows the result of a test run for the site Hovland 5, where the simulations were run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving a wide uncertainty range, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
 
 ```{r sample_size,  echo = FALSE, out.width = "500px"}
 include_graphics(here("analysis/figures/sample_size.png"))
@@ -28,9 +55,9 @@ include_graphics(here("analysis/figures/sample_size.png"))
 
 Below follows the presentation of the individual sites. The first plot on the first row for each site shows all calibrated radiocarbon dates from the Stone Age associated with the site (see analysis/data/raw_data/radiocarbon.csv for all dates, including those falling outside of the period). The fill colour of the radiocarbon dates indicates whether they are interpreted as belonging to the same phase, and each sum indicates that multiple dates for a phase have been modelled using the Boundary function and then summed using OxCal. Each phase is assumed to be independent of other phases. A red outline indicates that the date(s) were not seen as related to the artefact inventory in the original report. The second plot on the first row displays the site location in the present day landscape on the edited DTM (i.e. highways and railways impacting the adjusted sea-level have been removed, and elevation values are interpolated from the surroundings; see main text and analysis/script/03script.R). The third plot on the first row shows the site location within the study area relative to the isobases of the shoreline displacement curves in use.
 
-Subsequent rows for each site then show the simulation results. The first plot on these rows shows the probability density function from which site dates were drawn during simulation. The second plot shows the result of the simulation runs, where the intensity of the colour indicates the number of times the sea was simulated to be present at any given location. The third plot displays a violin plot of the measured distances between site and shore-line across all simulation runs. Measures for central tendency and dispersion associated with these are then given in the table.
+Subsequent rows for each site then show the simulation results. The first plot on these rows shows the probability density function from which site dates were drawn during simulation. The second plot shows the result of the simulation runs, where the intensity of the colour indicates the number of times the sea was simulated to be present at any given location. The third plot displays a violin plot of the measured distances between site and shore-line across all simulation runs.
 
-```{r adalvestre1,  echo = FALSE, out.width = "500px"}
+```{r adalvestre1,  echo = FALSE, out.width = "500px", regfloat=TRUE}
 
 include_graphics(here("analysis/figures/adalvestre1.png"))
 
@@ -46,7 +73,7 @@ filter(rcarbon, site_name  == "Adal vestre 1") %>%
 
 Adal vestre 1 is situated close to a field, but this does not appear to have resulted in any relevant changes to the terrain.
 
-```{r dalvestre2,  echo = FALSE, out.width = "500px"}
+```{r dalvestre2,  echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/adalvestre2.png"))
 
 filter(rcarbon, site_name  == "Adal vestre 2") %>% 
@@ -62,7 +89,7 @@ filter(rcarbon, site_name  == "Adal vestre 2") %>%
 
 Adal vestre 2 has a similar location in the present day landscape to that of Adal vestre 1 (above).
 
-```{r anvik,  echo = FALSE, out.width = "500px"}
+```{r anvik,  echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/anvik.png"))
 
 filter(rcarbon, site_name  == "Anvik") %>% 
@@ -79,7 +106,7 @@ filter(rcarbon, site_name  == "Anvik") %>%
 
 Anvik [@eymundsson2014a] is situated by the highway and a smaller road. Neither appear to impact the simulation results. The dated fireplace is not seen as related to lithic material, which is believed to hail from the latest part of the Early Mesolithc (c. 8500-8250 BCE).
 
-```{r bakke, echo = FALSE, out.width = "500px"}
+```{r bakke, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/bakke.png"))
 
 filter(rcarbon, site_name  == "Bakke") %>% 
@@ -94,7 +121,7 @@ filter(rcarbon, site_name  == "Bakke") %>%
 
 The radiocarbon date to the Stone Age is not related to the site inventory, which is distinctly Early Mesolithic in character [@nyland2012b].
 
-```{r dordal, echo = FALSE, out.width = "500px"}
+```{r dordal, echo = FALSE, out.width = "500px", regfloat=TRUE}
 
 include_graphics(here("analysis/figures/dordal.png"))
 
@@ -111,7 +138,7 @@ filter(rcarbon, site_name  == "Dørdal") %>%
 
 The ^14^C-dates from two fireplaces at Dørdal are not related to the lithic inventory, where there are no typological indicators pointing the Late Mesolithic. The report suggest that the results might reflect a contamination through a natural process of some sort [@solheim2017].
 
-```{r dybdalshei1, echo = FALSE, out.width = "500px"}
+```{r dybdalshei1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/dybdalshei1.png"))
 
 filter(rcarbon, site_name  == "Dybdalshei 1") %>% 
@@ -125,9 +152,9 @@ filter(rcarbon, site_name  == "Dybdalshei 1") %>%
 
 ```
 
-Dybdalshei 1 was subject to a very limited excavation [@granum2018], and the lack of data might therefore lead one to question whether or not the site actually represent a settlement area. Furthermore, what little lithic material was retrieved is too generic to offer any typological support to the radiocarbon dates of the dated cooking pits. Nonetheless, the site and the ^14^C-dates are still treated the same way as the other sites. This is based on the spatial relation between the lithic artefacts and the features, which offers some additional support to the fact that the cooking pits do in fact represent remnants from visits in the Mesolithic.
+Dybdalshei 1 was subject to a very limited excavation [@granum2018], and the lack of data might therefore lead one to question whether or not the site actually represent a settlement area. Furthermore, what little lithic material was retrieved is too generic to offer any typological support to the radiocarbon dates of the dated cooking pits. Nonetheless, the site and the ^14^C-dates are still treated the same way as the other sites. This is based on the spatial relation between the lithic artefacts and the features, which offers some additional support to the notion that the cooking pits represent remnants from visits in the Mesolithic.
 
-```{r dybdalshei2, echo = FALSE, out.width = "500px"}
+```{r dybdalshei2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/dybdalshei2.png"))
 
 filter(rcarbon, site_name  == "Dybdalshei 2") %>% 
@@ -143,7 +170,7 @@ filter(rcarbon, site_name  == "Dybdalshei 2") %>%
 
 The situation on Dybdalshei 2 is similar to that on Dybdalshei 1 [above, @granum2018], but with only a single date from a single feature and no lithics, the site is not included in the final results.
 
-```{r gunnarsrod4, echo = FALSE, out.width = "500px"}
+```{r gunnarsrod4, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/gunnarsrod4.png"))
 
 filter(rcarbon, site_name  == "Gunnarsrød 4") %>% 
@@ -157,9 +184,9 @@ filter(rcarbon, site_name  == "Gunnarsrød 4") %>%
 
 ```
 
-Gunnarsrød 4 [@reitan2014k], and Gunnarsrød 5 (below), were situated close to where the railway runs today, and therefore required editing of the DTM. Based on maps from the report, this appears to have given adequate, although not perfect results [@reitan2014k, fig.14.7.1]. The date from the bottom of the cultural layer was seen as possibly impacted by old-wood effect, a notion that is in line with the simulation results, as this date would have the site located beneath the sea-level [@reitan2014k].
+The rock-shelter site Gunnarsrød 4 [@reitan2014k], and Gunnarsrød 5 (below), were situated close to where the railway runs today, and therefore required editing of the DTM. Based on maps from the report, this appears to have given adequate, although not perfect results [@reitan2014k, fig.14.7.1]. The date from the bottom of the cultural layer was seen as possibly impacted by old-wood effect, a notion that is in line with the simulation results, as this date would have the site located beneath the sea-level [@reitan2014k].
 
-```{r gunnarsrod5, echo = FALSE, out.width = "500px"}
+```{r gunnarsrod5, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/gunnarsrod5.png"))
 
 filter(rcarbon, site_name  == "Gunnarsrød 5") %>% 
@@ -173,9 +200,9 @@ filter(rcarbon, site_name  == "Gunnarsrød 5") %>%
 
 ```
 
-The location of Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated [@reitan2014d]. While the editing and interpolation of the DTM appears to give reasonable results for the rest of the flatter marsh area where the railway runs today (see also Gunnarsrød 4, above), the site itself would thus have been situated slightly higher. This has likely led to the negative values on the distance measures. In combination, the simulation results and the site map in the report indicate that the site would not have been situated any significant distance from the shoreline. The values have therefore been set to zero for the final aggregative analysis. A note can also be made on the date that is seen as unrelated to the artefact inventory. This is from charcoal from a pit with ceramics which had a far younger date. The date was therefore interpreted as the result of contamination of some kind.
+The location of Gunnarsrød 5 is today situated at the exit of a railway tunnel. The construction of the tunnel entrance has lead to a removal of parts of what used to be a hill on which the site was situated [@reitan2014d]. While the editing and interpolation of the DTM appears to give reasonable results for the rest of the flatter marsh area where the railway runs today (see also Gunnarsrød 4, above), the site itself would thus have been situated slightly higher. This has likely led to the negative values on the distance measures. In combination, the simulation results and the site map in the report [@reitan2014d, fig.9.1] indicate that the site would not have been situated any significant distance from the shoreline. The values have therefore been set to zero for the final aggregative analysis. A note can also be made on the date that is seen as unrelated to the artefact inventory. This is from charcoal from a pit with ceramics which had a far younger date. The date was therefore interpreted as the result of contamination of some kind.
 
-```{r gunnarsrod6a, echo = FALSE, out.width = "500px"}
+```{r gunnarsrod6a, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/gunnarsrod6a.png"))
 
 filter(rcarbon, site_name  == "Gunnarsrød 6a") %>% 
@@ -189,9 +216,9 @@ filter(rcarbon, site_name  == "Gunnarsrød 6a") %>%
 
 ```
 
-The ^14^C-date to the Stone Age from Gunnarsrød 6a is not related to the lithic inventory on the site, which is clearly Mesolithic [@carrasco2014].
+The ^14^C-date to the Neolithic from Gunnarsrød 6a is not related to the lithic inventory on the site, which is clearly Mesolithic [@carrasco2014].
 
-```{r gunnarsrod6b, echo = FALSE, out.width = "500px"}
+```{r gunnarsrod6b, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/gunnarsrod6b.png"))
 
 filter(rcarbon, site_name  == "Gunnarsrød 6b") %>% 
@@ -205,9 +232,9 @@ filter(rcarbon, site_name  == "Gunnarsrød 6b") %>%
 
 ```
 
-As with Gunnarsrød 6a above, the ^14^C-date to the Stone Age from Gunnarsrød 6b is not related to the Mesolithic inventory on the site [@carrasco2014].
+As with Gunnarsrød 6a above, the ^14^C-date to the Neolithic from Gunnarsrød 6b is not related to the Mesolithic inventory on the site [@carrasco2014].
 
-```{r gunnarsrod7, echo = FALSE, out.width = "500px"}
+```{r gunnarsrod7, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/gunnarsrod7.png"))
 
 filter(rcarbon, site_name  == "Gunnarsrød 7") %>% 
@@ -221,9 +248,9 @@ filter(rcarbon, site_name  == "Gunnarsrød 7") %>%
 
 ```
 
-Gunnarsrød 7 is situated on a slope, stretching from 55 masl up to 59 [@fossum2014b]. The lithic inventory is of a Middle Mesolithic character and does not match the ^14^C-dates.
+ The lithic inventory from Gunnarsrød 7 is of a Middle Mesolithic character and does not match the ^14^C-dates [@fossum2014b].
 
-```{r gunnarsrod10, echo = FALSE, out.width = "500px"}
+```{r gunnarsrod10, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/gunnarsrod10.png"))
 
 filter(rcarbon, site_name  == "Gunnarsrød 10") %>% 
@@ -237,9 +264,9 @@ filter(rcarbon, site_name  == "Gunnarsrød 10") %>%
 
 ```
 
-Based on the location of Gunnarsrød 10 on a steep ledge, and the site inventory, the ^14^C-date is not believed to be related to the main occupation of the site [@reitan2014l].
+Based on the location of Gunnarsrød 10 on a steep ledge indicating a shore-bound location, and the site inventory, the ^14^C-date is not believed to be related to the main occupation of the site [@reitan2014l].
 
-```{r hegnavest1, echo = FALSE, out.width = "500px"}
+```{r hegnavest1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hegnavest1.png"))
 
 filter(rcarbon, site_name  == "Hegna vest 1") %>% 
@@ -254,7 +281,7 @@ filter(rcarbon, site_name  == "Hegna vest 1") %>%
 
 Example site from the main text. Hegna vest 1 has been visited multiple times throughout prehistory. The lithic inventory is distinctly Middle Mesolithic and Neolithic in character, with some finds that might be even younger. This is also reflected in the pottery finds, which are deemed to be from the Bronze Age--Early Iron Age. The ^14^C-date to the Late Mesolithic is therefore considered unrelated to the main occupation of the site, as it cannot be related to any elements of the site inventory [@fossum2017a]. The highway runs right by Hegna vest 1 and has been removed. This seem successful in that it doesn't appear to impact the simulated sea-levels. 
 
-```{r hegnavest2, echo = FALSE, out.width = "500px"}
+```{r hegnavest2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hegnavest2.png"))
 
 filter(rcarbon, site_name  == "Hegna vest 2") %>% 
@@ -269,7 +296,7 @@ filter(rcarbon, site_name  == "Hegna vest 2") %>%
 
 As with Hegna vest 1 (above), Hegna vest 2 has been used throughout prehistory. This includes the Middle Mesolithic, the Neolithc, the Bronze Age and the Early Iron Age. The ^14^C-dates are believed to be related to the site activities [@fossum2017]. Hegna vest 2 is located where the highway runs today. This was removed, which appears to have been successful in relation to the simulation results.
 
-```{r hegnavest3, echo = FALSE, out.width = "500px"}
+```{r hegnavest3, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hegnavest3.png"))
 
 filter(rcarbon, site_name  == "Hegna vest 3") %>% 
@@ -284,7 +311,7 @@ filter(rcarbon, site_name  == "Hegna vest 3") %>%
 
 Along with Hegna vest 2 (above), Hegna vest 3 was situated where the highway runs today. The highway has been removed, and it would seem successfully so, as related to the sea-level adjustments. The ^14^C-date to the Middle Mesolithic fits well with the lithic inventory [@eigeland2017]. 
 
-```{r hesthagc2, echo = FALSE, out.width = "500px"}
+```{r hesthagc2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hesthagc2.png"))
 
 filter(rcarbon, site_name  == "Hesthag C2") %>% 
@@ -299,7 +326,7 @@ filter(rcarbon, site_name  == "Hesthag C2") %>%
 
 Hesthag C2 has seen repeated use, as evidenced both by ^14^C-dates and the artefact inventory [@viken2018e]. While only a few finds can be typologically dated to the Late Mesolithic, these were deemed substantial enough to trust the two ^14^C-dates to the period [@viken2018e, 271]. No editing of the DTM was necessary.
 
-```{r hesthagc4, echo = FALSE, out.width = "500px"}
+```{r hesthagc4, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hesthagc4.png"))
 
 filter(rcarbon, site_name  == "Hesthag C4") %>% 
@@ -312,9 +339,9 @@ filter(rcarbon, site_name  == "Hesthag C4") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Typology and radiocarbon date match, and there are no modern disturbances in the vicinity of the site [@viken2018b]. The second ^14^C-date is a reference date of charcoal from a context believed not be anthropogenic. 
+Typology and radiocarbon date match, and there are no modern disturbances in the vicinity of Hesthag C4 [@viken2018b]. The second ^14^C-date is a reference date of charcoal from a context believed not be anthropogenic. 
 
-```{r hovland1, echo = FALSE, out.width = "500px"}
+```{r hovland1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hovland1.png"))
 
 filter(rcarbon, site_name  == "Hovland 1") %>% 
@@ -327,9 +354,9 @@ filter(rcarbon, site_name  == "Hovland 1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-It was noted in the report that it is uncertain how close to the shoreline Hovland 1 would have been situated, based on the ^14^C-dates [@olsen2013b]. The earliest dates match the lithic inventory. The later date is the only indication of activity from the Early Bronze Age/Early Iron Age. The site is not located far from the highway, which was been edited for the analysis of Hovland 1 and 4, as well as Torstvet (see below).   
+It was noted in the report that it is uncertain how close to the shoreline Hovland 1 would have been situated, based on the ^14^C-dates [@olsen2013b]. The earliest dates match the lithic inventory. The later date is the only indication of activity from the Early Bronze Age/Early Iron Age. The site is not located far from the highway, which was also edited for the analysis of Hovland 1 and 4, as well as Torstvet (see below).   
 
-```{r hovland3, echo = FALSE, out.width = "500px"}
+```{r hovland3, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hovland3.png"))
 
 filter(rcarbon, site_name  == "Hovland 3") %>% 
@@ -344,7 +371,7 @@ filter(rcarbon, site_name  == "Hovland 3") %>%
 
 Hovland 3 is securely dated both typologically and radiometrically [@solheim2013]. It is, however, located just by the highway. This appears to have been successfully removed.
 
-```{r hovland4, echo = FALSE, out.width = "500px"}
+```{r hovland4, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hovland4.png"))
 
 filter(rcarbon, site_name  == "Hovland 4") %>% 
@@ -357,9 +384,9 @@ filter(rcarbon, site_name  == "Hovland 4") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Hovland 4 is well-dated both typologically and with ^14^C-dates to the Mesolithic. It has a similar location to that of Hovland 3 (above), and editing of the highway seems to have been successful. 
+Hovland 4 is well-dated both typologically and with ^14^C-dates to the Mesolithic [@mansrud2013a]. It has a similar location to that of Hovland 3 (above), and editing of the highway seems to have been successful. 
 
-```{r hovland5, echo = FALSE, out.width = "500px"}
+```{r hovland5, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hovland5.png"))
 
 filter(rcarbon, site_name  == "Hovland 5") %>% 
@@ -374,7 +401,7 @@ filter(rcarbon, site_name  == "Hovland 5") %>%
 
 Hovland 5 is situated more withdrawn from the highway than the other Hovland sites (above), and the DTM did therefore not require any edits here. The site only has a single ^14^C-date to the Stone Age, but this does match the typological indicators of the assemblage [@mansrud2013]. 
 
-```{r hydal4, echo = FALSE, out.width = "500px"}
+```{r hydal4, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/hydal4.png"))
 
 filter(rcarbon, site_name  == "Hydal 4") %>% 
@@ -389,7 +416,7 @@ filter(rcarbon, site_name  == "Hydal 4") %>%
 
 The lithic inventory from Hydal 4 is distinctly Middle Mesolithic in character, and therefore does not match the ^14^C-dates to the Late Mesolithic [@koxvold2017e]. The simulation of the sea-level does not appear impacted by any modern disturbances.
 
-```{r krogenesd1, echo = FALSE, out.width = "500px"}
+```{r krogenesd1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/krogenesd1.png"))
 
 filter(rcarbon, site_name  == "Krøgenes D1") %>% 
@@ -402,9 +429,9 @@ filter(rcarbon, site_name  == "Krøgenes D1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-All ^14^C-dates from Krøgenes D1 are believed to be related to use of the site, which has been reused multiple times over a long time-span and which is evidenced in the artefact inventory as well [@reitan2018]. To what degree the different dates are related to different or the same settlement phases is difficult to ascertain, but is here, as with for the rest of the sites, simply based on grouping dates overlapping with 99.7% probability. The site is situated around 100 meter from a road to the south, but this does not appear to impact simulation results, and is therefore left unedited in the DTM.
+All ^14^C-dates from Krøgenes D1 are believed to be related to use of the site, which has been reused multiple times over a long time-span [@reitan2018]. This is evidenced by the artefact inventory as well. To what degree the different dates are related to different or the same settlement phases is difficult to ascertain, but is here, as with for the rest of the sites, simply based on grouping dates overlapping with 99.7% probability. The site is situated around 100 meter from a road to the south, but this does not appear to impact simulation results, and is therefore left unedited in the DTM.
 
-```{r krogenesd2, echo = FALSE, out.width = "500px"}
+```{r krogenesd2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/krogenesd2.png"))
 
 filter(rcarbon, site_name  == "Krøgenes D2") %>% 
@@ -419,7 +446,7 @@ filter(rcarbon, site_name  == "Krøgenes D2") %>%
 
 The oldest date is not seen as relevant for the main occupation on Krøgenes D2, in part also due to the large error [@mansrud2018b]. The site location is similar to that of Krøgenes D1 (above), and did not require any editing.
 
-```{r kvastada1, echo = FALSE, out.width = "500px"}
+```{r kvastada1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/kvastada1.png"))
 
 filter(rcarbon, site_name  == "Kvastad A1") %>% 
@@ -434,7 +461,7 @@ filter(rcarbon, site_name  == "Kvastad A1") %>%
 
 ^14^C-date and lithic inventory at Kvastad A1 correspond with a date to the end of the Early Mesolithic [@stokke2018]. The highway to north of the site is clearly visible on the DTM, but does not impact the simulation results.
 
-```{r kvastada2, echo = FALSE, out.width = "500px"}
+```{r kvastada2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/kvastada2.png"))
 
 filter(rcarbon, site_name  == "Kvastad A2") %>% 
@@ -449,7 +476,7 @@ filter(rcarbon, site_name  == "Kvastad A2") %>%
 
 The two find areas are predominantly Mesolithic (to the south-west) and Nesolithic (to the north-east) but were treated in combination here as one Mesolithic date is from the Neolithic area [@stokke2018b]. There is also a late Neolithic element in the lithic inventory that is not reflected in the ^14^C-dates. As with Kvastad A1 (above) the highway runs north of the site, clearly visible on the DTM, but does not impact the simulation results.
 
-```{r kvastada4, echo = FALSE, out.width = "500px"}
+```{r kvastada4, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/kvastada4.png"))
 
 filter(rcarbon, site_name  == "Kvastad A4") %>% 
@@ -462,9 +489,9 @@ filter(rcarbon, site_name  == "Kvastad A4") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-While there are a few elements of the lithic inventory from Kvastad A4 that could be related to the Stone Age date, it is not related to main visit to the site, which are Early and Middle Mesolithic in character [@darmark2018c]. The highway runs over the site today, but this is not relevant for the shore-line reconstruction done here.
+While there are a few elements of the lithic inventory from Kvastad A4 that could be related to the late Middle Mesolithic ^14^C-date, it is not related to the main visits to the site, which are Early Mesolithic in character [@darmark2018c]. The highway runs over the site today, but this is not relevant for the shore-line reconstruction done here.
 
-```{r kvastada9, echo = FALSE, out.width = "500px"}
+```{r kvastada9, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/kvastada9.png"))
 
 filter(rcarbon, site_name  == "Kvastad A9") %>% 
@@ -479,7 +506,7 @@ filter(rcarbon, site_name  == "Kvastad A9") %>%
 
 The Stone Age date from Kvastad A9 is not related to the Early Mesolithic assemblage [@darmark2018b]. The highway running by the site does not seem relevant to the simulation results. 
 
-```{r langangenv1, echo = FALSE, out.width = "500px"}
+```{r langangenv1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/langangenv1.png"))
 
 filter(rcarbon, site_name  == "Langangen Vestgård 1") %>% 
@@ -494,7 +521,7 @@ filter(rcarbon, site_name  == "Langangen Vestgård 1") %>%
 
 Langangen Vestgård 1 is a securely dated site with both ^14^C-dates and typology [@melvold2014]. No modern disturbances appear relevant for the sea-level adjustment.
 
-```{r langangenv3, echo = FALSE, out.width = "500px"}
+```{r langangenv3, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/langangenv3.png"))
 
 filter(rcarbon, site_name  == "Langangen Vestgård 3") %>% 
@@ -509,7 +536,7 @@ filter(rcarbon, site_name  == "Langangen Vestgård 3") %>%
 
 Typology of the site inventory from Langangen Vestgård 3 match the ^14^C-date [@eggen2014a]. Typological indicators are too coarse to offer any insight on the division into two phases done here for the ^14^C-dates. No editing of the DTM was necessary.
 
-```{r langangenv5, echo = FALSE, out.width = "500px"}
+```{r langangenv5, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/langangenv5.png"))
 
 filter(rcarbon, site_name  == "Langangen Vestgård 5") %>% 
@@ -524,7 +551,7 @@ filter(rcarbon, site_name  == "Langangen Vestgård 5") %>%
 
 Langangen Vestgård 5. Typology match the ^14^C-dates and a division of two phases, one Late Mesolithic and one Early Neolithic [@reitan2014b]. No editing of the DTM necessary.
 
-```{r langangenv6, echo = FALSE, out.width = "500px"}
+```{r langangenv6, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/langangenv6.png"))
 
 filter(rcarbon, site_name  == "Langangen Vestgård 6") %>% 
@@ -539,7 +566,7 @@ filter(rcarbon, site_name  == "Langangen Vestgård 6") %>%
 
 Pottery and the lithic inventory of Langanven Vestgård 6 match ^14^C-dates to the Early Neolithic [@reitan2014c]. Nothing in the artefact inventory could be related to the Late Neolithic date. The DTM did not require editing.
 
-```{r langangenv7, echo = FALSE, out.width = "500px"}
+```{r langangenv7, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/langangenv7.png"))
 
 filter(rcarbon, site_name  == "Langangen Vestgård 7") %>% 
@@ -554,7 +581,7 @@ filter(rcarbon, site_name  == "Langangen Vestgård 7") %>%
 
 Langangen Vestgård 7 is represented by a cooking pit found on one of two terraces scattered with lithics that was not known or originally part of the excavation project  [@reitan2014j]. It was therefore only investigated to a limited degree. However, the material does typologically match the ^14^C-date. 
 
-```{r langemyr, echo = FALSE, out.width = "500px"}
+```{r langemyr, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/langemyr.png"))
 
 filter(rcarbon, site_name  == "Langemyr") %>% 
@@ -569,7 +596,7 @@ filter(rcarbon, site_name  == "Langemyr") %>%
 
 Langemyr is typologically and radiometrically dated to the Middle Mesolithic [@koxvold2018a]. Construction area just south the site was removed. This is the same highway-project and raster editing that was done for some of the Hovland sites above.
 
-```{r lovas1, echo = FALSE, out.width = "500px"}
+```{r lovas1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/lovas1.png"))
 
 filter(rcarbon, site_name  == "Løvås 1") %>% 
@@ -584,7 +611,7 @@ filter(rcarbon, site_name  == "Løvås 1") %>%
 
 Løvås 1. No editing of the raster appeared to be necessary. Interestingly only the Løvås sites were simulated to be situated beneath the sea-level. The typologically secure inventory combined with the many overlapping dates from various features does indicate that the issue is with the displacement curve and not the dating of the site. Similar situation to that on Løvås 2 and 3 (below).
 
-```{r lovas2, echo = FALSE, out.width = "500px"}
+```{r lovas2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/lovas2.png"))
 
 filter(rcarbon, site_name  == "Løvås 2") %>% 
@@ -599,7 +626,7 @@ filter(rcarbon, site_name  == "Løvås 2") %>%
 
 Løvås 2. Similar situation to that on Løvås 1 and 3 (above and below).
 
-```{r lovas3, echo = FALSE, out.width = "500px"}
+```{r lovas3, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/lovas3.png"))
 
 filter(rcarbon, site_name  == "Løvås 3") %>% 
@@ -614,7 +641,7 @@ filter(rcarbon, site_name  == "Løvås 3") %>%
 
 Similar situation to that on Løvås 1 and 2 (above).
 
-```{r lunaveien, echo = FALSE, out.width = "500px"}
+```{r lunaveien, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/lunaveien.png"))
 
 filter(rcarbon, site_name  == "Lunaveien") %>% 
@@ -629,7 +656,7 @@ filter(rcarbon, site_name  == "Lunaveien") %>%
 
 Lunaveien is a grave cairn site, and the report states that it is unlikely that any of the finds relate to a settlement pre-dating the construction of the cairn [@reitan2010]. The results have therefore been excluded from the aggregative analysis.
 
-```{r nauena, echo = FALSE, out.width = "500px"}
+```{r nauena, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/nauena.png"))
 
 filter(rcarbon, site_name  == "Nauen A") %>% 
@@ -644,9 +671,7 @@ filter(rcarbon, site_name  == "Nauen A") %>%
 
 Typology of the lithic inventory on Nauen A points to a Late Mesolithic date [@persson2008]. The later date is seen as related to the establishment of a field for grazing or agriculture, which is also supported by dates that fall outside the analysis here. A section of the highway located a few hundred meters to the south was pre-emptively edited in the DTM. This does not appear to be relevant for the simulated sea-level.
 
-Nedre Holtan.
-
-```{r nauenc, echo = FALSE, out.width = "500px"}
+```{r nauenc, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/nauenc.png"))
 
 filter(rcarbon, site_name  == "Nauen C") %>% 
@@ -661,7 +686,7 @@ filter(rcarbon, site_name  == "Nauen C") %>%
 
 The typological indicators of the lithic inventory from Nauen C match the earliest dates [@persson2008]. As with Nauen A, above, the DTM was edited pre-emptively and does not appear to have been necessary.
 
-```{r nordby1, echo = FALSE, out.width = "500px"}
+```{r nordby1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/nordby1.png"))
 
 filter(rcarbon, site_name  == "Nordby 1") %>% 
@@ -674,9 +699,9 @@ filter(rcarbon, site_name  == "Nordby 1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Building structures from the Late Neolithic, Bronze Age and Early Iron Age [@gjerpe2008b]. Lithics and pottery finds support this. Site located on what is today a highway which was edited also for Nordby 52 (below), but is not relevant for the sea-level reconstruction for Nordby 1.
+Site dated to the Late Neolithic, Bronze Age and Early Iron Age [@gjerpe2008b] with long-house 4 dated to the LN. Lithics and pottery finds support the dates. Site located on what is today a highway which was edited also for Nordby 52 (below), but is not relevant for the sea-level reconstruction for Nordby 1.
 
-```{r nordby52, echo = FALSE, out.width = "500px"}
+```{r nordby52, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/nordby52.png"))
 
 filter(rcarbon, site_name  == "Nordby 52") %>% 
@@ -691,7 +716,7 @@ filter(rcarbon, site_name  == "Nordby 52") %>%
 
 Nordby 52 is a rock-shelter that has been visited throughout prehistory [@gjerpe2008]. Clear typological date to both of the Stone Age periods defined by the ^14^C-dates treated here. The site is located by where the highway runs today (see also Nordby 1 above). Edit appears to have been successful.
 
-```{r pauler1, echo = FALSE, out.width = "500px"}
+```{r pauler1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/pauler1.png"))
 
 filter(rcarbon, site_name  == "Pauler 1") %>% 
@@ -706,7 +731,7 @@ filter(rcarbon, site_name  == "Pauler 1") %>%
 
 Pauler 1 has a distinctly Early Mesolithic artefact inventory that is not related to the ^14^C-dates [@schallerahrberg2012]. No modern disturbances appear to imapact the reconstruction of the sea-level corresponding to the ^14^C-dates.
 
-```{r pauler2, echo = FALSE, out.width = "500px"}
+```{r pauler2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/pauler2.png"))
 
 filter(rcarbon, site_name  == "Pauler 2") %>% 
@@ -721,7 +746,7 @@ filter(rcarbon, site_name  == "Pauler 2") %>%
 
 As with Pauler 1 (above), Pauler 2 has a distinctly Early Mesolithic artefact inventory that is not related to the ^14^C-dates [@nyland2012]. No modern disturbances appear to imapact the reconstruction of the sea-level corresponding to the ^14^C-dates.
 
-```{r pjonkerodr1, echo = FALSE, out.width = "500px"}
+```{r pjonkerodr1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/pjonkerodr1.png"))
 
 filter(rcarbon, site_name  == "Pjonkerød R1") %>% 
@@ -736,7 +761,7 @@ filter(rcarbon, site_name  == "Pjonkerød R1") %>%
 
 The lithic inventory from Pjonkerød R1 is consistent with the ^14^C-date [@carrasco2015]. The site is situated by a gravel pit today, which has been fairly successfully edited. However, as the few negative values in the results are likely to result from the interpolation process and the fact that this is a quite large area, as opposed to issues with the displacement curves or ^14^C-dates, the negative values were forced to zero for the aggregative analysis.
 
-```{r prestemoen1, echo = FALSE, out.width = "500px"}
+```{r prestemoen1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/prestemoen1.png"))
 
 filter(rcarbon, site_name  == "Prestemoen 1") %>% 
@@ -751,7 +776,7 @@ filter(rcarbon, site_name  == "Prestemoen 1") %>%
 
 Prestemoen 1 has a lithic inventory consistent with the ^14^C-dates [@persson2014]. The site is situated by a gravel pit that is clearly visible on the DTM to the north-east of the site. This was not edited as it has not impacted the simulated distance between site and sea. The landscape surrounding the site would, however, have been substantially different in the Mesolithic [@persson2014, fig. 10.20].
 
-```{r ragnhildrod, echo = FALSE, out.width = "500px"}
+```{r ragnhildrod, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/ragnhildrod.png"))
 
 filter(rcarbon, site_name  == "Ragnhildrød") %>% 
@@ -764,7 +789,7 @@ filter(rcarbon, site_name  == "Ragnhildrød") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r rodbol54, echo = FALSE, out.width = "500px"}
+```{r rodbol54, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/rodbol54.png"))
 
 filter(rcarbon, site_name  == "Rødbøl 54") %>% 
@@ -779,7 +804,7 @@ filter(rcarbon, site_name  == "Rødbøl 54") %>%
 
 Lithic inventory match the ^14^C-date from Rødbøl 54 [@mansrud2008]. 
 
-```{r rognlien, echo = FALSE, out.width = "500px"}
+```{r rognlien, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/rognlien.png"))
 
 filter(rcarbon, site_name  == "Rognlien") %>% 
@@ -792,7 +817,7 @@ filter(rcarbon, site_name  == "Rognlien") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r sageneb1, echo = FALSE, out.width = "500px"}
+```{r sageneb1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/sageneb1.png"))
 
 filter(rcarbon, site_name  == "Sagene B1") %>% 
@@ -805,7 +830,7 @@ filter(rcarbon, site_name  == "Sagene B1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r sageneb2, echo = FALSE, out.width = "500px"}
+```{r sageneb2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/sageneb2.png"))
 
 filter(rcarbon, site_name  == "Sagene B2") %>% 
@@ -818,7 +843,7 @@ filter(rcarbon, site_name  == "Sagene B2") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r solum3, echo = FALSE, out.width = "500px"}
+```{r solum3, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/solum3.png"))
 
 filter(rcarbon, site_name  == "Solum 3") %>% 
@@ -831,7 +856,7 @@ filter(rcarbon, site_name  == "Solum 3") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r stokkep1, echo = FALSE, out.width = "500px"}
+```{r stokkep1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/stokkep1.png"))
 
 filter(rcarbon, site_name  == "Stokke/Polland 1") %>% 
@@ -844,7 +869,7 @@ filter(rcarbon, site_name  == "Stokke/Polland 1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r stokkep5, echo = FALSE, out.width = "500px"}
+```{r stokkep5, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/stokkep5.png"))
 
 filter(rcarbon, site_name  == "Stokke/Polland 5") %>% 
@@ -857,7 +882,7 @@ filter(rcarbon, site_name  == "Stokke/Polland 5") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r stokkep8, echo = FALSE, out.width = "500px"}
+```{r stokkep8, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/stokkep8.png"))
 
 filter(rcarbon, site_name  == "Stokke/Polland 8") %>% 
@@ -870,7 +895,7 @@ filter(rcarbon, site_name  == "Stokke/Polland 8") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r torstvet, echo = FALSE, out.width = "500px"}
+```{r torstvet, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/torstvet.png"))
 
 filter(rcarbon, site_name  == "Torstvet") %>% 
@@ -883,7 +908,7 @@ filter(rcarbon, site_name  == "Torstvet") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r trondalen, echo = FALSE, out.width = "500px"}
+```{r trondalen, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/trondalen.png"))
 
 filter(rcarbon, site_name  == "Trondalen") %>% 
@@ -896,7 +921,7 @@ filter(rcarbon, site_name  == "Trondalen") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r tverdal, echo = FALSE, out.width = "500px"}
+```{r tverdal, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/tverdal.png"))
 
 filter(rcarbon, site_name  == "Tverdal") %>% 
@@ -909,7 +934,7 @@ filter(rcarbon, site_name  == "Tverdal") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r vallermyrene1a, echo = FALSE, out.width = "500px"}
+```{r vallermyrene1a, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/vallermyrene1a.png"))
 
 filter(rcarbon, site_name  == "Vallermyrene 1a") %>% 
@@ -922,7 +947,7 @@ filter(rcarbon, site_name  == "Vallermyrene 1a") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r vallermyrene1b, echo = FALSE, out.width = "500px"}
+```{r vallermyrene1b, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/vallermyrene1b.png"))
 
 filter(rcarbon, site_name  == "Vallermyrene 1b") %>% 
@@ -935,7 +960,7 @@ filter(rcarbon, site_name  == "Vallermyrene 1b") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r vallermyrene2, echo = FALSE, out.width = "500px"}
+```{r vallermyrene2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/vallermyrene2.png"))
 
 filter(rcarbon, site_name  == "Vallermyrene 2") %>% 
@@ -948,7 +973,7 @@ filter(rcarbon, site_name  == "Vallermyrene 2") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r vallermyrene4a, echo = FALSE, out.width = "500px"}
+```{r vallermyrene4a, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/vallermyrene4a.png"))
 
 filter(rcarbon, site_name  == "Vallermyrene 4a") %>% 
@@ -961,7 +986,7 @@ filter(rcarbon, site_name  == "Vallermyrene 4a") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-```{r vallermyrene4b, echo = FALSE, out.width = "500px"}
+```{r vallermyrene4b, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/vallermyrene4b.png"))
 
 filter(rcarbon, site_name  == "Vallermyrene 4b") %>% 
