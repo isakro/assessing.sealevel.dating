@@ -1,6 +1,7 @@
 library(here)
 library(dplyr)
 library(purrr)
+library(stringr)
 library(ggplot2)
 library(grid)
 library(gridExtra)
@@ -23,6 +24,9 @@ for(i in 1:length(datfiles)){
                              c("datedat", "sitel", "sitecurve"))]
 }
 
+# Sites and phases to label as agricultural
+agr <- c("Nordby 1", "Kvastad A2", "Nauen A")
+
 # results_list is a list of lists of variable length that need to be unpacked.
 # (Might be a smoother purrr solution to do all of this?)
 results <- list()
@@ -30,14 +34,23 @@ for(i in 1:length(results_list)){
   dat <- results_list[[i]]
   tmp <- list()
   for(j in 1:length(dat)){
-    tmp[[j]] <- dat[[j]]["results"]
+    pdat <- dat[[j]]["results"][[1]]
+    if(is.element(unique(pdat$sitename), agr) & any(pdat$year > -4000)){
+        pdat$type <- "agricultural"
+      } else{
+        pdat$type <- "forager"
+      }
+    tmp[[j]] <- pdat
   }
   results[[i]] <- tmp
 }
 
 # Collapse list of lists into a single data frame
 distances <- results %>% bind_rows()
-distances <-  distances$results
+# distances <-  distances$results
+
+# Lunaveien and Dybdalshei 2 are excluded
+# (see site evaluations in the supplementary material)
 
 # Negative values for Gunnarsrød 5 and Pjonkerød R1 are to be set to zero
 # (see site evaluations in the supplementary material)
@@ -49,6 +62,9 @@ distances <- distances %>%
          topodist = ifelse(sitename %in% c("Gunnarsrød 5", "Pjonkerød R1")
                            & topodist < 0,  0, topodist))
 
+save(distances,
+     file = here::here("analysis/data/derived_data/06data.RData"))
+
 sum_all <- distances %>%
   summarise_at(c("hordist", "topodist", "vertdist"),
                c(mean, median, sd, IQR)) %>%
@@ -59,15 +75,20 @@ sum_cor <- distances %>% filter(rcarb_cor == "t") %>%
                c(mean, median, sd, IQR)) %>%
    round()
 
+colsh = c("forager" = "#00ba38", "agricultural" = "darkgrey")
+colst = c("forager" = "#fad510", "agricultural" = "darkgrey")
+colsv = c("forager" = "steelblue", "agricultural" = "darkgrey")
+
 # Horisontal distance, all dates to the Stone Age
-h1 <- ggplot(distances) + geom_point(aes(x = year, y = hordist),
-                                     shape = 21,
-                                     alpha = 0.01,
-                                     fill = "#00ba38",
-                                     colour = "#00ba38") +
+h1 <- ggplot(distances, aes(x = year, y = hordist,
+                            colour = type)) +
+  geom_point(shape = 16, alpha = 0.01) +
+  scale_colour_manual(values = colsh) +
   labs(y = "Horisontal distance (m)", x = "cal BCE",
        title = "All dates") +
-  theme_bw()
+  scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
+  theme_bw() +
+  theme(legend.position = "none")
 
 th1 <- tableGrob(sum_all[c("hordist_fn1", "hordist_fn2",
                          "hordist_fn3", "hordist_fn4")],
@@ -82,15 +103,15 @@ hor1 <- grid.arrange(h1, th1, heights = unit.c(unit(1, "null"), th))
 
 # Horisontal distance, dates corresponding to inventory
 h2 <- distances %>%  filter(rcarb_cor == "t") %>%
-  ggplot() +
-  geom_point(aes(x = year, y = hordist),
-                        shape = 21,
-                        alpha = 0.01,
-                        fill = "#00ba38",
-                        colour = "#00ba38") +
+  ggplot(aes(x = year, y = hordist,
+                        colour = type)) +
+  geom_point(shape = 16, alpha = 0.01) +
+  scale_colour_manual(values = colsh) +
   labs(y = "Horisontal distance (m)", x = "cal BCE",
        title = "Corresponding dates") +
-  theme_bw()
+  scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
+  theme_bw() +
+  theme(legend.position = "none")
 
 th2 <- tableGrob(sum_cor[c("hordist_fn1", "hordist_fn2",
                            "hordist_fn3", "hordist_fn4")],
@@ -101,14 +122,14 @@ th2 <- tableGrob(sum_cor[c("hordist_fn1", "hordist_fn2",
 hor2 <- grid.arrange(h2, th2, heights = unit.c(unit(1, "null"), th))
 
 # Repeat for topographic distance
-t1 <- ggplot(distances) +
-  geom_point(aes(x = year, y = topodist),
-             shape = 21,
-             alpha = 0.01,
-             fill = "#fad510",
-             colour = "#fad510") +
-  labs(y = "Topographic distance (m)", x = "cal BCE") +
-  theme_bw()
+t1 <- ggplot(distances, aes(x = year, y = topodist,
+                            colour = type)) +
+  geom_point(shape = 16, alpha = 0.01) +
+  scale_colour_manual(values = colst) +
+  labs(y = "Topographic distance (m)", x = "cal BCE", title = "") +
+  scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
+  theme_bw() +
+  theme(legend.position = "none")
 
 tt1 <- tableGrob(sum_all[c("topodist_fn1", "topodist_fn2",
                            "topodist_fn3", "topodist_fn4")],
@@ -120,14 +141,14 @@ topo1 <- grid.arrange(t1, tt1, heights = unit.c(unit(1, "null"), th))
 
 # Topograhic distance, corresponding dates
 t2 <- distances %>%  filter(rcarb_cor == "t") %>%
-  ggplot() +
-  geom_point(aes(x = year, y = topodist),
-             shape = 21,
-             alpha = 0.01,
-             fill = "#fad510",
-             colour = "#fad510") +
-  labs(y = "Topographic distance (m)", x = "cal BCE") +
-  theme_bw()
+  ggplot(aes(x = year, y = topodist,
+                        colour = type)) +
+  geom_point(shape = 16, alpha = 0.01) +
+  scale_colour_manual(values = colst) +
+  labs(y = "Topographic distance (m)", x = "cal BCE", title = "") +
+   scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
+  theme_bw() +
+  theme(legend.position = "none")
 
 tt2 <- tableGrob(sum_cor[c("topodist_fn1", "topodist_fn2",
                            "topodist_fn3", "topodist_fn4")],
@@ -135,26 +156,18 @@ tt2 <- tableGrob(sum_cor[c("topodist_fn1", "topodist_fn2",
                           "SD", "IQR"),
                  rows = NULL, theme = ttheme_minimal())
 
-# tt2 <- gtable_add_grob(tt2,
-#                        grobs =  segmentsGrob(
-#                          x0 = unit(0,"npc"),
-#                          y0 = unit(0,"npc"),
-#                          x1 = unit(1,"npc"),
-#                          y1 = unit(0,"npc"),
-#                          gp = gpar(lwd = 1)),
-#                        t = 1, b =1, l = 1, r = ncol(tt2))
-
 topo2 <- grid.arrange(t2, tt2, heights = unit.c(unit(1, "null"), th))
 
 # Repeat for vertical distance
-v1 <- ggplot(distances) +
-  geom_point(aes(x = year, y = vertdist), shape = 21,
-             alpha = 0.01,
-             fill = "#046c9a",
-             colour = "#046c9a") +
-  labs(y = "Vertical distance (m)", x = "cal BCE") +
+v1 <- ggplot(distances, aes(x = year, y = vertdist,
+                            colour = type)) +
+  geom_point(shape = 16, alpha = 0.01) +
+  scale_colour_manual(values = colsv) +
+  labs(y = "Vertical distance (m)", x = "cal BCE", title = "") +
+  scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
   ylim(-30, 90) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none")
 
 vt1 <- tableGrob(sum_all[c("vertdist_fn1", "vertdist_fn2",
                            "vertdist_fn3", "vertdist_fn4")],
@@ -166,15 +179,15 @@ vert1 <- grid.arrange(v1, vt1, heights = unit.c(unit(1, "null"), th))
 
 # Vertical distance, corresponding dates
 v2 <- distances %>%  filter(rcarb_cor == "t") %>%
-  ggplot() +
-  geom_point(aes(x = year, y = vertdist),
-             shape = 21,
-             alpha = 0.01,
-             fill = "#046c9a",
-             colour = "#046c9a") +
-  labs(y = "Vertical distance (m)", x = "cal BCE") +
+  ggplot(aes(x = year, y = vertdist,
+                        colour = type)) +
+  geom_point(shape = 16, alpha = 0.01) +
+  scale_colour_manual(values = colsv) +
+  scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
+  labs(y = "Vertical distance (m)", x = "cal BCE", title = "") +
   ylim(-30, 90) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none")
 
 vt2 <- tableGrob(sum_cor[c("vertdist_fn1", "vertdist_fn2",
                            "vertdist_fn3", "vertdist_fn4")],
@@ -192,50 +205,79 @@ grd <- plot_grid(grd1, grd2, ncol = 1, scale = 0.9)
 ggsave(file = here("analysis/figures/results.png"), grd,
        bg = "white")
 
-# Exclude data younger than 2500 BCE and only use corresponding 14C-dates.
+# Measures for vertical distance to inform recommendations for shoreline dating.
+# Using only corresponding dates, excluding dates to agricultural activity
 
-# Find statistics again
-sum_cor2 <- distances %>% filter(year <= -2500 & rcarb_cor == "t") %>%
+# Dates older than 2500
+distances2 <- distances %>%
+  filter(year <= -2500 & rcarb_cor == "t" & type == "forager") %>%
+  mutate(hordist = ifelse(str_detect(sitename, "Løvås"), 0, hordist),
+       topodist = ifelse(str_detect(sitename, "Løvås"), 0, topodist),
+       vertdist = ifelse(str_detect(sitename, "Løvås"), 0, vertdist))
+# %>%
+#   mutate(hordist = ifelse(hordist < 0, 0, hordist),
+#          topodist = ifelse(topodist < 0, 0, topodist),
+#          vertdist = ifelse(vertdist < 0, 0, vertdist))
+
+sum_cor2 <- distances2 %>%
   summarise_at(c("hordist", "topodist", "vertdist"),
                c(mean, median, sd, IQR)) %>%
   round()
 
-# Histogram for horisontal distance
-histhor <- distances %>%  filter(year <= -2500 & rcarb_cor == "t") %>%
+# Dates older than 4000
+distances3 <- distances %>%
+  filter(year <= -4000 & rcarb_cor == "t" & type == "forager") %>%
+  mutate(hordist = ifelse(str_detect(sitename, "Løvås"), 0, hordist),
+         topodist = ifelse(str_detect(sitename, "Løvås"), 0, topodist),
+         vertdist = ifelse(str_detect(sitename, "Løvås"), 0, vertdist))
+
+sum_cor3 <- distances3 %>%
+  summarise_at(c("hordist", "topodist", "vertdist"),
+               c(mean, median, sd, IQR)) %>%
+  round()
+
+# Vertical distance,
+# Vertical distance, dates older than 4000 BCE (i.e. Mesolithic)
+
+histhor <- distances2 %>%
   ggplot() + geom_histogram(aes(hordist), binwidth = 20,
                             fill = "#00ba38",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
-  labs(title= "Horisontal distance (m) \nBinwidth = 20m", x = "", y = "Frequency")
+  labs(title= "Horisontal distance (m) \nBinwidth = 20m",
+       x = "", y = "Frequency")
 
 # Table for horisontal statistics after exclusion of younger sites
 tabhor3 <- tableGrob(sum_cor2[c("hordist_fn1", "hordist_fn2",
-                           "hordist_fn3", "hordist_fn4")],
-                 cols = c("Mean", "Median",
-                          "SD", "IQR"),
-                 rows = NULL, theme = ttheme_minimal())
+                                "hordist_fn3", "hordist_fn4")],
+                     cols = c("Mean", "Median",
+                              "SD", "IQR"),
+                     rows = NULL, theme = ttheme_minimal())
+
+th <- sum(tabhor3$heights)
 
 # Assemble horisontal histogram and table
 hor3 <- grid.arrange(histhor, tabhor3, heights = unit.c(unit(1, "null"), th))
 
-histtopo <- distances %>%  filter(year <= -2500 & rcarb_cor == "t") %>%
+histtopo <- distances2 %>%
   ggplot() + geom_histogram(aes(topodist), binwidth = 20,
                             fill = "#fad510",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
-  labs(title= "Topographic distance (m) \nBinwidth = 20m", x = "", y = "Frequency")
+  labs(title= "Topographic distance (m) \nBinwidth = 20m",
+       x = "", y = "Frequency")
 
 tabtopo3 <- tableGrob(sum_cor2[c("topodist_fn1", "topodist_fn2",
-                            "topodist_fn3", "topodist_fn4")],
-                  cols = c("Mean", "Median",
-                           "SD", "IQR"),
-                  rows = NULL, theme = ttheme_minimal())
+                                 "topodist_fn3", "topodist_fn4")],
+                      cols = c("Mean", "Median",
+                               "SD", "IQR"),
+                      rows = NULL, theme = ttheme_minimal())
 
 topo3 <- grid.arrange(histtopo, tabtopo3, heights = unit.c(unit(1, "null"), th))
 
-histvert <- distances %>%  filter(year <= -2500 & rcarb_cor == "t") %>%
+histvert <- distances2 %>%
   ggplot() + geom_histogram(aes(vertdist), binwidth = 1,
                             fill = "#046c9a",
                             colour = "black",
@@ -244,10 +286,10 @@ histvert <- distances %>%  filter(year <= -2500 & rcarb_cor == "t") %>%
   labs(title= "Vertical distance (m) \nBinwidth = 1m", x = "", y = "Frequency")
 
 tabvert3 <- tableGrob(sum_cor2[c("vertdist_fn1", "vertdist_fn2",
-                            "vertdist_fn3", "vertdist_fn4")],
-                  cols = c("Mean", "Median",
-                           "SD", "IQR"),
-                  rows = NULL, theme = ttheme_minimal())
+                                 "vertdist_fn3", "vertdist_fn4")],
+                      cols = c("Mean", "Median",
+                               "SD", "IQR"),
+                      rows = NULL, theme = ttheme_minimal())
 
 vert3 <- grid.arrange(histvert, tabvert3, heights = unit.c(unit(1, "null"), th))
 
@@ -256,6 +298,63 @@ grd3 <- grid.arrange(hor3, topo3, vert3, nrow = 1)
 ggsave(file = here("analysis/figures/results2.png"), grd3,
        width = 250, height = 100, units = "mm")
 
-save(distances,
-     file = here::here("analysis/data/derived_data/06data.RData"))
+# Repeat for Mesolithic
 
+histhor2 <- distances3 %>%
+  ggplot() + geom_histogram(aes(hordist), binwidth = 20,
+                            fill = "#00ba38",
+                            colour = "black",
+                            alpha = 0.5) +
+  theme_bw() +
+  labs(title= "Horisontal distance (m) \nBinwidth = 20m",
+       x = "", y = "Frequency")
+
+tabhor4 <- tableGrob(sum_cor3[c("hordist_fn1", "hordist_fn2",
+                                "hordist_fn3", "hordist_fn4")],
+                     cols = c("Mean", "Median",
+                              "SD", "IQR"),
+                     rows = NULL, theme = ttheme_minimal())
+
+th <- sum(tabhor4$heights)
+
+hor4 <- grid.arrange(histhor2, tabhor4, heights = unit.c(unit(1, "null"), th))
+
+histtopo2 <- distances3 %>%
+  ggplot() + geom_histogram(aes(topodist), binwidth = 20,
+                            fill = "#fad510",
+                            colour = "black",
+                            alpha = 0.5) +
+  theme_bw() +
+  labs(title= "Topographic distance (m) \nBinwidth = 20m",
+       x = "", y = "Frequency")
+
+tabtopo4 <- tableGrob(sum_cor3[c("topodist_fn1", "topodist_fn2",
+                                 "topodist_fn3", "topodist_fn4")],
+                      cols = c("Mean", "Median",
+                               "SD", "IQR"),
+                      rows = NULL, theme = ttheme_minimal())
+
+topo4 <- grid.arrange(histtopo2, tabtopo4,
+                      heights = unit.c(unit(1, "null"), th))
+
+histvert2 <- distances3 %>%
+  ggplot() + geom_histogram(aes(vertdist), binwidth = 1,
+                            fill = "#046c9a",
+                            colour = "black",
+                            alpha = 0.5) +
+  theme_bw() +
+  labs(title= "Vertical distance (m) \nBinwidth = 1m", x = "", y = "Frequency")
+
+tabvert4 <- tableGrob(sum_cor3[c("vertdist_fn1", "vertdist_fn2",
+                                 "vertdist_fn3", "vertdist_fn4")],
+                      cols = c("Mean", "Median",
+                               "SD", "IQR"),
+                      rows = NULL, theme = ttheme_minimal())
+
+vert4 <- grid.arrange(histvert2, tabvert4,
+                      heights = unit.c(unit(1, "null"), th))
+
+grd4 <- grid.arrange(hor4, topo4, vert4, nrow = 1)
+
+ggsave(file = here("analysis/figures/results3.png"), grd4,
+       width = 250, height = 100, units = "mm")

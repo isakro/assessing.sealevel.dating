@@ -42,9 +42,9 @@ knitr::knit_hooks$set(plot = function (x, options) {
 rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
 ```
 
-This document shows the simulation results for each individual site analysed in the study with some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order. Tables holding data on excavated sites and radiocarbon dates, and spatial data for site limits and site features are available in the online repoistory for the paper at https://osf.io/7F9SU
+This document shows the simulation results for each individual site analysed in the study with some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order.  excavated sites and radiocarbon dates, and spatial data for site limits and site features are available in the online repoistory for the paper at https://osf.io/7F9SU
 
-Sites with ^14^C-dates to the Stone Age, but for which no spatial data was readily available are Frebergsvik A--C [@mikkelsen1975], Nedre Holtan, Rugtvedt [@odgaard1994], Auve [@østmo2008] and Torsrød [@østmo1975]. These sites are therefore not included in the analysis.  
+Sites with ^14^C-dates to the Stone Age but for which no spatial data was readily available are Frebergsvik A--C [@mikkelsen1975, although these do not typologically match], Nedre Holtan, Rugtvedt [@odgaard1994], Auve [@østmo2008] and Torsrød [@østmo1975]. These sites are therefore not included in the analysis. Furthermore, @nielsen2021 has recently interpreted features from the otherwise younger sites Bratsberg and Larønningen as possibly related to farming activity in the Early Neolithic. However, given the limited number of features, the lack of any artefacts directly related to these, and the therefore somewhat speculative nature of this suggestion, the sites are kept out of the analysis here.
 
 The first figure shows the result of a test run for the site Hovland 5, where the simulations were run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving a wide uncertainty range, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
 
@@ -774,7 +774,7 @@ filter(rcarbon, site_name  == "Prestemoen 1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Prestemoen 1 has a lithic inventory consistent with the ^14^C-dates [@persson2014]. The site is situated by a gravel pit that is clearly visible on the DTM to the north-east of the site. This was not edited as it has not impacted the simulated distance between site and sea. The landscape surrounding the site would, however, have been substantially different in the Mesolithic [@persson2014, fig. 10.20].
+Prestemoen 1 has a lithic inventory consistent with the ^14^C-dates [@persson2014]. The site is situated by a gravel pit that is clearly visible on the DTM to the north-east of the site. This was not edited as it has not impacted the simulated distance between site and sea. The landscape surrounding the site would, however, have been very different in the Mesolithic [@persson2014, fig. 10.20].
 
 ```{r ragnhildrod, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/ragnhildrod.png"))
@@ -789,6 +789,8 @@ filter(rcarbon, site_name  == "Ragnhildrød") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
+The earliest ^14^C-date does not match the Middle Mesolithic inventory from Ragnhildrød [@mjaerum2012]. The post-hole dated to the Late Neolithic/Bronze Age could be related to a single find of a pressure flaked object, but was not given much weight in the report [@mjaerum2012, 76].
+
 ```{r rodbol54, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/rodbol54.png"))
 
@@ -802,7 +804,7 @@ filter(rcarbon, site_name  == "Rødbøl 54") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Lithic inventory match the ^14^C-date from Rødbøl 54 [@mansrud2008]. 
+Lithic inventory match the ^14^C-date from Rødbøl 54 [@mansrud2008]. The site is situated where the highway runs today, which required editing. 
 
 ```{r rognlien, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/rognlien.png"))
@@ -817,6 +819,8 @@ filter(rcarbon, site_name  == "Rognlien") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
+Rognlien was originally excavated in [@ingstad1970]. The site limit has been manually defined based on the description given in the report and the spatial geometry of the site as defined in the database Askeladden. It could be slightly off, but should match the elevation given in the publication of the site [@ingstad1970].The ^14^C-dates from the original excavation was not seen as contemporaneous with the lithic material on the site. Burnt elk bone from the original excavation was therefore recently subjected to radiocarbon dating and is believed to match the occupation of the site [pers.comm. Steinar Solheim, also provided in @stokke2017, 24].
+
 ```{r sageneb1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/sageneb1.png"))
 
@@ -829,6 +833,9 @@ filter(rcarbon, site_name  == "Sagene B1") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+
+^14^C-dates from Sagene B1 do not match the Early Mesolithic inventory of the site [@viken2018]. The wide discrepancy of the dates from the the post-holes also led @viken2018 to suggest that these features might actually be non-anthropogenic and rather be related to trees that have grown on the site.
 
 ```{r sageneb2, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/sageneb2.png"))
@@ -843,6 +850,8 @@ filter(rcarbon, site_name  == "Sagene B2") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
+The ^14^C-dates from Sagene B2 do not match the clearly Early Mesolithic inventory of the site [@darmark2018a].
+
 ```{r solum3, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/solum3.png"))
 
@@ -855,6 +864,8 @@ filter(rcarbon, site_name  == "Solum 3") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+Solum 3 is a Late Neolithic and Early Bronze Age site, with ^14^C-dates matching the lithic inventory [@fossum2014d].
 
 ```{r stokkep1, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/stokkep1.png"))
@@ -869,6 +880,8 @@ filter(rcarbon, site_name  == "Stokke/Polland 1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
+The artefact inventory from Stokke/Polland 1, containing both lithics and ceramics, indicates visits in the Late Mesolithic as well as the Early Neolithic [@koxvold2017i]. Date groups were therefore manually separated, even though they overlap at 99.7% probability. The site is located right by the highway to the east, which was edited for the other Stokke/Polland sites, but this does not appear relevant for the reconstruction of the sea-level at Stokke/Polland 1, which would have reached the site from the west.
+
 ```{r stokkep5, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/stokkep5.png"))
 
@@ -881,6 +894,8 @@ filter(rcarbon, site_name  == "Stokke/Polland 5") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+The ^14^C-dates matches the lithic inventory from Stokke/Polland 5 [@mansrud2017]. The site is located where the highway runs today. This appears to have been successfully edited. The excavated area is more extensive (field A--C in the report) that what is used as the site limit here, but the relation between the different areas is not clear. Field A, used as the site limit here, holds all the dated features.
 
 ```{r stokkep8, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/stokkep8.png"))
@@ -895,6 +910,8 @@ filter(rcarbon, site_name  == "Stokke/Polland 8") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
+Stokke/Polland 8 have corresponding lithic inventory and ^14^C-date [@fossum2017c]. The site is situated just east of where the highway runs today. This appears to have been successfully edited [cf. @fossum2017c, fig.28.3].
+
 ```{r torstvet, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/torstvet.png"))
 
@@ -907,6 +924,8 @@ filter(rcarbon, site_name  == "Torstvet") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+Typology of lithics match the ^14^C-dates from Torstvet [@mansrud2013b]. The site is located where the highway runs today. This appears to have been successfully edited, although there is a possibility that this has led to the sea-level being simulated sightly further away from the site than what would otherwise have been the case. However, as with he Hovland-sites above, this appears to rather follow from the general topography of the landscape which makes the reconstruction more uncertain than in areas with a higher relief.
 
 ```{r trondalen, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/trondalen.png"))
@@ -921,6 +940,8 @@ filter(rcarbon, site_name  == "Trondalen") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
+^14^C-dates match the typological indicators in the artefact assemblage at Trondalen [@mansrud2018c]. No disturbances required editing in the DTM.
+
 ```{r tverdal, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/tverdal.png"))
 
@@ -933,6 +954,8 @@ filter(rcarbon, site_name  == "Tverdal") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+
 
 ```{r vallermyrene1a, echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/vallermyrene1a.png"))
@@ -998,5 +1021,3 @@ filter(rcarbon, site_name  == "Vallermyrene 4b") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
-
-Bratsberg was originally two sites [@wenn2012]. [@nielsen2021] has interpreted this as an indicator of early farming.

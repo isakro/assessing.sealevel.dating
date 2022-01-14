@@ -855,6 +855,7 @@ ggsave(file = here("analysis/figures/langangenv6.png"), width = 250,
 sitename <- "Langangen Vestgård 7"
 date_groups <- group_dates(rcarb_sa, sitename)
 
+# Use dated feature instead of site limit
 # output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
 #                           isobases, nsamp = nsamp, loc_bbox = 200, siterpath,
 #                           sitelimit = FALSE)
@@ -1275,7 +1276,10 @@ ggsave(file = here("analysis/figures/solum3.png"), width = 250,
 
 ######### Stokke/Polland 1 #########
 sitename <- "Stokke/Polland 1"
-date_groups <- group_dates(rcarb_sa, sitename)
+
+# Typological indicators indicate seperate Late Mesolithic and a Early Neolithic
+# visits. Date groups were manually set to reflect this.
+date_groups <- c(1, 2, 2, 2)
 
 # output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
 #                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)

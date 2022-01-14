@@ -628,6 +628,8 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
     # And assign the values from the limit to the convex hull
     sitel <- left_join(sitel, st_drop_geometry(filter(sites_sa,
              name == sitename)), by = c("site_name" = "name", "ask_id"))
+    names(sitel)[which(names(sitel) == "site_name")] <- "name"
+    sitel <- st_as_sf(sitel)
   }
 
   # If this option is set to true, only include radiocarbon dates which were
@@ -1005,4 +1007,70 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
       plot_annotation(title = sitename) &
       theme(plot.title = element_text(hjust = 0.5))
     }
+}
+
+
+# Function to shoreline date site, adding specified offsets
+shoreline_date <- function(sitename, dtm = dtm,
+                           displacement_curves = displacement_curves,
+                           features = rcarb_sa, sites = sites_sa,
+                           isobases = isobases, sitelimit = TRUE, xvals = xvals,
+                           offset = c(0, 16)){
+  # Retrieve site features
+  siter <- filter(features, site_name == sitename)
+
+  # If the site limit is to be used
+  if(sitelimit == TRUE){
+    sitel <- filter(sites, name == sitename)
+    siteu <- st_union(sitel)
+    sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
+  } else {
+    # If not create a convex hull around the dated features
+    sitel <- st_convex_hull(siter)
+    # And assign the values from the limit to the convex hull
+    sitel <- left_join(sitel, st_drop_geometry(filter(sites_sa,
+                name == sitename)), by = c("site_name" = "name", "ask_id"))
+  }
+
+  sitecurve <- interpolate_curve(years = xvals,
+                                 isobase1 = sitel$isobase1,
+                                 isobase2 = sitel$isobase2,
+                                 target = sitel,
+                                 dispdat = displacement_curves,
+                                 isodat = isobases,
+                                 direction_rel_curve1 = sitel$dir_rel_1)
+  sitecurve$name <- sitename
+
+  siteelev <- extract(dtm, vect(sitel), fun = min)[2]
+
+
+  negative_offset <- siteelev - offset[1]
+  if(negative_offset < 1) {
+    negative_offset <- 1
+  }
+
+  positive_offset <- siteelev + offset[2]
+
+  # Find lower date, subtracting offset (defaults to 0)
+  lowerd1 <- round(approx(sitecurve[,"lowerelev"],
+                         xvals, xout = negative_offset)[['y']])
+
+  # Find upper date, subtracting offset (defaults to 0)
+  upperd1 <- round(approx(sitecurve[,"upperelev"],
+                          xvals, xout = negative_offset)[['y']])
+
+  # Find lower date, adding upper offset (defaults to 16)
+  lowerd2 <- round(approx(sitecurve[,"lowerelev"],
+                         xvals, xout = positive_offset)[['y']])
+
+  # Find upper date, adding upper offset (defaults to 16)
+  upperd2 <- round(approx(sitecurve[,"upperelev"],
+                         xvals, xout = positive_offset)[['y']])
+
+  # Find youngest and oldest date
+  latest <- max(c(lowerd1, upperd1, lowerd2, upperd2), na.rm = TRUE)
+  earliest <- min(c(lowerd1, upperd1, lowerd2, upperd2), na.rm = TRUE)
+
+  shoredates <- c("latest_date" = latest, "earliest_date" = earliest)
+  return(shoredates)
 }
