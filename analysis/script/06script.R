@@ -213,11 +213,29 @@ distances2 <- distances %>%
   filter(year <= -2500 & rcarb_cor == "t" & type == "forager") %>%
   mutate(hordist = ifelse(str_detect(sitename, "Løvås"), 0, hordist),
        topodist = ifelse(str_detect(sitename, "Løvås"), 0, topodist),
-       vertdist = ifelse(str_detect(sitename, "Løvås"), 0, vertdist))
-# %>%
-#   mutate(hordist = ifelse(hordist < 0, 0, hordist),
-#          topodist = ifelse(topodist < 0, 0, topodist),
-#          vertdist = ifelse(vertdist < 0, 0, vertdist))
+       vertdist = ifelse(str_detect(sitename, "Løvås"), 0, vertdist)) %>%
+  mutate(hordist = ifelse(hordist < 0, 0, hordist),
+         topodist = ifelse(topodist < 0, 0, topodist),
+         vertdist = ifelse(vertdist < 0, 0, vertdist))
+
+
+distances2$bins <- cut(round(distances$vertdist),
+                       breaks = seq(min(round(distances$vertdist)),
+                                    max(round(distances$vertdist)), 1))
+
+library(MASS)
+fitdistr(distances2$vertdist, "exponential")
+fitdistr(distances2$vertdist,"logistic")
+
+fitexp <- fitdistr(distances2$vertdist, "exponential")
+1 * (1 - fitexp$estimate) * 1
+
+hist(distances2$vertdist, freq=FALSE)
+curve(dexp(x, rate = fitexp$estimate, log=FALSE), from = 1, add = TRUE)
+
+curve(dpois(x, 0.00917018, log = FALSE), add = TRUE)
+
+fitdistr(distances2$vertdist,"exponential")
 
 sum_cor2 <- distances2 %>%
   summarise_at(c("hordist", "topodist", "vertdist"),
