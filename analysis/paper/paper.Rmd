@@ -531,15 +531,15 @@ knitr::include_graphics(here("analysis/figures/example_sim_result.png"))
 ```{r distances}
 distances2 <- distances %>%
   filter(year <= -2500 & rcarb_cor == "t" & type == "forager") %>% 
-  mutate(hordist = ifelse(str_detect(sitename, "Løvås"), 0, hordist),
-         topodist = ifelse(str_detect(sitename, "Løvås"), 0, topodist),
-         vertdist = ifelse(str_detect(sitename, "Løvås"), 0, vertdist))
+  mutate(hordist = ifelse(hordist < 0, 0, hordist),
+         topodist = ifelse(topodist < 0, 0, topodist),
+         vertdist = ifelse(vertdist < 0, 0, vertdist))
 
 distances3 <- distances %>%
   filter(year <= -4000 & rcarb_cor == "t" & type == "forager") %>% 
-  mutate(hordist = ifelse(str_detect(sitename, "Løvås"), 0, hordist),
-         topodist = ifelse(str_detect(sitename, "Løvås"), 0, topodist),
-         vertdist = ifelse(str_detect(sitename, "Løvås"), 0, vertdist))
+  mutate(hordist = ifelse(hordist < 0, 0, hordist),
+         topodist = ifelse(topodist < 0, 0, topodist),
+         vertdist = ifelse(vertdist < 0, 0, vertdist))
 ```
 # Results
 

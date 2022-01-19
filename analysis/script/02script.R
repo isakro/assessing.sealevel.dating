@@ -59,7 +59,7 @@ horten$name <- "Horten"
 displacement_curves <- rbind(larvik, tvedestrand, arendal, horten)
 displacement_curves$years <- yr(displacement_curves$years, "cal BP")
 displacement_curves$years <- yr_transform(displacement_curves$years, "BCE") * -1
-xvals <- yr_transform(yr(xvals, "cal BP"), "BCE") * -1
+xvals <- as.integer(yr_transform(yr(xvals, "cal BP"), "BCE") * -1)
 
 # Specify arbitrarily long distance of the line to represent the isobase at
 # each centre-point.
