@@ -1010,7 +1010,7 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
 }
 
 
-# Function to shoreline date site, adding specified offsets
+# Function to shoreline date site, adding specified offsets uniformly
 shoreline_date <- function(sitename, dtm = dtm,
                            displacement_curves = displacement_curves,
                            features = rcarb_sa, sites = sites_sa,
@@ -1073,4 +1073,87 @@ shoreline_date <- function(sitename, dtm = dtm,
 
   shoredates <- c("latest_date" = latest, "earliest_date" = earliest)
   return(shoredates)
+}
+
+# Shoreline date, using exponential offset
+shoreline_date_exp <- function(sitename, dtm = dtm,
+                           displacement_curves = displacement_curves,
+                           features = rcarb_sa, sites = sites_sa,
+                           isobases = isobases, sitelimit = TRUE,
+                           expratio){
+  # Retrieve site features
+  siter <- filter(features, site_name == sitename)
+
+  # If the site limit is to be used
+  if(sitelimit == TRUE){
+    sitel <- filter(sites, name == sitename)
+    siteu <- st_union(sitel)
+    sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
+  } else {
+    # If not create a convex hull around the dated features
+    sitel <- st_convex_hull(siter)
+    # And assign the values from the limit to the convex hull
+    sitel <- left_join(sitel, st_drop_geometry(filter(sites_sa,
+                name == sitename)), by = c("site_name" = "name", "ask_id"))
+  }
+
+  sitecurve <- interpolate_curve(years = xvals,
+                                 isobase1 = sitel$isobase1,
+                                 isobase2 = sitel$isobase2,
+                                 target = sitel,
+                                 dispdat = displacement_curves,
+                                 isodat = isobases,
+                                 direction_rel_curve1 = sitel$dir_rel_1)
+
+  siteelev <- extract(dtm, vect(sitel), fun = mean)[2]
+
+  probs <- c()
+  prob <- 1
+  i <- 1
+  while(prob > 0.00001) {
+    prob <- (1 * (1 - (expratio/10)))^i
+    probs[i] <- as.numeric(prob)
+    i <- i + 1
+  }
+
+
+  offsets <- seq(1, length(probs), 1)/10
+  dates <- data.frame(matrix(ncol = 3, nrow = length(probs)))
+  names(dates) <- c("earliest_date", "latest_date", "probability")
+  dates$probability <- probs
+
+  # Do not allow for the sea-level being below its present level.
+  for(i in 1:length(offsets)){
+    negative_offset <- as.numeric(siteelev - offsets[i])
+    if(!(negative_offset > 0)) {
+      negative_offset <- 0.01
+    }
+    positive_offset <- as.numeric(siteelev + offsets[i])
+
+    # Find lower date, subtracting offset (defaults to 0)
+    lowerd1 <- round(approx(sitecurve[,"lowerelev"],
+                            xvals, xout = negative_offset)[['y']])
+
+    # Find upper date, subtracting offset (defaults to 0)
+    upperd1 <- round(approx(sitecurve[,"upperelev"],
+                            xvals, xout =  negative_offset)[['y']])
+
+    lowerd2 <- round(approx(sitecurve[,"lowerelev"],
+                            xvals, xout = positive_offset)[['y']])
+
+    upperd2 <- round(approx(sitecurve[,"upperelev"],
+                            xvals, xout =  positive_offset)[['y']])
+
+    # Find youngest and oldest date
+    earliest <- min(c(lowerd1, upperd1), na.rm = TRUE)
+    latest <- max(c(lowerd1, upperd1), na.rm = TRUE)
+
+    dates[i, 1:2] <- cbind(earliest, latest)
+  }
+  dates$site_name <- sitename
+
+  dates <- dates %>%
+    mutate(combined = (earliest_date + latest_date)/2,
+           probability = probability/sum(probability))
+  return(dates)
 }

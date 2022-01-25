@@ -7,6 +7,7 @@ library(grid)
 library(gridExtra)
 library(gtable)
 library(cowplot)
+library(MASS)
 
 # List all files except those starting with a number.
 # That is, all data files resulting from analysis in 05script.R
@@ -61,9 +62,6 @@ distances <- distances %>%
                           & hordist < 0,  0, hordist),
          topodist = ifelse(sitename %in% c("Gunnarsrød 5", "Pjonkerød R1")
                            & topodist < 0,  0, topodist))
-
-save(distances,
-     file = here::here("analysis/data/derived_data/06data.RData"))
 
 sum_all <- distances %>%
   summarise_at(c("hordist", "topodist", "vertdist"),
@@ -206,11 +204,11 @@ ggsave(file = here("analysis/figures/results.png"), grd,
        bg = "white")
 
 # Measures for vertical distance to inform recommendations for shoreline dating.
-# Using only corresponding dates, excluding dates to agricultural activity
+# Using only corresponding dates, including dates to agricultural activity
 
 # Dates older than 2500
 distances2 <- distances %>%
-  filter(year <= -2500 & rcarb_cor == "t" & type == "forager") %>%
+  filter(year <= -2500 & rcarb_cor == "t") %>%
   # mutate(hordist = ifelse(str_detect(sitename, "Løvås"), 0, hordist),
   #      topodist = ifelse(str_detect(sitename, "Løvås"), 0, topodist),
   #      vertdist = ifelse(str_detect(sitename, "Løvås"), 0, vertdist)) %>%
@@ -218,30 +216,35 @@ distances2 <- distances %>%
          topodist = ifelse(topodist < 0, 0, topodist),
          vertdist = ifelse(vertdist < 0, 0, vertdist))
 
-library(MASS)
-fitdistr(distances2$vertdist, "exponential")
-fitdistr(distances2$vertdist,"logistic")
+# Dates older than 4000 (which also excludes agricultural sites)
+distances3 <- distances %>%
+  filter(year <= -4000 & rcarb_cor == "t" & type == "forager") %>%
+  mutate(hordist = ifelse(hordist < 0, 0, hordist),
+         topodist = ifelse(topodist < 0, 0, topodist),
+         vertdist = ifelse(vertdist < 0, 0, vertdist))
 
-fitexp <- fitdistr(distances2$vertdist, "exponential")
+# Fit exponential functions
+expfit <- fitdistr(distances2$vertdist, "exponential")
 
-hist(distances2$vertdist, freq=FALSE)
-curve(dexp(x, rate = fitexp$estimate, log=FALSE), from = 0, add = TRUE)
+expdat <- data.frame(
+  x = distances2$vertdist,
+  px = dexp(as.numeric(distances2$vertdist), rate = expfit$estimate))
 
-curve(dpois(x, 0.00917018, log = FALSE), add = TRUE)
+# Fit exponential functions
+expfit2 <- fitdistr(distances3$vertdist, "exponential")
 
-fitdistr(distances2$vertdist,"exponential")
+expdat2 <- data.frame(
+  x = distances3$vertdist,
+  px = dexp(as.numeric(distances3$vertdist), rate = expfit2$estimate))
+
+# # Visualise in base R
+# hist(distances2$vertdist, freq =  FALSE)
+# curve(dexp(x, rate = expfit$estimate, log = FALSE), from = 0, add = TRUE)
 
 sum_cor2 <- distances2 %>%
   summarise_at(c("hordist", "topodist", "vertdist"),
                c(mean, median, sd, IQR)) %>%
   round()
-
-# Dates older than 4000
-distances3 <- distances %>%
-  filter(year <= -4000 & rcarb_cor == "t" & type == "forager") %>%
-  mutate(hordist = ifelse(str_detect(sitename, "Løvås"), 0, hordist),
-         topodist = ifelse(str_detect(sitename, "Løvås"), 0, topodist),
-         vertdist = ifelse(str_detect(sitename, "Løvås"), 0, vertdist))
 
 sum_cor3 <- distances3 %>%
   summarise_at(c("hordist", "topodist", "vertdist"),
@@ -252,13 +255,13 @@ sum_cor3 <- distances3 %>%
 # Vertical distance, dates older than 4000 BCE (i.e. Mesolithic)
 
 histhor <- distances2 %>%
-  ggplot() + geom_histogram(aes(hordist), binwidth = 20,
+  ggplot() + geom_histogram(aes(hordist, y = ..density..), binwidth = 20,
                             fill = "#00ba38",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
   labs(title= "Horisontal distance (m) \nBinwidth = 20m",
-       x = "", y = "Frequency")
+       x = "", y = "Density")
 
 # Table for horisontal statistics after exclusion of younger sites
 tabhor3 <- tableGrob(sum_cor2[c("hordist_fn1", "hordist_fn2",
@@ -273,13 +276,13 @@ th <- sum(tabhor3$heights)
 hor3 <- grid.arrange(histhor, tabhor3, heights = unit.c(unit(1, "null"), th))
 
 histtopo <- distances2 %>%
-  ggplot() + geom_histogram(aes(topodist), binwidth = 20,
+  ggplot() + geom_histogram(aes(topodist, y = ..density..), binwidth = 20,
                             fill = "#fad510",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
   labs(title= "Topographic distance (m) \nBinwidth = 20m",
-       x = "", y = "Frequency")
+       x = "", y = "Density")
 
 tabtopo3 <- tableGrob(sum_cor2[c("topodist_fn1", "topodist_fn2",
                                  "topodist_fn3", "topodist_fn4")],
@@ -289,13 +292,19 @@ tabtopo3 <- tableGrob(sum_cor2[c("topodist_fn1", "topodist_fn2",
 
 topo3 <- grid.arrange(histtopo, tabtopo3, heights = unit.c(unit(1, "null"), th))
 
+label_text <- paste("lambda ==" , as.character(round(expfit$estimate, 3)))
+
 histvert <- distances2 %>%
-  ggplot() + geom_histogram(aes(vertdist), binwidth = 1,
+  ggplot() + geom_histogram(aes(vertdist, y = ..density..), binwidth = 1,
                             fill = "#046c9a",
                             colour = "black",
                             alpha = 0.5) +
+  geom_line(data = expdat, aes(x = x, y = px), col = "red") +
+  geom_text(aes(x = Inf, y = Inf, hjust = 1.2,
+            vjust = 5,
+            label = label_text), col = "red", parse = TRUE) +
   theme_bw() +
-  labs(title= "Vertical distance (m) \nBinwidth = 1m", x = "", y = "Frequency")
+  labs(title= "Vertical distance (m) \nBinwidth = 1m", x = "", y = "Density")
 
 tabvert3 <- tableGrob(sum_cor2[c("vertdist_fn1", "vertdist_fn2",
                                  "vertdist_fn3", "vertdist_fn4")],
@@ -307,19 +316,19 @@ vert3 <- grid.arrange(histvert, tabvert3, heights = unit.c(unit(1, "null"), th))
 
 grd3 <- grid.arrange(hor3, topo3, vert3, nrow = 1)
 
-ggsave(file = here("analysis/figures/results2.png"), grd3,
+ggsave(file = here("analysis/figures/temp.png"), grd3,
        width = 250, height = 100, units = "mm")
 
 # Repeat for Mesolithic
 
 histhor2 <- distances3 %>%
-  ggplot() + geom_histogram(aes(hordist), binwidth = 20,
+  ggplot() + geom_histogram(aes(hordist, y = ..density..), binwidth = 20,
                             fill = "#00ba38",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
   labs(title= "Horisontal distance (m) \nBinwidth = 20m",
-       x = "", y = "Frequency")
+       x = "", y = "Density")
 
 tabhor4 <- tableGrob(sum_cor3[c("hordist_fn1", "hordist_fn2",
                                 "hordist_fn3", "hordist_fn4")],
@@ -332,13 +341,13 @@ th <- sum(tabhor4$heights)
 hor4 <- grid.arrange(histhor2, tabhor4, heights = unit.c(unit(1, "null"), th))
 
 histtopo2 <- distances3 %>%
-  ggplot() + geom_histogram(aes(topodist), binwidth = 20,
+  ggplot() + geom_histogram(aes(topodist, y = ..density..), binwidth = 20,
                             fill = "#fad510",
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
   labs(title= "Topographic distance (m) \nBinwidth = 20m",
-       x = "", y = "Frequency")
+       x = "", y = "Density")
 
 tabtopo4 <- tableGrob(sum_cor3[c("topodist_fn1", "topodist_fn2",
                                  "topodist_fn3", "topodist_fn4")],
@@ -349,13 +358,19 @@ tabtopo4 <- tableGrob(sum_cor3[c("topodist_fn1", "topodist_fn2",
 topo4 <- grid.arrange(histtopo2, tabtopo4,
                       heights = unit.c(unit(1, "null"), th))
 
+label_text2 <- paste("lambda ==" , as.character(round(expfit2$estimate, 3)))
+
 histvert2 <- distances3 %>%
-  ggplot() + geom_histogram(aes(vertdist), binwidth = 1,
+  ggplot() + geom_histogram(aes(vertdist, y = ..density..), binwidth = 1,
                             fill = "#046c9a",
                             colour = "black",
                             alpha = 0.5) +
+  geom_line(data = expdat2, aes(x = x, y = px), col = "red") +
+  geom_text(aes(x = Inf, y = Inf, hjust = 1.2,
+                vjust = 5,
+                label = label_text2), col = "red", parse = TRUE) +
   theme_bw() +
-  labs(title= "Vertical distance (m) \nBinwidth = 1m", x = "", y = "Frequency")
+  labs(title= "Vertical distance (m) \nBinwidth = 1m", x = "", y = "Density")
 
 tabvert4 <- tableGrob(sum_cor3[c("vertdist_fn1", "vertdist_fn2",
                                  "vertdist_fn3", "vertdist_fn4")],
@@ -368,5 +383,12 @@ vert4 <- grid.arrange(histvert2, tabvert4,
 
 grd4 <- grid.arrange(hor4, topo4, vert4, nrow = 1)
 
-ggsave(file = here("analysis/figures/results3.png"), grd4,
-       width = 250, height = 100, units = "mm")
+grd <- plot_grid(grd3, grd4, ncol = 1, scale = 0.9)
+
+# Save plot
+ggsave(file = here("analysis/figures/results2.png"), grd,
+       bg = "white")
+
+# Save results and exponential functions
+save(distances, expfit, expfit2,
+     file = here("analysis/data/derived_data/06data.RData"))

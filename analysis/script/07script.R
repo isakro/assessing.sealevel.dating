@@ -8,6 +8,7 @@ library(sf)
 source(here("analysis/script/04script.R"))
 load(here("analysis/data/derived_data/01data.RData"))
 load(here("analysis/data/derived_data/02data.RData"))
+load(here("analysis/data/derived_data/06data.RData"))
 
 # Read in raster
 dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
@@ -45,6 +46,85 @@ rdates <- rdates %>%  group_by(site_name) %>%
 sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
                     join = st_intersects, largest = TRUE) %>%
   filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
+
+shorelinedates <- list()
+for(i in 1:nrow(sites_sa)){
+  print(sites_sa$name[i])
+  shorelinedates[[i]] <- shoreline_date_exp(sitename = sites_sa$name[i],
+                                            dtm = dtm,
+                                            displacement_curves = displacement_curves,
+                                            features = rcarb_sa,
+                                            sites = sites_sa,
+                                            isobases = isobases,
+                                            sitelimit = TRUE,
+                                            expratio =  expfit$estimate)
+}
+
+sdates <- bind_rows(shorelinedates)
+
+# Radiocarbon dates corresponding to site inventory and older than 2500 BCE
+corsites <- rdates %>%
+  # Excluded, see supplmenetary
+  filter(!(site_name %in% c("Dybdalshei 2", "Lunaveien"))) %>%
+  group_by(site_name) %>%
+  # Exclude Late Neolithic sites
+  filter(n() != sum(is.na(name)) & min(dates) < -2500)
+
+# Retrieve shoreline date data for the same sites
+corshore <- sdates %>%  filter(site_name %in% unique(corsites$site_name))
+
+# Find 95 % probability range for shoreline dates and median shoreline date
+# for ordering in the plot
+hdr <- corshore %>%  group_by(site_name) %>%
+  filter(cumsum(probability) < 0.95) %>%
+  summarise(
+    comb_min = min(combined, na.rm = TRUE),
+    comb_max = max(combined, na.rm = TRUE),
+    comb_median = median(combined, na.rm = TRUE))
+
+# Call to plot
+shrplt <- ggplot(data = hdr,
+                 aes(x = comb_median, y = reorder(site_name, -comb_median))) +
+  geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
+                               yend = site_name), col = "red", size = 1) +
+  ggridges::geom_ridgeline(data = corshore,
+                           aes(x = combined, y = site_name,
+                               height = probability*50),
+                           colour = "grey", fill = "grey") +
+  ggridges::geom_ridgeline(data = corsites,
+                           aes(x = dates, y = site_name,
+                               height = probabilities*50),
+                           colour = "black", fill = NA) +
+  labs(x = "cal BCE/CE", y = "", title = paste("\U03BB =",
+                                  as.numeric(round(expfit$estimate, 3)))) +
+  theme_bw()
+
+ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
+       width = 200, height = 200, units = "mm")
+
+
+
+
+
+
+
+
+  # Call to plot
+  ggplot(aes(x = combined, y = site_name)) +
+  ggridges::geom_ridgeline(aes(x = dates, height = probability), colour = "grey", fill = "grey") +
+  ggridges::geom_ridgeline(aes(x = dates, height = probabilities), colour = "red", fill = "white") +
+  labs(x = "cal BCE/CE", y = "") +
+  scale_x_continuous(breaks = seq(-9000, 1000, by = 2000)) +
+  theme_bw() +
+  theme(legend.position = "None")
+
+datedata %>%  ggplot(aes(x = median_date, y = reorder(site_name, -median_date))) +
+  ggridges::geom_ridgeline(aes(x = dates, height = probability), colour = "black", fill = "white")
+
+
+
+
+
 
 shorelinedates <- list()
 for(i in 1:nrow(sites_sa)){
@@ -90,7 +170,7 @@ ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
 
 
 # Exponential decay: y = a(1-b)x
-# b =  decay proportion (decay factor)
+# b =  decay factor
 # a = original amount before decay
 # x = time
 tst <- 1:19
@@ -134,13 +214,13 @@ probs <- c()
 prob <- 1
 i <- 1
 while(prob > 0.00001) {
-  prob <- (1 * (1 - (fitexp$estimate/100)))^i
+  prob <- (1 * (1 - (expfit$estimate/10)))^i
   probs[i] <- as.numeric(prob)
   i <- i + 1
 }
 
 
-offsets <- seq(1, length(probs), 1)/100
+offsets <- seq(1, length(probs), 1)/10
 dates <- data.frame(matrix(ncol = 3, nrow = length(probs)))
 names(dates) <- c("earliest_date", "latest_date", "probability")
 dates$probability <- probs
@@ -175,21 +255,32 @@ for(i in 1:length(offsets)){
 
 dates$site_name <- sitename
 
-dates <- dates %>%
-  mutate(probability = probability/sum(probability),
-         date = coalesce(latest_date, earliest_date, ))
+dates %>%
+  # filter(cumsum(probability) < 0.95) %>%
+  filter(probability >  0.05) %>%
+  ggplot(aes(y = site_name)) +
+  # ggridges::geom_ridgeline(aes(x = date, height = probability * 100),
+  #                          colour = "black", fill = NA) +
+  ggridges::geom_ridgeline(aes(x = earliest_date, height = probability),
+                           colour = "blue", fill = NA) +
+  ggridges::geom_ridgeline(aes(x = latest_date, height = probability),
+                           colour = "red", fill = NA)
 
+dates <- dates %>%
+  mutate(combined = (earliest_date + latest_date)/2,
+         probability = probability/sum(probability))
 
 
 dates %>%
+  # filter(probability >= 0.05) %>%
   filter(cumsum(probability) < 0.95) %>%
-ggplot(aes(y = site_name)) +
-  ggridges::geom_ridgeline(aes(x = date, height = probability * 100),
-                           colour = "black", fill = NA) +
+ggplot(aes(y = probability)) +
+  ggridges::geom_ridgeline(aes(x = combined, height = probability * 100),
+                           colour = "black", fill = "grey") +
   ggridges::geom_ridgeline(aes(x = earliest_date, height = probability * 100),
-                           colour = "blue", fill = NA) +
+                           colour = "blue", fill = "blue", alpha = 0.3) +
   ggridges::geom_ridgeline(aes(x = latest_date, height = probability * 100),
-                           colour = "red", fill = NA)
+                           colour = "red", fill = "red", alpha = 0.3)
 
 
 nrow(dates)
@@ -218,5 +309,32 @@ earliest <- min(c(lowerd1, upperd1, lowerd2, upperd2), na.rm = TRUE)
 
 shoredates <- c("latest_date" = latest, "earliest_date" = earliest)
 return(shoredates)
+
+
+tst <- shorelinedates[1:2]
+
+
+tst <-  shoreline_date_exp(sitename = "Dybdalshei 1",
+                           dtm = dtm,
+                           displacement_curves = displacement_curves,
+                           features = rcarb_sa,
+                           sites = sites_sa,
+                           isobases = isobases,
+                           sitelimit = TRUE,
+                           expratio =  expfit$estimate)
+
+
+
+sdates <- tst %>% bind_rows() %>%
+  group_by(site_name) %>%
+  mutate(median_date = median(c(as.numeric(earliest_date), as.numeric(latest_date))))
+
+
+
+
+
+ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
+       width = 200, height = 200, units = "mm")
+
 
 
