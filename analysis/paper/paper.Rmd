@@ -569,6 +569,10 @@ knitr::include_graphics(here("analysis/figures/results2.png"))
 knitr::include_graphics(here("analysis/figures/shoredate.png"))
 ```
 
+# Shoreline dating sites from Brunlanes
+
+The pre-boreal sites from the Brunlanes-project are among the earliest in Norway. They have a clear and distinct Early Mesolithic artefact inventory and are situated in an extremely steep area of the landscape where any use of the sites after the sea retreated would be difficult to envision. In the publication of the sites, Jaksland provides a thorough discussion of shoreline dating in general and as used for the dating of the Brunlanes sites specifically. The result of comparing his results against the ones achieved using the above-outlined approach are given in Figure, and are largely in agreement. The sites are located more or less on the isobase of the Larvik curve and so no adjustment was needed. The slight discrepancies can result from the fact that a slightly updated version of the displacement curve is applied here, and the sites are dated according to their mean rather than their lowest elevation. Here Jaksland's dates are given a 200 year uncertainty range, provided earliest possible date The sites are located in such a constrained area of the landscape that, as argued by Jaksland, the difference in site elevation would arguably be enough to constrain the uncertainty range so that they don't overlap between sites -- information that is not integrated here. The steepness of the curve does nonetheless provide very precise dates, the accuracy of which are of course ultimately dependent on the veracity of the geological reconstruction.  
+
 # Discussion
 
 While allowing for a deviation up to 16m might be recommended when no other information is available, this can likely be considerably reduced by evaluating the surroundings of the site. 

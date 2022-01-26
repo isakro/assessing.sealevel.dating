@@ -1078,24 +1078,14 @@ shoreline_date <- function(sitename, dtm = dtm,
 # Shoreline date, using exponential offset
 shoreline_date_exp <- function(sitename, dtm = dtm,
                            displacement_curves = displacement_curves,
-                           features = rcarb_sa, sites = sites_sa,
-                           isobases = isobases, sitelimit = TRUE,
+                           sites = sites_sa,
+                           isobases = isobases,
                            expratio){
-  # Retrieve site features
-  siter <- filter(features, site_name == sitename)
 
-  # If the site limit is to be used
-  if(sitelimit == TRUE){
-    sitel <- filter(sites, name == sitename)
-    siteu <- st_union(sitel)
-    sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
-  } else {
-    # If not create a convex hull around the dated features
-    sitel <- st_convex_hull(siter)
-    # And assign the values from the limit to the convex hull
-    sitel <- left_join(sitel, st_drop_geometry(filter(sites_sa,
-                name == sitename)), by = c("site_name" = "name", "ask_id"))
-  }
+  # site limit
+  sitel <- filter(sites, name == sitename)
+  siteu <- st_union(sitel)
+  sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
 
   sitecurve <- interpolate_curve(years = xvals,
                                  isobase1 = sitel$isobase1,
