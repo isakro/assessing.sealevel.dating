@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  26 JAN 2022 09:10
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  27 JAN 2022 14:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1025,7 +1025,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/deglaciation.png, id
-=19, 708.0051pt x 597.432pt>
+=20, 708.0051pt x 597.432pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/deglaciation.pn
 g Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/deglaciation.png
@@ -1035,7 +1035,7 @@ res/deglaciation.png  used on input line 128.
 (pdftex.def)             Requested size: 401.49286pt x 338.78949pt.
 [2] [3 </home/isak/phd/assessing.sealevel.dating/analysis/figures/deglaciation.
 png>] [4] [5]
-<../figures/map-iso-1.pdf, id=47, 452.69125pt x 908.39375pt>
+<../figures/map-iso-1.pdf, id=48, 452.69125pt x 908.39375pt>
 File: ../figures/map-iso-1.pdf Graphic file (type pdf)
 <use ../figures/map-iso-1.pdf>
 Package pdftex.def Info: ../figures/map-iso-1.pdf  used on input line 162.
@@ -1045,7 +1045,7 @@ LaTeX Warning: Float too large for page by 47.95358pt on input line 164.
 
 [6] [7 <../figures/map-iso-1.pdf>]
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png, id=
-71, 711.1368pt x 648.5028pt>
+72, 711.1368pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png
  Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png>
@@ -1059,7 +1059,7 @@ Overfull \hbox (32.12819pt too wide) in paragraph at lines 183--184
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map.png,
- id=72, 853.5087pt x 648.5028pt>
+ id=73, 853.5087pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map
 .png Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map.
@@ -1073,7 +1073,7 @@ Overfull \hbox (32.1177pt too wide) in paragraph at lines 192--193
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_result.p
-ng, id=73, 711.1368pt x 648.5028pt>
+ng, id=74, 711.1368pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_res
 ult.png Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_resu
@@ -1090,7 +1090,7 @@ Overfull \hbox (32.12819pt too wide) in paragraph at lines 200--200
 ng (PNG copy)>] [10 </home/isak/phd/assessing.sealevel.dating/analysis/figures/
 example_sim_map.png (PNG copy)>] [11 </home/isak/phd/assessing.sealevel.dating/
 analysis/figures/example_sim_result.png (PNG copy)>]
-</home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png, id=100,
+</home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png, id=101,
  725.8317pt x 589.0005pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png Gra
 phic file (type png)
@@ -1103,7 +1103,7 @@ Overfull \hbox (32.13261pt too wide) in paragraph at lines 220--221
  [][] 
  []
 
-</home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png, id=101
+</home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png, id=102
 , 725.8317pt x 589.0005pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png Gr
 aphic file (type png)
@@ -1117,7 +1117,7 @@ Overfull \hbox (57.21814pt too wide) in paragraph at lines 229--230
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png, id=10
-2, 569.0058pt x 569.0058pt>
+3, 569.0058pt x 569.0058pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png G
 raphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png>
@@ -1133,22 +1133,22 @@ Overfull \hbox (57.21828pt too wide) in paragraph at lines 238--239
  (PNG copy)>] [14 </home/isak/phd/assessing.sealevel.dating/analysis/figures/re
 sults2.png (PNG copy)>] [15 </home/isak/phd/assessing.sealevel.dating/analysis/
 figures/shoredate.png (PNG copy)>] [16] [17] [18]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 438.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 447.
 [19]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 438.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 447.
 (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 438.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 438.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 438.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 447.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 447.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 447.
  ) 
 Here is how much of TeX's memory you used:
- 13721 strings out of 492982
- 197363 string characters out of 6134896
- 313784 words of memory out of 5000000
+ 13724 strings out of 492982
+ 197437 string characters out of 6134896
+ 313792 words of memory out of 5000000
  16872 multiletter control sequences out of 15000+600000
  56846 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,10n,38p,2801b,360s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,10n,38p,2841b,360s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/en
 c/dvips/lm/lm-ec.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/s
 hare/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/publi
@@ -1156,10 +1156,10 @@ c/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/te
 xmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr
 7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/
 type1/public/lm/lmsy7.pfb>
-Output written on paper.pdf (19 pages, 3726369 bytes).
+Output written on paper.pdf (19 pages, 3728666 bytes).
 PDF statistics:
- 321 PDF objects out of 1000 (max. 8388607)
- 278 compressed objects within 3 object streams
- 102 named destinations out of 1000 (max. 500000)
+ 327 PDF objects out of 1000 (max. 8388607)
+ 284 compressed objects within 3 object streams
+ 105 named destinations out of 1000 (max. 500000)
  12401 words of extra memory for PDF output out of 14400 (max. 10000000)
 

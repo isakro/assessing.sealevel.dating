@@ -63,13 +63,14 @@ ggplot(data = hdr,
                  aes(x = comb_median, y = reorder(site_name, -comb_min))) +
   geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
                                yend = site_name), col = "red", size = 1) +
-  ggridges::geom_ridgeline(data = pdates,
+  ggridges::geom_ridgeline(data = bdates,
                            aes(x = combined, y = site_name,
                                height = probability*50),
                            colour = "grey", fill = "grey") +
-  geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date,
-                                    ymin = site_name, ymax = site_name),
-                                    position = position_dodge2(width = 0.5),
+  geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
+                               yend = site_name), col = "red", size = 1) +
+  geom_segment(data = jaksland, aes(x = earliest_date, xend = latest_date,
+                                    y = site_name, yend = site_name),
                col = "blue", size = 1) +
   labs(y = "", x = "") +
   theme_bw()
