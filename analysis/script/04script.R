@@ -1080,7 +1080,8 @@ shoreline_date_exp <- function(sitename, dtm = dtm,
                            displacement_curves = displacement_curves,
                            sites = sites_sa,
                            isobases = isobases,
-                           expratio, siteelev = "mean"){
+                           expratio, siteelev = "mean",
+                           specified_elev = NA){
 
   # site limit
   sitel <- filter(sites, name == sitename)
@@ -1095,10 +1096,14 @@ shoreline_date_exp <- function(sitename, dtm = dtm,
                                  isodat = isobases,
                                  direction_rel_curve1 = sitel$dir_rel_1)
 
-  if(siteelev == "mean") {
-    siteelev <- extract(dtm, vect(sitel), fun = mean)[2]
-  } else if(siteelev == "min"){
-    siteelev <- extract(dtm, vect(sitel), fun = min)[2]
+  if(!(is.na(specified_elev))){
+    siteelev <- specified_elev
+  } else{
+    if(siteelev == "mean") {
+      siteelev <- extract(dtm, vect(sitel), fun = mean)[2]
+    } else if(siteelev == "min"){
+      siteelev <- extract(dtm, vect(sitel), fun = min)[2]
+    }
   }
 
   probs <- c()
