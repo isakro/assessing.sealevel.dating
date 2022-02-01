@@ -58,8 +58,7 @@ hdr <- bdates %>%  group_by(site_name) %>%
   summarise(
     comb_min = min(combined, na.rm = TRUE),
     comb_max = max(combined, na.rm = TRUE),
-    comb_median = median(combined, na.rm = TRUE)) %>%
-  mutate(siteno = ifelse(site_name == "Pauler 1", "p1", "other"))
+    comb_median = median(combined, na.rm = TRUE))
 
 
 # Lasse Jaksland's dates of the Brunlanes sites. He provided a maximum age,
@@ -71,7 +70,7 @@ jaksland <- data.frame(site_name = sort(unique(bdates$site_name)),
          latest_date2 = earliest_date + 200)
 
 # Call to plot
-bdates <- ggplot(data = hdr, aes(x = comb_median, y = reorder(site_name, -comb_min))) +
+dateplot <- ggplot(data = hdr, aes(x = comb_median, y = reorder(site_name, -comb_min))) +
   geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
                                yend = site_name), col = "red", size = 2) +
   ggridges::geom_ridgeline(data = bdates,
@@ -79,7 +78,7 @@ bdates <- ggplot(data = hdr, aes(x = comb_median, y = reorder(site_name, -comb_m
                                height = probability*50),
                            colour = "grey", fill = "grey") +
   geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
-                               yend = site_name, colour = as.factor(siteno)),
+                               yend = site_name), col = "red",
                                size = 2) +
   geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date1,
                                       y = site_name), size = 1.75,
@@ -93,9 +92,7 @@ bdates <- ggplot(data = hdr, aes(x = comb_median, y = reorder(site_name, -comb_m
   #                                   y = site_name, yend = site_name),
   #              col = "black", size = 5) +
   labs(y = "", x = "BCE") +
-  theme_bw() +
-  scale_color_manual(values = c("p1" = "gold", "other" = "red")) +
-  theme(legend.position = "None")
+  theme_bw()
 
 pauler <- filter(brunlanes, str_detect(name, 'Pauler|Sky'))
 
@@ -119,7 +116,7 @@ location_bbox <- bboxpoly(sitel, 1000)
 sitearea <- terra::crop(dtm, location_bbox)
 
 # Retrieve the posterior density estimate for each date group
-samplingframe <- filter(bdates, site_name == sitename) %>%
+samplingframe <- dplyr::filter(bdates, site_name == sitename) %>%
   rename("dates" = "combined", "probabilities" = "probability")
 samplingframe$rcarb_cor = "t"
 
@@ -202,7 +199,7 @@ bmap <- ggplot() +
                      panel.grid.major = element_blank(),
                      legend.position = "none")
 
-bdates + bmap
+dateplot + bmap
 
 ggsave(file = here("analysis/figures/brunlanes.png"), width = 250,
        height = 120,
