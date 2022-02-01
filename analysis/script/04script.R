@@ -439,7 +439,8 @@ bboxpoly <- function(feature, xy_adjustment) {
 # Define function to simulate shoreline and measure distances given a single
 # radiocarbon probability density function, site limit, and adjusted
 # displacement curve
-sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
+sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs,
+                             paths = FALSE){
 
   results <- data.frame(matrix(ncol = 6, nrow = samps))
   names(results) <- c("vertdist", "hordist", "topodist",
@@ -447,7 +448,11 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
   results$rcarb_cor <- unique(na.omit(posteriorprobs$rcarb_cor))
   results$sitename <- unique(sitel$name)
   seapolygons <- list(length = samps)
-  # topopaths <- list(length = samps)
+
+  # If topographic paths are to be retrieved
+  if(paths == TRUE){
+    topopaths <- list()
+  }
 
   for(i in 1:samps){
     # Set up sampling frame from sum of posterior densities
@@ -503,6 +508,12 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       # Find topographic distance (retrieve path)
       topodist <- topoDist(raster::raster(sitearea), coords,
                            paths = TRUE)
+
+      if(paths == TRUE){
+        topopaths[i] <- topodist[[2]]
+      }
+
+
       # Store distance (negative to indicate below sea-level)
       results$topodist[i] <- topodist[[1]]["loc", "sea"] * -1
 
@@ -551,6 +562,11 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
       # Find topographic distance (retrieve path)
       topodist <- topoDist(raster::raster(sitearea), coords,
                            paths = TRUE)
+
+      if(paths == TRUE){
+        topopaths[i] <- topodist[[2]]
+      }
+
       # Store distance
       results$topodist[i] <- topodist[[1]]["loc", "sea"]
 
@@ -574,11 +590,18 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs){
   }
   }
 
-  return(list(
-    results = results,
-    seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
-                      crs = st_crs(sitel))))
-
+  if(paths == TRUE){
+    return(list(
+      results = results,
+      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+                        crs = st_crs(sitel)),
+      topopaths = topopaths))
+  } else {
+    return(list(
+      results = results,
+      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+                        crs = st_crs(sitel))))
+  }
   # # If there are no topopaths at all, do not try to return these
   # if(any(!(summary(topopaths)[,2]) %in% c("-none-", "sf"))){
   #   return(list(
@@ -738,7 +761,6 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value),
                 alpha = 0.3) +
     scale_fill_gradient(low = "grey", high = "white", na.value = NA) +
-    # scale_fill_gradient(low = "darkgrey", high = "grey", na.value = NA) +
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
     scale_fill_gradient(low = NA, high = NA, na.value = "white") +
