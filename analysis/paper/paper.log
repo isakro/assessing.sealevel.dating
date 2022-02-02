@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  1 FEB 2022 23:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  2 FEB 2022 00:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1134,7 +1134,7 @@ Overfull \hbox (57.21828pt too wide) in paragraph at lines 236--237
 sults2.png (PNG copy)>] [15 </home/isak/phd/assessing.sealevel.dating/analysis/
 figures/shoredate.png (PNG copy)>]
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png, id=12
-6, 711.1368pt x 341.3553pt>
+9, 711.1368pt x 341.3553pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png G
 raphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png>
@@ -1147,23 +1147,23 @@ Overfull \hbox (57.21584pt too wide) in paragraph at lines 250--251
  []
 
 [16 </home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png (P
-NG copy)>] [17] [18] [19]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 472.
-[20]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 472.
+NG copy)>] [17] [18] [19] [20]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 475.
+[21]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 475.
 (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 472.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 472.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 472.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 475.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 475.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 475.
  ) 
 Here is how much of TeX's memory you used:
- 13738 strings out of 492982
- 197884 string characters out of 6134896
- 314364 words of memory out of 5000000
+ 13740 strings out of 492982
+ 197906 string characters out of 6134896
+ 314421 words of memory out of 5000000
  16877 multiletter control sequences out of 15000+600000
  56846 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,10n,38p,3494b,360s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,10n,38p,3326b,360s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/en
 c/dvips/lm/lm-ec.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/s
 hare/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/publi
@@ -1171,10 +1171,10 @@ c/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/te
 xmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr
 7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/
 type1/public/lm/lmsy7.pfb>
-Output written on paper.pdf (20 pages, 3886928 bytes).
+Output written on paper.pdf (21 pages, 3888757 bytes).
 PDF statistics:
- 347 PDF objects out of 1000 (max. 8388607)
- 301 compressed objects within 4 object streams
- 113 named destinations out of 1000 (max. 500000)
+ 357 PDF objects out of 1000 (max. 8388607)
+ 310 compressed objects within 4 object streams
+ 115 named destinations out of 1000 (max. 500000)
  12406 words of extra memory for PDF output out of 14400 (max. 10000000)
 

@@ -1122,9 +1122,9 @@ shoreline_date_exp <- function(sitename, dtm = dtm,
     siteelev <- specified_elev
   } else{
     if(siteelev == "mean") {
-      siteelev <- extract(dtm, vect(sitel), fun = mean)[2]
+      siteelev <- terra::extract(dtm, vect(sitel), fun = mean)[2]
     } else if(siteelev == "min"){
-      siteelev <- extract(dtm, vect(sitel), fun = min)[2]
+      siteelev <- terra::extract(dtm, vect(sitel), fun = min)[2]
     }
   }
 
@@ -1171,10 +1171,22 @@ shoreline_date_exp <- function(sitename, dtm = dtm,
 
     dates[i, 1:2] <- cbind(earliest, latest)
   }
+
+  # dates <- dates %>%
+  #   mutate(combined = (earliest_date + latest_date)/2,
+  #          probability = probability/sum(probability))
+
+  dates <- dates %>% group_by(r = row_number()) %>%
+    mutate(date_range = list(earliest_date:latest_date)) %>%
+    ungroup %>% dplyr::select(-r) %>%
+    # Unnest the list column to get the desired "long" data frame
+    unnest(date_range) %>%
+    mutate(probability = probability/sum(probability)) %>%
+    dplyr::select(-earliest_date, -latest_date)
+
+  # Make infinite values NA
+  is.na(dates) <- do.call(cbind,lapply(dates, is.infinite))
   dates$site_name <- sitename
 
-  dates <- dates %>%
-    mutate(combined = (earliest_date + latest_date)/2,
-           probability = probability/sum(probability))
   return(dates)
 }

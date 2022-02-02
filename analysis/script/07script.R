@@ -192,53 +192,95 @@ ggplot(aes(y = probability)) +
                            colour = "red", fill = NA, alpha = 0.3) +
   labs(y = "Density", x = "BCE")
 
+is.na(dates) <- do.call(cbind,lapply(dates, is.infinite))
+yrs <- seq(-10500, 1950, 1)
+agegrid <- data.frame(year = yrs,
+                      earliest_prob = numeric(length(yrs)),
+                      latest_prob = numeric(length(yrs)))
 
-dat <- pivot_longer(dates,
-                    cols = c(earliest_date, latest_date), names_to = "year") %>%
-  # filter(!duplicated(value)) %>%
+erange <- seq(min(dates$earliest_date, na.rm = TRUE), max(dates$earliest_date, na.rm = TRUE), 1)
+efirst <- dates[match(unique(dates$earliest_date), dates$earliest_date),]
+
+which(erange == -8200)
+which(agegrid$year == -8200)
+
+for (i in 1:length(erange)) {
+  if(erange[i] %in% efirst$earliest_date) {
+    yr <- efirst$earliest_date[which(efirst$earliest_date == erange[i])]
+    agegrid[which(agegrid$year == yr),
+            "earliest_prob"] <- efirst[which(efirst$earliest_date == yr),"probability"]
+    j <- 1
+  } else {
+    yr <- efirst$earliest_date[which(efirst$earliest_date == erange[i - j])]
+    agegrid[which(agegrid$year == yr + j),
+            "earliest_prob"] <- efirst[which(efirst$earliest_date == yr),"probability"]
+    j <- j + 1
+  }
+}
+
+lrange <- seq(min(dates$latest_date), max(dates$latest_date), 1)
+lfirst <- dates[match(unique(dates$latest_date), dates$latest_date),]
+
+for (i in 1:length(lrange)) {
+  if(lrange[i] %in% lfirst$latest_date) {
+    yr <- lfirst$latest_date[which(lfirst$latest_date == lrange[i])]
+    agegrid[which(agegrid$year == yr),
+            "latest_prob"] <- lfirst[which(lfirst$latest_date == yr),"probability"]
+    j <- 1
+  } else {
+    yr <- lfirst$latest_date[which(lfirst$latest_date == lrange[i - j])]
+    agegrid[which(agegrid$year == yr + j),
+            "latest_prob"] <- lfirst[which(lfirst$latest_date == yr),"probability"]
+    j <- j +1
+  }
+}
+
+
+tst <- agegrid %>%
+  mutate(probability = earliest_prob + latest_prob) %>%
   mutate(probability = probability/sum(probability))
 
+tst %>%
+  ggplot(aes(x= year, y = probability)) +
+  ggridges::geom_ridgeline(aes(height = probability), fill = "grey", col = "blue")
 
-dat %>%
+
+agegrid %>%
+  # filter(probability >= 0.05) %>%
+  ggplot() +
+  ggridges::geom_ridgeline(aes(x = year, y = earliest_prob, height = earliest_prob * 50),
+                           fill = NA, col = "blue") +
+  ggridges::geom_ridgeline(aes(x = year, y = latest_prob, height = latest_prob * 50),
+                           fill = NA, col = "red")
+
+
+
+shorelinedates <- list()
+for(i in 1:nrow(sites_sa)){
+  print(sites_sa$name[i])
+  shorelinedates[[i]] <- shoreline_date_exp(sitename = sites_sa$name[i],
+                                            dtm = dtm,
+                                            displacement_curves = displacement_curves,
+                                            sites = sites_sa,
+                                            isobases = isobases,
+                                            expratio =  expfit$estimate,
+                                            siteelev = "mean")
+}
+
+sdates <- bind_rows(shorelinedates)
+
+dat2 <- dates %>%
+  group_by(r = row_number()) %>%
+  mutate(date_range = list(earliest_date:latest_date)) %>%
+  ungroup %>% dplyr::select(-r) %>%
+  # Unnest the list column to get the desired "long" data frame
+  unnest(date_range) %>%
+  mutate(probability = probability/sum(probability)) %>%
+  dplyr::select(-earliest_date, -latest_date)
+
+dat2 %>%
   # filter(probability >= 0.05) %>%
   filter(cumsum(probability) < 0.95) %>%
-ggplot(aes(y = probability)) +
-  ggridges::geom_ridgeline(aes(x = value, height = probability),
-                           colour = "black", fill = "grey")
-
-
-
-dategrid <- data.frame(year = unique(xvals),
-           earliest = NA,
-           prob_earliest =0,
-           latest = NA,
-           prob_latest = 0)
-
-# Identify earliest dates
-dategrid[which(dategrid$year %in% dates[!duplicated(dates$earliest_date),"earliest_date"]), "earliest"] <-
-  dategrid[which(dategrid$year %in% dates[!duplicated(dates$earliest_date),"earliest_date"]), "year"]
-
-# Assign probabilities
-dategrid[which(dategrid$earliest %in% dates[!duplicated(dates$earliest_date),"earliest_date"]), "prob_earliest"] <-
-  dates[which(dates[!duplicated(dates$earliest_date),"earliest_date"] %in% dategrid$earliest), "probability"]
-
-# Repeat for youngest dates
-dategrid[which(dategrid$year %in% dates[!duplicated(dates$latest_date),"latest_date"]), "latest"] <-
-  dategrid[which(dategrid$year %in% dates[!duplicated(dates$latest_date),"latest_date"]), "year"]
-
-dategrid[which(dategrid$latest %in% dates[!duplicated(dates$latest_date),"latest_date"]), "prob_latest"] <-
-  dates[which(dates[!duplicated(dates$latest_date),"latest_date"] %in% dategrid$latest), "probability"]
-
-dategrid$probability <- dategrid$prob_earliest + dategrid$prob_latest
-dategrid$probability <- dategrid$probability / sum(dategrid$probability)
-
-dategrid %>%
-  filter(cumsum(probability) < 0.95) %>%
   ggplot(aes(y = probability)) +
-  ggridges::geom_ridgeline(aes(x = year, height = probability),
-                           colour = "black", fill = "grey")
-
-
-dategrid$earliest <- dategrid$year %in% dates$earliest
-
-dates$site_name <- sitename
+  ggridges::geom_ridgeline(aes(x = date_range, height = probability * 50),
+                           fill = "grey", col = "grey")

@@ -78,8 +78,7 @@ dateplot <- ggplot(data = hdr, aes(x = comb_median, y = reorder(site_name, -comb
                                height = probability*50),
                            colour = "grey", fill = "grey") +
   geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
-                               yend = site_name), col = "red",
-                               size = 2) +
+                               yend = site_name), col = "red") +
   geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date1,
                                       y = site_name), size = 1.75,
                  position = position_dodge(width = 0.3, preserve = 'single'),
