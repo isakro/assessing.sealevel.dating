@@ -40,13 +40,14 @@ sdatesp <- list()
 for(i in 1:nrow(brunlanes)){
   print(brunlanes$name[i])
   sdatesp[[i]] <- shoreline_date_exp(sitename = brunlanes$name[i],
-                                     dtm = dtm,
-                                     displacement_curves = displacement_curves,
-                                     sites = brunlanes,
-                                     isobases = isobases,
-                                     expratio =  expfit2$estimate,
-                                     siteelev = "min",
-                                     specified_elev = brunlanes$elevation[i])
+                                        elev = dtm,
+                                        disp_curves = displacement_curves,
+                                        sites = brunlanes,
+                                        iso = isobases,
+                                        expratio = expfit2$estimate,
+                                        specified_elev = brunlanes$elevation[i])
+
+
 }
 
 bdates <- bind_rows(sdatesp)
@@ -54,11 +55,11 @@ bdates <- bind_rows(sdatesp)
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
 hdr <- bdates %>%  group_by(site_name) %>%
-  filter(cumsum(probability) < 0.95) %>%
+  filter(cumsum(replace_na(probability, 0)) < 0.95) %>%
   summarise(
-    comb_min = min(combined, na.rm = TRUE),
-    comb_max = max(combined, na.rm = TRUE),
-    comb_median = median(combined, na.rm = TRUE))
+    year_min = min(year, na.rm = TRUE),
+    year_max = max(year, na.rm = TRUE),
+    year_median = median(year, na.rm = TRUE))
 
 
 # Lasse Jaksland's dates of the Brunlanes sites. He provided a maximum age,
@@ -70,14 +71,14 @@ jaksland <- data.frame(site_name = sort(unique(bdates$site_name)),
          latest_date2 = earliest_date + 200)
 
 # Call to plot
-dateplot <- ggplot(data = hdr, aes(x = comb_median, y = reorder(site_name, -comb_min))) +
-  geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
-                               yend = site_name), col = "red", size = 2) +
+dateplot <- ggplot(data = hdr, aes(x = year_median, y = reorder(site_name, -year_median))) +
+  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
+                               yend = site_name), col = "red") +
   ggridges::geom_ridgeline(data = bdates,
-                           aes(x = combined, y = site_name,
+                           aes(x = year, y = site_name,
                                height = probability*50),
                            colour = "grey", fill = "grey") +
-  geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
+  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red") +
   geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date1,
                                       y = site_name), size = 1.75,
@@ -116,8 +117,10 @@ sitearea <- terra::crop(dtm, location_bbox)
 
 # Retrieve the posterior density estimate for each date group
 samplingframe <- dplyr::filter(bdates, site_name == sitename) %>%
-  rename("dates" = "combined", "probabilities" = "probability")
+  rename("dates" = "year", "probabilities" = "probability") %>%
+  na.omit()
 samplingframe$rcarb_cor = "t"
+
 
 # Simulate sea-level and retrieve distances (uncomment to re-run)
 # output <- sample_shoreline(1000, sitel, sitecurve, sitearea,
@@ -180,15 +183,15 @@ bmap <- ggplot() +
   new_scale_fill() +
   geom_sf(data = simsea, aes(alpha = overlaps), col = NA,
           fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff #"#dbe3f3"
-  geom_sf(data = st_centroid(pauler), size = 2, shape = 21, fill = "red") +
+  geom_sf(data = st_centroid(pauler), size = 1.5, shape = 21, fill = "red") +
   # geom_label_repel(data = site_coords, aes(x = X, y = Y, label = name),
   #                  force = 50, min.segment.length = 0) +
-  geom_sf(data = st_centroid(pauler1), size = 2, shape = 21, fill = "gold") +
+  geom_sf(data = st_centroid(pauler1), size = 1.5, shape = 21, fill = "gold") +
   scale_alpha_continuous(range = c(0.01, 1), na.value = 0) +
   ggsn::scalebar(data = pauler, dist = 200, dist_unit = "m",
                  transform = FALSE, st.size = 3, height = 0.06,
                  border.size = 0.1, st.dist = 0.07,
-                 anchor = c(x = anc[2] - 175, y = anc[1]) + 85) +
+                 anchor = c(x = anc[2] - 190, y = anc[1]) + 100) +
   coord_sf(expand = FALSE) +
   theme_bw() + theme(axis.title=element_blank(),
                      axis.text.y = element_blank(),

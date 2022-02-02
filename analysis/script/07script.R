@@ -50,7 +50,7 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
 shorelinedates <- list()
 for(i in 1:nrow(sites_sa)){
   print(sites_sa$name[i])
-  shorelinedates[[i]] <- shoreline_date_exp(sitename = sites_sa$name[i],
+  shorelinedates[[i]] <- shoreline_date_exp_avg(sitename = sites_sa$name[i],
                                             dtm = dtm,
                                             displacement_curves = displacement_curves,
                                             features = rcarb_sa,
@@ -58,6 +58,19 @@ for(i in 1:nrow(sites_sa)){
                                             isobases = isobases,
                                             sitelimit = TRUE,
                                             expratio =  expfit$estimate)
+}
+
+shorelinedates <- list()
+for(i in 1:nrow(sites_sa)){
+  print(sites_sa$name[i])
+  shorelinedates[[i]] <- shoreline_date_exp(sitename = sites_sa$name[i],
+                                            elev = dtm,
+                                            disp_curves = displacement_curves,
+                                            sites = sites_sa,
+                                            iso = isobases,
+                                            expratio = expfit$estimate,
+                                            siteelev = "mean",
+                                            specified_elev = NA)
 }
 
 sdates <- bind_rows(shorelinedates)
@@ -76,20 +89,20 @@ corshore <- sdates %>%  filter(site_name %in% unique(corsites$site_name))
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
 hdr <- corshore %>%  group_by(site_name) %>%
-  filter(cumsum(probability) < 0.95) %>%
+  filter(cumsum(replace_na(probability, 0)) < 0.95) %>%
   summarise(
-    comb_min = min(combined, na.rm = TRUE),
-    comb_max = max(combined, na.rm = TRUE),
-    comb_median = median(combined, na.rm = TRUE))
+    year_min = min(year, na.rm = TRUE),
+    year_max = max(year, na.rm = TRUE),
+    year_median = median(year, na.rm = TRUE))
 
 # Call to plot
 shrplt <- ggplot(data = hdr,
-                 aes(x = comb_median, y = reorder(site_name, -comb_median))) +
-  geom_segment(data = hdr, aes(x = comb_min, xend = comb_max,
+                 aes(x = year_median, y = reorder(site_name, -year_median))) +
+  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red", size = 1) +
   ggridges::geom_ridgeline(data = corshore,
-                           aes(x = combined, y = site_name,
-                               height = probability*50),
+                           aes(x = year, y = site_name,
+                               height = probability*200),
                            colour = "grey", fill = "grey") +
   ggridges::geom_ridgeline(data = corsites,
                            aes(x = dates, y = site_name,
@@ -100,7 +113,7 @@ shrplt <- ggplot(data = hdr,
   theme_bw()
 
 ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
-       width = 200, height = 200, units = "mm")
+       width = 200, height = 230, units = "mm")
 
 
 # Example site for development
@@ -109,8 +122,9 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
                     join = st_intersects, largest = TRUE) %>%
   filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
 
-sitename <- "Dybdalshei 1"
+sitename <- "Dybdalshei 1" #
 sitel <- filter(sites_sa, name == sitename)
+
 
 sitecurve <- interpolate_curve(years = xvals,
                                isobase1 = sitel$isobase1,
@@ -168,8 +182,53 @@ for(i in 1:length(offsets)){
   earliest <- min(c(lowerd1, upperd1), na.rm = TRUE)
   latest <- max(c(lowerd1, upperd1), na.rm = TRUE)
 
+  yrs <- data.frame(year = seq(earliest, latest, 1), prob = probs[i])
   dates[i, 1:2] <- cbind(earliest, latest)
 }
+
+dates <- data.frame(matrix(ncol = 2))
+names(dates) <- c("year", "probability")
+
+for(i in 1:length(offsets)){
+  negative_offset <- as.numeric(siteelev - offsets[i])
+  if(!(negative_offset > 0)) {
+    negative_offset <- 0.01
+  }
+  positive_offset <- as.numeric(siteelev + offsets[i])
+
+  # Find lower date, subtracting offset (defaults to 0)
+  lowerd1 <- round(approx(sitecurve[,"lowerelev"],
+                          xvals, xout = negative_offset)[['y']])
+
+  # Find upper date, subtracting offset (defaults to 0)
+  upperd1 <- round(approx(sitecurve[,"upperelev"],
+                          xvals, xout =  negative_offset)[['y']])
+
+  lowerd2 <- round(approx(sitecurve[,"lowerelev"],
+                          xvals, xout = positive_offset)[['y']])
+
+  upperd2 <- round(approx(sitecurve[,"upperelev"],
+                          xvals, xout =  positive_offset)[['y']])
+
+  # Find youngest and oldest date
+  earliest <- min(c(lowerd1, upperd1))
+  latest <- max(c(lowerd1, upperd1))
+
+  if(!is.na(earliest)){
+    yrs <- seq(earliest, latest, 1)
+    yrs <- yrs[!(yrs %in% dates$year)]
+  } else if(is.na(earliest && latest)) {
+    yrs <- NA
+  } else {
+    seq(max(dates$year, na.rm = TRUE), latest, 1)
+    yrs <- yrs[!(yrs %in% dates$year)]
+  }
+
+  if(length(yrs) > 0){
+    dates <- rbind(dates, cbind(year = yrs, probability = as.numeric(probs[i])))
+  }
+}
+
 
 dat1 <- dates %>%
   dplyr::mutate(probability = probability/sum(probability)) %>%
@@ -183,14 +242,21 @@ dat1 <- dates %>%
 dat1 %>%
   # filter(probability >= 0.05) %>%
   filter(cumsum(probability) < 0.95) %>%
-ggplot(aes(y = probability)) +
+ggplot(aes(y = 0)) +
   ggridges::geom_ridgeline(aes(x = combined, height = probability),
-                           colour = "black", fill = NA) +
+                           colour = "black", fill = "grey") +
   ggridges::geom_ridgeline(aes(x = earliest_date, height = probability),
-                           colour = "blue", fill = NA, alpha = 0.3) +
+                           colour = "blue", fill = "grey", alpha = 0.3) +
   ggridges::geom_ridgeline(aes(x = latest_date, height = probability),
-                           colour = "red", fill = NA, alpha = 0.3) +
+                           colour = "red", fill = "grey", alpha = 0.3) +
   labs(y = "Density", x = "BCE")
+
+dat <- dates %>%
+  mutate(probability = probability/sum(probability, na.rm = TRUE))
+  ggplot() +
+  ggridges::geom_ridgeline(aes(x = year, y = 0, height = probability),
+                           colour = "black", fill = "grey")
+
 
 is.na(dates) <- do.call(cbind,lapply(dates, is.infinite))
 yrs <- seq(-10500, 1950, 1)
@@ -198,11 +264,9 @@ agegrid <- data.frame(year = yrs,
                       earliest_prob = numeric(length(yrs)),
                       latest_prob = numeric(length(yrs)))
 
-erange <- seq(min(dates$earliest_date, na.rm = TRUE), max(dates$earliest_date, na.rm = TRUE), 1)
+erange <- seq(min(dates$earliest_date, na.rm = TRUE),
+              max(dates$earliest_date, na.rm = TRUE), 1)
 efirst <- dates[match(unique(dates$earliest_date), dates$earliest_date),]
-
-which(erange == -8200)
-which(agegrid$year == -8200)
 
 for (i in 1:length(erange)) {
   if(erange[i] %in% efirst$earliest_date) {
@@ -218,9 +282,11 @@ for (i in 1:length(erange)) {
   }
 }
 
-lrange <- seq(min(dates$latest_date), max(dates$latest_date), 1)
+lrange <- seq(min(dates$latest_date, na.rm = TRUE),
+              max(dates$latest_date, na.rm = TRUE), 1)
 lfirst <- dates[match(unique(dates$latest_date), dates$latest_date),]
 
+j <- 1
 for (i in 1:length(lrange)) {
   if(lrange[i] %in% lfirst$latest_date) {
     yr <- lfirst$latest_date[which(lfirst$latest_date == lrange[i])]
@@ -241,33 +307,19 @@ tst <- agegrid %>%
   mutate(probability = probability/sum(probability))
 
 tst %>%
-  ggplot(aes(x= year, y = probability)) +
+  ggplot(aes(x= year, y = 0)) +
   ggridges::geom_ridgeline(aes(height = probability), fill = "grey", col = "blue")
 
 
 agegrid %>%
   # filter(probability >= 0.05) %>%
-  ggplot() +
-  ggridges::geom_ridgeline(aes(x = year, y = earliest_prob, height = earliest_prob * 50),
+  ggplot(aes(y = 0)) +
+  ggridges::geom_ridgeline(aes(x = year, height = earliest_prob * 50),
                            fill = NA, col = "blue") +
-  ggridges::geom_ridgeline(aes(x = year, y = latest_prob, height = latest_prob * 50),
+  ggridges::geom_ridgeline(aes(x = year, height = latest_prob * 50),
                            fill = NA, col = "red")
 
 
-
-shorelinedates <- list()
-for(i in 1:nrow(sites_sa)){
-  print(sites_sa$name[i])
-  shorelinedates[[i]] <- shoreline_date_exp(sitename = sites_sa$name[i],
-                                            dtm = dtm,
-                                            displacement_curves = displacement_curves,
-                                            sites = sites_sa,
-                                            isobases = isobases,
-                                            expratio =  expfit$estimate,
-                                            siteelev = "mean")
-}
-
-sdates <- bind_rows(shorelinedates)
 
 dat2 <- dates %>%
   group_by(r = row_number()) %>%
@@ -281,6 +333,6 @@ dat2 <- dates %>%
 dat2 %>%
   # filter(probability >= 0.05) %>%
   filter(cumsum(probability) < 0.95) %>%
-  ggplot(aes(y = probability)) +
+  ggplot(aes(y = 0)) +
   ggridges::geom_ridgeline(aes(x = date_range, height = probability * 50),
                            fill = "grey", col = "grey")
