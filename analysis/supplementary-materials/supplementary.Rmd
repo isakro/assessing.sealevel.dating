@@ -121,6 +121,32 @@ filter(rcarbon, site_name  == "Bakke") %>%
 
 The radiocarbon date to the Stone Age is not related to the site inventory, which is distinctly Early Mesolithic in character [@nyland2012b].
 
+```{r brunstad24, echo = FALSE, out.width = "500px", regfloat=TRUE}
+knitr::include_graphics(here("analysis/figures/brunstad24.png"))
+
+filter(rcarbon, site_name  == "Brunstad 24") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Brunstad 24", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
+```
+
+```{r brunstad25, echo = FALSE, out.width = "500px", regfloat=TRUE}
+knitr::include_graphics(here("analysis/figures/brunstad25.png"))
+
+filter(rcarbon, site_name  == "Brunstad 25") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Brunstad 25", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
+```
+
 ```{r dordal, echo = FALSE, out.width = "500px", regfloat=TRUE}
 
 include_graphics(here("analysis/figures/dordal.png"))

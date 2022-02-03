@@ -281,6 +281,13 @@ for(i in 1:nrow(sites_sl)){
 bdates <- bind_rows(sitdates)
 
 
+psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
+  mutate(start = start * -1,
+         end = end * -1) %>%
+  rename(site_name = name)
+
+bdates <- bdates %>%filter(site_name %in% psdates$site_name)
+
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
 hdr <- bdates %>%  group_by(site_name) %>%
@@ -290,8 +297,18 @@ hdr <- bdates %>%  group_by(site_name) %>%
     year_max = max(year, na.rm = TRUE),
     year_median = median(year, na.rm = TRUE))
 
+hdr <- hdr[order(hdr$year_median, decreasing = TRUE),]
+hdr$site_name <- factor(hdr$site_name, levels = hdr$site_name)
+
+psdates <- psdates[order(match(psdates$site_name, hdr$site_name)),]
+psdates$site_name <- factor(psdates$site_name, levels = psdates$site_name)
+
+psdates1 <- psdates %>%  filter(start != end)
+psdates2 <- psdates %>%  filter(start == end)
+
+
 # Call to plot
-ggplot(data = hdr, aes(x = year_median, y = reorder(site_name, -year_median))) +
+ggplot(data = hdr, aes(x = year_median, y = site_name)) +
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red") +
   ggridges::geom_ridgeline(data = bdates,
@@ -300,9 +317,11 @@ ggplot(data = hdr, aes(x = year_median, y = reorder(site_name, -year_median))) +
                            colour = "grey", fill = "grey") +
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red") +
-  # geom_segment(data = jaksland, aes(x = earliest_date, xend = latest_date,
-  #                                   y = site_name, yend = site_name),
-  #              col = "black", size = 5) +
+  geom_linerange(data = psdates1, aes(xmin = start, xmax = end,
+                                      y = site_name), size = 1,
+                 position = position_dodge(width = 0.3, preserve = 'single'),
+                 inherit.aes = FALSE) +
+  geom_point(data = psdates2, aes(x = start), col = "black") +
   labs(y = "", x = "BCE") +
   theme_bw()
 
