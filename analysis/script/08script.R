@@ -10,6 +10,7 @@ library(raster)
 library(terra)
 library(sf)
 library(topoDistance)
+library(cowplot)
 
 source(here("analysis/script/04script.R"))
 load(here("analysis/data/derived_data/01data.RData"))
@@ -134,6 +135,49 @@ load(here("analysis/data/derived_data/08data.RData"))
 # (also takes quite some time to execute)
 simsea <- sea_overlaps(sitearea, output$seapol)
 
+# Create overview map for inset
+imap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
+
+bboxsites <- st_bbox(sites_sa)
+bboxsites[1] <- bboxsites[1] - 15000
+bboxsites[3] <- bboxsites[3] + 15000
+bboxsites[2] <- bboxsites[2] - 5000
+bboxsites[4] <- bboxsites[4] + 5000
+bboxsitespoly <- st_as_sf(st_as_sfc(bboxsites))
+
+bound_reproj <- st_transform(bboxsitespoly, st_crs(imap))
+imap2 <- imap %>%
+  dplyr::filter(st_intersects(., bound_reproj, sparse = FALSE))
+imap_reproj <- st_transform(imap2, st_crs(sites_sa))
+
+overview <- ggplot() +
+  geom_sf(data = imap_reproj, fill = "grey", colour = NA) +
+  geom_sf(data = isobases, aes(colour = name)) +
+  geom_sf(data = st_centroid(location_bbox), fill = "red",
+          size = 2.25,  shape = 21, colour = "black") +
+  coord_sf(xlim = c(bboxsites[1], bboxsites[3]),
+           ylim = c(bboxsites[2], bboxsites[4]),
+           expand = FALSE) +
+  scale_colour_manual(values = c("Arendal" = "black",
+                                 "Larvik" = "darkgreen",
+                                 "Tvedestrand" = "blue",
+                                 "Horten" = "darkorange")) +
+  theme_nothing() + theme(axis.title=element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.text.x = element_blank(),
+                     rect = element_rect(),
+                     axis.ticks = element_blank(),
+                     panel.grid.major = element_blank(),
+                     legend.position = "none",
+                     plot.background = element_rect(fill = "white"),
+                     panel.border = element_rect(fill=NA)) +
+  scale_x_continuous(expand=c(0,0)) +
+  scale_y_continuous(expand=c(0,0)) +
+  labs(x = NULL, y = NULL)
+
+
+
+
 # Code below repurposed from shore_plot() in 04script.R
 bboxgrid <- st_bbox(simsea)
 anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
@@ -183,10 +227,10 @@ bmap <- ggplot() +
   new_scale_fill() +
   geom_sf(data = simsea, aes(alpha = overlaps), col = NA,
           fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff #"#dbe3f3"
-  geom_sf(data = st_centroid(pauler), size = 1.5, shape = 21, fill = "red") +
+  geom_sf(data = st_centroid(pauler), size = 2, shape = 21, fill = NA) +
   # geom_label_repel(data = site_coords, aes(x = X, y = Y, label = name),
   #                  force = 50, min.segment.length = 0) +
-  geom_sf(data = st_centroid(pauler1), size = 1.5, shape = 21, fill = "gold") +
+  geom_sf(data = st_centroid(pauler1), size = 2, shape = 21, fill = "red") +
   scale_alpha_continuous(range = c(0.01, 1), na.value = 0) +
   ggsn::scalebar(data = pauler, dist = 200, dist_unit = "m",
                  transform = FALSE, st.size = 3, height = 0.06,
@@ -201,9 +245,64 @@ bmap <- ggplot() +
                      panel.grid.major = element_blank(),
                      legend.position = "none")
 
-dateplot + bmap
+inset_map <- ggdraw() +
+  draw_plot(bmap) +
+  draw_plot(overview, x = 0.088, y = 0.64, width = 0.35, height = 0.35)
 
-ggsave(file = here("analysis/figures/brunlanes.png"), width = 250,
-       height = 120,
-       units = "mm")
+dateplot + inset_map
+
+ggsave(file = here("analysis/figures/brunlanes2.png"), width = 1325*2,
+       height = 558*2,
+       units = "px")
+
+
+
+
+sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f")
+
+sites_sl <- st_join(st_make_valid(sites_sl), isopolys,
+                    join = st_intersects, largest = TRUE) %>%
+  filter(!is.na(dir_rel_1))
+
+sitdates <- list()
+for(i in 1:nrow(sites_sl)){
+  print(sites_sl$name[i])
+  sitdates[[i]] <- shoreline_date_exp(sitename = sites_sl$name[i],
+                                     elev = dtm,
+                                     disp_curves = displacement_curves,
+                                     sites = sites_sl,
+                                     iso = isobases,
+                                     expratio = expfit$estimate,
+                                     siteelev = "mean")
+
+
+}
+
+bdates <- bind_rows(sitdates)
+
+
+# Find 95 % probability range for shoreline dates and median shoreline date
+# for ordering in the plot
+hdr <- bdates %>%  group_by(site_name) %>%
+  filter(cumsum(replace_na(probability, 0)) < 0.95) %>%
+  summarise(
+    year_min = min(year, na.rm = TRUE),
+    year_max = max(year, na.rm = TRUE),
+    year_median = median(year, na.rm = TRUE))
+
+# Call to plot
+ggplot(data = hdr, aes(x = year_median, y = reorder(site_name, -year_median))) +
+  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
+                               yend = site_name), col = "red") +
+  ggridges::geom_ridgeline(data = bdates,
+                           aes(x = year, y = site_name,
+                               height = probability*50),
+                           colour = "grey", fill = "grey") +
+  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
+                               yend = site_name), col = "red") +
+  # geom_segment(data = jaksland, aes(x = earliest_date, xend = latest_date,
+  #                                   y = site_name, yend = site_name),
+  #              col = "black", size = 5) +
+  labs(y = "", x = "BCE") +
+  theme_bw()
 
