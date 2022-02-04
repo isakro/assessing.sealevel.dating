@@ -5,6 +5,7 @@ library(ggnewscale)
 library(dplyr)
 library(magrittr)
 library(stringr)
+library(tidyr)
 library(here)
 library(raster)
 library(terra)
@@ -256,13 +257,21 @@ ggsave(file = here("analysis/figures/brunlanes2.png"), width = 1325*2,
        units = "px")
 
 
-
+psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
+  mutate(start = start * -1,
+         end = end * -1) %>%
+  rename(site_name = name)
 
 sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f")
 
 sites_sl <- st_join(st_make_valid(sites_sl), isopolys,
                     join = st_intersects, largest = TRUE) %>%
-  filter(!is.na(dir_rel_1))
+  filter(!is.na(dir_rel_1)) %>%
+  filter(name %in% psdates$site_name)
+
+sites_sl <- inner_join(sites_sl,
+                       dplyr::select(psdates, site_name, min_elev, max_elev),
+                       by = c("name" = "site_name"))
 
 sitdates <- list()
 for(i in 1:nrow(sites_sl)){
@@ -273,20 +282,10 @@ for(i in 1:nrow(sites_sl)){
                                      sites = sites_sl,
                                      iso = isobases,
                                      expratio = expfit$estimate,
-                                     siteelev = "mean")
-
-
+                                     specified_elev = sites_sl$min_elev[i])
 }
 
 bdates <- bind_rows(sitdates)
-
-
-psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
-  mutate(start = start * -1,
-         end = end * -1) %>%
-  rename(site_name = name)
-
-bdates <- bdates %>%filter(site_name %in% psdates$site_name)
 
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
@@ -308,20 +307,24 @@ psdates2 <- psdates %>%  filter(start == end)
 
 
 # Call to plot
-ggplot(data = hdr, aes(x = year_median, y = site_name)) +
+redateplt <- ggplot(data = hdr, aes(x = year_median, y = site_name)) +
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red") +
-  ggridges::geom_ridgeline(data = bdates,
-                           aes(x = year, y = site_name,
-                               height = probability*50),
-                           colour = "grey", fill = "grey") +
+  # ggridges::geom_ridgeline(data = bdates,
+  #                          aes(x = year, y = site_name,
+  #                              height = probability*50),
+  #                          colour = "grey", fill = "grey") +
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red") +
-  geom_linerange(data = psdates1, aes(xmin = start, xmax = end,
-                                      y = site_name), size = 1,
-                 position = position_dodge(width = 0.3, preserve = 'single'),
-                 inherit.aes = FALSE) +
-  geom_point(data = psdates2, aes(x = start), col = "black") +
+  geom_segment(data = psdates1, aes(x = start, xend = end, yend = site_name)) +
+  # geom_linerange(data = psdates1, aes(xmin = start, xmax = end,
+  #                                     y = site_name), size = 0.4,
+  #                position = position_dodge(width = 0.5, preserve = 'single'),
+  #                inherit.aes = FALSE) +
+  scale_y_discrete(limits = hdr$site_name) +
+  geom_point(data = psdates2, aes(x = start), col = "black", size = 0.8) +
   labs(y = "", x = "BCE") +
   theme_bw()
 
+ggsave(file = here("analysis/figures/redate.png"), redateplt,
+       width = 200, height = 230, units = "mm")

@@ -1079,15 +1079,14 @@ shoreline_date_exp <- function(sitename, elev = dtm,
   for(i in 1:length(offsets)){
     negative_offset <- as.numeric(siteelev - offsets[i])
     if(!(negative_offset > 0)) {
+      # Make sure the sea level can not be lower than the present
       negative_offset <- 0.01
     }
     positive_offset <- as.numeric(siteelev + offsets[i])
 
-    # Find lower date, subtracting offset (defaults to 0)
     lowerd1 <- round(approx(sitecurve[,"lowerelev"],
                             xvals, xout = negative_offset)[['y']])
 
-    # Find upper date, subtracting offset (defaults to 0)
     upperd1 <- round(approx(sitecurve[,"upperelev"],
                             xvals, xout =  negative_offset)[['y']])
 
