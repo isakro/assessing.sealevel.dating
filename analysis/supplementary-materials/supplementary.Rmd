@@ -106,6 +106,23 @@ filter(rcarbon, site_name  == "Anvik") %>%
 
 Anvik [@eymundsson2014a] is situated by the highway and a smaller road. Neither appear to impact the simulation results. The dated fireplace is not seen as related to lithic material, which is believed to hail from the latest part of the Early Mesolithc (c. 8500-8250 BCE).
 
+```{r auve,  echo = FALSE, out.width = "500px", regfloat=TRUE}
+include_graphics(here("analysis/figures/anvik.png"))
+
+filter(rcarbon, site_name  == "Auve") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Auve", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
+
+
+```
+
+The site limit for Auve was drawn manually based on the description in the publication of the site and the site geometry available in the database Askeladden. The area to the has reportedly been affected by land-slides, but the extent of this is difficult to ascertain based on maps of the area. As the simulation results appear reasonable, nothing was done to try to correct for this. 
+
 ```{r bakke, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/bakke.png"))
 

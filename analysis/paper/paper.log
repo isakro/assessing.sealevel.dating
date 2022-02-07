@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  4 FEB 2022 15:24
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  7 FEB 2022 18:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1031,58 +1031,58 @@ g Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/deglaciation.png
 >
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/deglaciation.png  used on input line 129.
+res/deglaciation.png  used on input line 128.
 (pdftex.def)             Requested size: 401.49286pt x 338.78949pt.
 [2] [3 </home/isak/phd/assessing.sealevel.dating/analysis/figures/deglaciation.
 png>] [4] [5]
 <../figures/map-iso-1.pdf, id=48, 452.69125pt x 908.39375pt>
 File: ../figures/map-iso-1.pdf Graphic file (type pdf)
 <use ../figures/map-iso-1.pdf>
-Package pdftex.def Info: ../figures/map-iso-1.pdf  used on input line 163.
+Package pdftex.def Info: ../figures/map-iso-1.pdf  used on input line 162.
 (pdftex.def)             Requested size: 324.1415pt x 650.43916pt.
 
-LaTeX Warning: Float too large for page by 47.95358pt on input line 165.
+LaTeX Warning: Float too large for page by 47.95358pt on input line 164.
 
 [6] [7 <../figures/map-iso-1.pdf>]
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png, id=
-71, 711.1368pt x 648.5028pt>
+72, 711.1368pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png
  Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png>
 
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/example_map.png  used on input line 184.
+res/example_map.png  used on input line 179.
 (pdftex.def)             Requested size: 501.88321pt x 457.67941pt.
 
-Overfull \hbox (32.12819pt too wide) in paragraph at lines 184--185
+Overfull \hbox (32.12819pt too wide) in paragraph at lines 179--180
  [][] 
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map.png,
- id=72, 853.5087pt x 648.5028pt>
+ id=73, 853.5087pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map
 .png Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map.
 png>
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/example_sim_map.png  used on input line 193.
+res/example_sim_map.png  used on input line 188.
 (pdftex.def)             Requested size: 501.87273pt x 381.32695pt.
 
-Overfull \hbox (32.1177pt too wide) in paragraph at lines 193--194
+Overfull \hbox (32.1177pt too wide) in paragraph at lines 188--189
  [][] 
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_result.p
-ng, id=73, 711.1368pt x 648.5028pt>
+ng, id=74, 711.1368pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_res
 ult.png Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_resu
 lt.png>
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/example_sim_result.png  used on input line 201.
+res/example_sim_result.png  used on input line 196.
 (pdftex.def)             Requested size: 501.88321pt x 457.67941pt.
 
-Overfull \hbox (32.12819pt too wide) in paragraph at lines 201--201
+Overfull \hbox (32.12819pt too wide) in paragraph at lines 196--196
 [][] 
  []
 
@@ -1090,47 +1090,47 @@ Overfull \hbox (32.12819pt too wide) in paragraph at lines 201--201
 ng (PNG copy)>] [10 </home/isak/phd/assessing.sealevel.dating/analysis/figures/
 example_sim_map.png (PNG copy)>] [11 </home/isak/phd/assessing.sealevel.dating/
 analysis/figures/example_sim_result.png (PNG copy)>]
-</home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png, id=101,
+</home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png, id=102,
  725.8317pt x 589.0005pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png Gra
 phic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png>
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/results.png  used on input line 219.
+res/results.png  used on input line 214.
 (pdftex.def)             Requested size: 501.88763pt x 407.27357pt.
 
-Overfull \hbox (32.13261pt too wide) in paragraph at lines 219--220
+Overfull \hbox (32.13261pt too wide) in paragraph at lines 214--215
  [][] 
  []
 
-</home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png, id=102
+</home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png, id=103
 , 725.8317pt x 589.0005pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png Gr
 aphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png>
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/results2.png  used on input line 228.
+res/results2.png  used on input line 223.
 (pdftex.def)             Requested size: 526.97316pt x 427.63005pt.
 
-Overfull \hbox (57.21814pt too wide) in paragraph at lines 228--229
+Overfull \hbox (57.21814pt too wide) in paragraph at lines 223--224
  [][] 
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png, id=10
-3, 569.0058pt x 654.2844pt>
+4, 569.0058pt x 654.2844pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png G
 raphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png>
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/shoredate.png  used on input line 237.
+res/shoredate.png  used on input line 232.
 (pdftex.def)             Requested size: 526.9733pt x 605.95236pt.
 
-Overfull \hbox (57.21828pt too wide) in paragraph at lines 237--238
+Overfull \hbox (57.21828pt too wide) in paragraph at lines 232--233
  [][] 
  []
 
 
-LaTeX Warning: Float too large for page by 27.46678pt on input line 242.
+LaTeX Warning: Float too large for page by 27.46678pt on input line 237.
 
 [12] [13 </home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png
  (PNG copy)>] [14 </home/isak/phd/assessing.sealevel.dating/analysis/figures/re
@@ -1142,10 +1142,10 @@ File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png G
 raphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png>
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/brunlanes.png  used on input line 251.
+res/brunlanes.png  used on input line 246.
 (pdftex.def)             Requested size: 526.96375pt x 221.87947pt.
 
-Overfull \hbox (57.20872pt too wide) in paragraph at lines 251--252
+Overfull \hbox (57.20872pt too wide) in paragraph at lines 246--247
  [][] 
  []
 
@@ -1155,35 +1155,35 @@ File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/redate.png Grap
 hic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/redate.png>
 Package pdftex.def Info: /home/isak/phd/assessing.sealevel.dating/analysis/figu
-res/redate.png  used on input line 263.
+res/redate.png  used on input line 258.
 (pdftex.def)             Requested size: 526.9733pt x 605.95236pt.
 
-Overfull \hbox (57.21828pt too wide) in paragraph at lines 263--264
+Overfull \hbox (57.21828pt too wide) in paragraph at lines 258--259
  [][] 
  []
 
 
-LaTeX Warning: Float too large for page by 3.46678pt on input line 268.
+LaTeX Warning: Float too large for page by 3.46678pt on input line 263.
 
 [16 </home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png (P
 NG copy)>] [17 </home/isak/phd/assessing.sealevel.dating/analysis/figures/redat
 e.png (PNG copy)>] [18] [19] [20] [21]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 498.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 493.
 [22]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 498.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 493.
 (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 498.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 498.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 498.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 493.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 493.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 493.
  ) 
 Here is how much of TeX's memory you used:
- 13754 strings out of 492982
- 198318 string characters out of 6134896
- 314868 words of memory out of 5000000
+ 13755 strings out of 492982
+ 198347 string characters out of 6134896
+ 314962 words of memory out of 5000000
  16884 multiletter control sequences out of 15000+600000
  56846 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,10n,38p,3325b,360s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,10n,38p,3489b,360s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/en
 c/dvips/lm/lm-ec.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/s
 hare/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/publi
@@ -1191,7 +1191,7 @@ c/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/te
 xmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr
 7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/
 type1/public/lm/lmsy7.pfb>
-Output written on paper.pdf (22 pages, 4325272 bytes).
+Output written on paper.pdf (22 pages, 4345930 bytes).
 PDF statistics:
  371 PDF objects out of 1000 (max. 8388607)
  322 compressed objects within 4 object streams

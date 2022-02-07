@@ -122,7 +122,7 @@ sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
                     join = st_intersects, largest = TRUE) %>%
   filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
 
-sitename <- "Dybdalshei 1" #
+sitename <- "Krøgenes D2" #
 sitel <- filter(sites_sa, name == sitename)
 
 
@@ -142,57 +142,59 @@ siteelev <- terra::extract(dtm, vect(sitel), fun = min)[2]
 # a = original amount before decay (1 here)
 # x = time (distance here)
 
-# 1/200 x sannsynlighet
 inc <- seq(0, 70, 0.1)
 
 expdat <- data.frame(
   offset = inc,
-  px = pexp(inc, rate = expfit$estimate))
-
-plot(y = expdat$px, x = inc)
-
-expdat <- expdat %>%
-  mutate(prob = px - lag(px, default =  first(px))) %>%
+  px = pexp(inc, rate = expfit$estimate)) %>%
+  mutate(probs = px - lag(px, default =  first(px))) %>%
   tail(-1)
 
-probs <- c()
-prob <- 1
-i <- 1
-while(prob > 0.00001) {
-  prob <- (1 * (1 - (expfit$estimate/10)))^i
-  probs[i] <- as.numeric(prob)
-  i <- i + 1
-}
-
-dates <- data.frame(matrix(ncol = 3, nrow = length(probs)))
-names(dates) <- c("earliest_date", "latest_date", "probability")
-dates$probability <- probs
+dategrid <- data.frame(
+  years = seq(-10000, 2000, 1),
+  probability = 0)
 
 for(i in 1:nrow(expdat)){
   negative_offset <- as.numeric(siteelev - expdat$offset[i])
   if(!(negative_offset > 0)) {
     negative_offset <- 0.01
   }
-
   # Find lower date, subtracting offset (defaults to 0)
-  lowerd1 <- round(approx(sitecurve[,"lowerelev"],
+  lowerd <- round(approx(sitecurve[,"lowerelev"],
                           xvals, xout = negative_offset)[['y']])
 
   # Find upper date, subtracting offset (defaults to 0)
-  upperd1 <- round(approx(sitecurve[,"upperelev"],
+  upperd <- round(approx(sitecurve[,"upperelev"],
                           xvals, xout =  negative_offset)[['y']])
 
   # Find youngest and oldest date
-  earliest <- min(c(lowerd1, upperd1), na.rm = TRUE)
-  latest <- max(c(lowerd1, upperd1), na.rm = TRUE)
+  earliest <- min(c(lowerd, upperd))
+  latest <- max(c(lowerd, upperd))
 
-  # Assign probability to each year in range
-  yrs <- data.frame(year = seq(earliest, latest, 1)) %>%
-    mutate(prob = 1/nrow(.)*expdat$prob[i])
+  print(c(earliest, latest))
 
+  # Add probability to each year in range
+  if(!is.na(latest) && !is.na(earliest)){
 
-  dates[i, 1:2] <- cbind(earliest, latest)
+    year_range <- seq(earliest, latest, 1)
+    prob <- 1/length(year_range)*expdat$probs[i]
+
+    dategrid[dategrid$years %in% year_range, "probability"] <-
+      dategrid[dategrid$years %in% year_range, "probability"] + prob
+  }
 }
+
+dategrid %>%
+ggplot() +
+  ggridges::geom_ridgeline(aes(x = years, y = 0, height = probability),
+                           colour = "black", fill = "grey")
+
+
+tst <- shoreline_date("Krøgenes D2", expratio = expfit$estimate)
+
+tst %>% ggplot() +
+  ggridges::geom_ridgeline(aes(x = years, y = 0, height = probability),
+                           colour = "black", fill = "grey")
 
 dates <- data.frame(matrix(ncol = 2))
 names(dates) <- c("year", "probability")
@@ -236,6 +238,7 @@ for(i in 1:length(offsets)){
     dates <- rbind(dates, cbind(year = yrs, probability = as.numeric(probs[i])))
   }
 }
+
 
 
 dat1 <- dates %>%

@@ -17,6 +17,8 @@ quickSetupOxcal()
 # source("http://bioconductor.org/biocLite.R")
 # biocLite("IRanges")
 
+# For reproducibility
+set.seed(123)
 
 # Load required functions and prepared data
 source(here("analysis/script/04script.R"))
@@ -34,10 +36,6 @@ dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
 
 # Path to smaller site area rasters
 siterpath <- "/home/isak/phd/eaa_presentation/sitearea"
-
-# Assign closest isobases to site data.
-sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
-                    join = st_intersects, largest = TRUE)
 
 # Prespecified height of plot (to be multiplied by number of phases)
 plot_height <- 76
@@ -144,10 +142,10 @@ ggsave(file = here("analysis/figures/adalvestre2.png"), width = 250,
 sitename <- "Alveberget 8"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-# save(output,
-#      file = here::here("analysis/data/derived_data/alveberget8.RData"))
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/alveberget8.RData"))
 load(here("analysis/data/derived_data/alveberget8.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -179,6 +177,27 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
              s_tdist = 1, s_xpos = 150, s_ypos = 70, s_bheight = 0.75)
 
 ggsave(file = here("analysis/figures/anvik.png"), width = 250,
+       height = plot_height + (plot_height * length(unique(date_groups))),
+       units = "mm")
+
+######### Auve #########
+sitename <- "Auve"
+date_groups <- group_dates(rcarb_sa, sitename)
+
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/auve.RData"))
+load(here("analysis/data/derived_data/auve.RData"))
+
+sitearea <- rast(file.path(siterpath,
+                           paste0(str_replace(sitename, " ", "_"), ".tif")))
+
+plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
+             sites_sa, isobases, output, date_groups, scale_dist = 150,
+             s_tdist = 0.35, s_xpos = 150, s_ypos = 70, s_bheight = 0.25)
+
+ggsave(file = here("analysis/figures/auve.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 

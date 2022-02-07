@@ -347,45 +347,48 @@ group_dates <- function(data, sitename){
   }
 
 
-# Define function to interpolate displacement curve for a given location,
-# based on distance to curves on two provided isobases on the
-# north-east to south-west axis perpendicular to the isobases.
-interpolate_curve <- function(years, isobase1, isobase2, target, dispdat,
-                              isodat, direction_rel_curve1){
+# Interpolate displacement curve for
+interpolate_curve <- function(years, target, dispdat, isodat){
 
-  # Distance between "northern" and "southern" isobase
-  dist <- st_distance(filter(isodat, name == isobase1),
-                      filter(isodat, name == isobase2))
+  dists <- as.data.frame(st_distance(target, isobases))
+  names(dists) <- isobases$name
 
-  curve1 <- filter(dispdat, name == isobase1)
-  curve2 <- filter(dispdat, name == isobase2)
+  values <- data.frame(matrix(ncol = 3, nrow = length(years)))
+  names(values) <- c("years", "lowerelev", "upperelev")
 
-  # Difference in displacement per meter between the the curves,
-  # upper confidence limit
-  prm_u <- (dplyr::select(curve1, upperelev) -
-              dplyr::select(curve2, upperelev))/ as.numeric(dist)
-  # Difference in difference per meter, lower confidence limit
-  prm_l <- (dplyr::select(curve1, lowerelev) -
-              dplyr::select(curve2, lowerelev))/ as.numeric(dist)
+  for(i in 1:length(years)){
+    for(j in 1:ncol(dists)){
+      le <- dispdat[which(dispdat$name == names(dists)[j] &
+                            dispdat$years == years[i]),
+                    "lowerelev"]
 
-  # Distance to target isobase from isobase of curve 1
-  distfrom1 <- st_distance(filter(isodat, name == isobase1),
-                           target)
+      ue <- dispdat[which(dispdat$name == names(dists)[j] &
+                            dispdat$years == years[i]),
+                    "upperelev"]
 
-  # Find and return values for the target isobase
-  uppervals <- prm_u * as.numeric(distfrom1)
-  lowervals <- prm_l * as.numeric(distfrom1)
+      dists[2, j] <- le
+      dists[3, j] <- ue
+    }
+    distdat <- as.data.frame(t(dists))
+    names(distdat) <- c("distance", "lower", "upper")
 
-  # If the direction relative to curve1 is southwest the values are subtracted,
-  # if not the values are added.
-  if (direction_rel_curve1 == "sw"){
-    upperelev <- dplyr::select(curve1, upperelev) - uppervals
-    lowerelev <- dplyr::select(curve1, lowerelev) - lowervals
-  } else {
-    upperelev <- dplyr::select(curve1, upperelev) + uppervals
-    lowerelev <- dplyr::select(curve1, lowerelev) + lowervals
+    # No sites are older than the lowest limit of any displacement curve
+    # so in case of NA values, simply assign NA
+    if(any(is.na(distdat))){
+      lowerval <- upperval <- NA
+    } else {
+      # Inverse distance weighting
+      lowerval <- sum(apply(distdat, 1,
+                            function(x) x["lower"] * x["distance"]^-2)) /
+        sum(apply(distdat, 1, function(x) x["distance"] ^-2))
+      upperval <- sum(apply(distdat, 1,
+                            function(x) x["upper"] * x["distance"]^-2)) /
+        sum(apply(distdat, 1, function(x) x["distance"] ^-2))
+
+    }
+    values[i,] <- c(years[i], lowerval, upperval)
   }
-  values <- cbind.data.frame(years, upperelev, lowerelev)
+
   return(values)
 }
 
@@ -667,12 +670,9 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
 
   # Interpolate displacement curve to the site location
   sitecurve <- interpolate_curve(years = xvals,
-                                 isobase1 = sitel$isobase1,
-                                 isobase2 = sitel$isobase2,
                                  target = sitel,
                                  dispdat = displacement_curves,
-                                 isodat = isobases,
-                                 direction_rel_curve1 = sitel$dir_rel_1)
+                                 isodat = isobases)
   # Add site name
   sitecurve$name <- sitename
 
@@ -1031,13 +1031,87 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
     }
 }
 
-# Shoreline date, using exponential offset on displacement curve average
-shoreline_date_exp <- function(sitename, elev = dtm,
+# Shoreline date, using exponential function for elevation offset
+shoreline_date <- function(sitename, elev = dtm,
                            disp_curves = displacement_curves,
                            sites = sites_sa,
                            iso = isobases,
                            expratio, siteelev = "mean",
                            specified_elev = NA){
+
+  # site limit
+  sitel <- filter(sites, name == sitename)
+  siteu <- st_union(sitel)
+  sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
+
+  sitecurve <- interpolate_curve(years = xvals,
+                                 isobase1 = sitel$isobase1,
+                                 isobase2 = sitel$isobase2,
+                                 target = sitel,
+                                 dispdat = disp_curves,
+                                 isodat = iso,
+                                 direction_rel_curve1 = sitel$dir_rel_1)
+
+  if(!(is.na(specified_elev))){
+    siteelev <- specified_elev
+  } else{
+    if(siteelev == "mean") {
+      siteelev <- terra::extract(elev, vect(sitel), fun = mean)[2]
+    } else if(siteelev == "min"){
+      siteelev <- terra::extract(elev, vect(sitel), fun = min)[2]
+    }
+  }
+
+  inc <- seq(0, 70, 0.1)
+
+  expdat <- data.frame(
+    offset = inc,
+    px = pexp(inc, rate = expratio)) %>%
+    mutate(probs = px - lag(px, default =  first(px))) %>%
+    tail(-1)
+
+  dategrid <- data.frame(
+    years = seq(-10000, 2000, 1),
+    probability = 0)
+
+  for(i in 1:nrow(expdat)){
+    negative_offset <- as.numeric(siteelev - expdat$offset[i])
+    if(!(negative_offset > 0)) {
+      negative_offset <- 0.01
+    }
+    # Find lower date, subtracting offset (defaults to 0)
+    lowerd <- round(approx(sitecurve[,"lowerelev"],
+                           xvals, xout = negative_offset)[['y']])
+
+    # Find upper date, subtracting offset (defaults to 0)
+    upperd <- round(approx(sitecurve[,"upperelev"],
+                           xvals, xout =  negative_offset)[['y']])
+
+    # Find youngest and oldest date
+    earliest <- min(c(lowerd, upperd))
+    latest <- max(c(lowerd, upperd))
+
+    # Add probability to each year in range
+    if(!is.na(latest)){
+
+      year_range <- seq(earliest, latest, 1)
+      prob <- 1/length(year_range)*expdat$probs[i]
+
+      dategrid[dategrid$years %in% year_range, "probability"] <-
+        dategrid[dategrid$years %in% year_range, "probability"] + prob
+    }
+  }
+  return(dategrid)
+}
+
+
+# Shoreline date, using exponential decay for elevation offset
+shoreline_date_exp <- function(sitename, elev = dtm,
+                               disp_curves = displacement_curves,
+                               sites = sites_sa,
+                               iso = isobases,
+                               expratio, siteelev = "mean",
+                               specified_elev = NA){
 
   # site limit
   sitel <- filter(sites, name == sitename)
@@ -1082,23 +1156,17 @@ shoreline_date_exp <- function(sitename, elev = dtm,
       # Make sure the sea level can not be lower than the present
       negative_offset <- 0.01
     }
-    positive_offset <- as.numeric(siteelev + offsets[i])
 
-    lowerd1 <- round(approx(sitecurve[,"lowerelev"],
+    lowerd <- round(approx(sitecurve[,"lowerelev"],
                             xvals, xout = negative_offset)[['y']])
 
-    upperd1 <- round(approx(sitecurve[,"upperelev"],
+    upperd <- round(approx(sitecurve[,"upperelev"],
                             xvals, xout =  negative_offset)[['y']])
 
-    lowerd2 <- round(approx(sitecurve[,"lowerelev"],
-                            xvals, xout = positive_offset)[['y']])
-
-    upperd2 <- round(approx(sitecurve[,"upperelev"],
-                            xvals, xout =  positive_offset)[['y']])
 
     # Find youngest and oldest date
-    earliest <- min(c(lowerd1, upperd1))
-    latest <- max(c(lowerd1, upperd1))
+    earliest <- min(c(lowerd, upperd))
+    latest <- max(c(lowerd, upperd))
 
     if(!is.na(earliest)){
       yrs <- seq(earliest, latest, 1)
@@ -1117,90 +1185,6 @@ shoreline_date_exp <- function(sitename, elev = dtm,
 
   dates <- dates %>%
     mutate(probability = probability/sum(probability, na.rm = TRUE))
-
-  dates$site_name <- sitename
-
-  return(dates)
-}
-
-# Shoreline date, using exponential offset ond displacement curve average
-shoreline_date_exp_avg <- function(sitename, dtm = dtm,
-                                   displacement_curves = displacement_curves,
-                                   sites = sites_sa,
-                                   isobases = isobases,
-                                   expratio, siteelev = "mean",
-                                   specified_elev = NA){
-
-  # site limit
-  sitel <- filter(sites, name == sitename)
-  siteu <- st_union(sitel)
-  sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
-
-  sitecurve <- interpolate_curve(years = xvals,
-                                 isobase1 = sitel$isobase1,
-                                 isobase2 = sitel$isobase2,
-                                 target = sitel,
-                                 dispdat = displacement_curves,
-                                 isodat = isobases,
-                                 direction_rel_curve1 = sitel$dir_rel_1)
-
-  if(!(is.na(specified_elev))){
-    siteelev <- specified_elev
-  } else{
-    if(siteelev == "mean") {
-      siteelev <- terra::extract(dtm, vect(sitel), fun = mean)[2]
-    } else if(siteelev == "min"){
-      siteelev <- terra::extract(dtm, vect(sitel), fun = min)[2]
-    }
-  }
-
-  probs <- c()
-  prob <- 1
-  i <- 1
-  while(prob > 0.00001) {
-    prob <- (1 * (1 - (expratio/10)))^i
-    probs[i] <- as.numeric(prob)
-    i <- i + 1
-  }
-
-
-  offsets <- seq(1, length(probs), 1)/10
-  dates <- data.frame(matrix(ncol = 3, nrow = length(probs)))
-  names(dates) <- c("earliest_date", "latest_date", "probability")
-  dates$probability <- probs
-
-  # Do not allow for the sea-level being below its present level.
-  for(i in 1:length(offsets)){
-    negative_offset <- as.numeric(siteelev - offsets[i])
-    if(!(negative_offset > 0)) {
-      negative_offset <- 0.01
-    }
-    positive_offset <- as.numeric(siteelev + offsets[i])
-
-    # Find lower date, subtracting offset (defaults to 0)
-    lowerd1 <- round(approx(sitecurve[,"lowerelev"],
-                            xvals, xout = negative_offset)[['y']])
-
-    # Find upper date, subtracting offset (defaults to 0)
-    upperd1 <- round(approx(sitecurve[,"upperelev"],
-                            xvals, xout =  negative_offset)[['y']])
-
-    lowerd2 <- round(approx(sitecurve[,"lowerelev"],
-                            xvals, xout = positive_offset)[['y']])
-
-    upperd2 <- round(approx(sitecurve[,"upperelev"],
-                            xvals, xout =  positive_offset)[['y']])
-
-    # Find youngest and oldest date
-    earliest <- min(c(lowerd1, upperd1), na.rm = TRUE)
-    latest <- max(c(lowerd1, upperd1), na.rm = TRUE)
-
-    dates[i, 1:2] <- cbind(earliest, latest)
-  }
-
-  dates <- dates %>%
-    mutate(combined = (earliest_date + latest_date)/2,
-           probability = probability/sum(probability))
 
   dates$site_name <- sitename
 

@@ -6,7 +6,7 @@ author:
       institute: [UiO]
       correspondence: true
 institute:
-  - UofO: University of Oslo, Institute of Archaeology, Conservation and History
+  - UiO: University of Oslo, Institute of Archaeology, Conservation and History
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
     bookdown::pdf_document2:
@@ -76,6 +76,9 @@ knitr::knit_hooks$set(plot = function (x, options) {
 ```
 
 ```{r get-data-functions, include = FALSE}
+# For reproducibility
+set.seed(123)
+
 # Load all sites and radiocarbon data
 sites <- read.csv(here('analysis/data/raw_data/sites.csv'))
 rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
@@ -198,11 +201,7 @@ overview_map / disp_curves
 
 # Methods
 
-The goal of this study is effectively to evaluate the spatial relationship between two phenomena, sites and shorelines, each associated with their own range of temporal uncertainty. The first task was therefore to ascribe likely date ranges and associated uncertainty to the two phenomena.
-
-To take account of the gradient in the isostatic rebound, the shoreline displacement curves were adjusted to each site location by taking into account the distance to the closest isobase. This was done for each site by first finding the difference between the elevation values of the two closest displacement curves for each year along the entirety of the curves. Each value was then divided by the distance between the isobases. To find the adjusted displacement curve for a given site location, the distance between the site polygon and closest isobase was multiplied with the values for difference per meter. These values were then subtracted from the displacement curve located to the south-west of the site, and in the few cases where the site was located south-west of all isobases, the values were instead added. The result of this process is shown for an example site in Figure \@ref(fig:example-1).
-
-For the date ranges associated with the sites, all radiocarbon dates were first individually calibrated using the IntCal20 calibration curve [@reimer2020] using OxCal v4.4.4 [@bronkramsey2009] through the oxcAAR package for R [@hinz2021]. Radiocarbon dates associated with each site were then grouped if they overlapped with 99.7 % probability, meaning these were effectively taken to represent the same settlement phase. In the case where there are multiple dates believed to belong to a single phase, these were subjected to Bayesian modelling using the Boundary function in OxCal and then summed. Multiple phases at a single site were treated as independent of each other.
+The goal of this study is effectively to evaluate the spatial relationship between two phenomena, sites and shorelines, each associated with their own range of temporal uncertainty. The first task was therefore to ascribe likely date ranges and associated uncertainty to the two phenomena. To take account of the gradient in the isostatic rebound, the trajectory of shoreline displacement was interpolated to each site location from the displacement curves using inverse distance weighting based on the distance between the site and the isobases of the displacement curves [e.g. @conolly2020; @conolly2006,94--97]. This was done for each year along the entirety of the curves using the squared inverse of the distances. The result of this process is shown for an example site in Figure \@ref(fig:example-1). For the date ranges associated with the sites, all radiocarbon dates were first individually calibrated using the IntCal20 calibration curve [@reimer2020] using OxCal v4.4.4 [@bronkramsey2009] through the oxcAAR package for R [@hinz2021]. Radiocarbon dates associated with each site were then grouped if they overlapped with 99.7 % probability, meaning these were effectively taken to represent the same settlement phase. In the case where there are multiple dates believed to belong to a single phase, these were subjected to Bayesian modelling using the Boundary function in OxCal and then summed. Multiple phases at a single site were treated as independent of each other.
 
 As the excavation of archaeological sites typically follow from residential and commercial development, as well as the expansion of infrastructure, the area immediately surrounding the sites have sometimes been severely impacted by modern disturbances. In addition to employing 10m resolution DTM to alleviate some of these issues, this also necessitated some additional editing of the elevation raster. This involved manually defining the extent of problem areas such as railways, highways, quarries and the like. The DTM values on these were then set to missing, and new elevation values were interpolated from the surrounding terrain. This was done using regularised spline interpolation with tension [e.g. @conolly2020], using the default settings of r.fillnulls from GRASS GIS in R through the package rgrass7 [@bivand2021]. In addition to code and original spatial data being available in the research compendium for this paper, it has also been noted in the supplementary material when the area surrounding a site has been edited in this manner.
 
@@ -211,11 +210,6 @@ Armed with a likely date range for the occupation(s) of each site, an estimated 
 This process was repeated 1000 times for each phase for each site. The choice of 1000 simulation runs follows from an evaluation of when the mean distances between site and shoreline converged when running 5000 iterations of the simulation on the site Hovland 5, available in the supplementary material. Hovland 5 was chosen for this evaluation as it has a fairly uncertain date range, and is located in area of quite complex topography. At 1000 simulation runs the analysis of each site took up to a few hours, depending on the distance to the simulated shorelines and the necessary size of the window of analysis.
 
 ```{r example-site, fig.show='hide'}
-
-# Assign closest isobases to site data.
-sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
-                    join = st_intersects, largest = TRUE)
-
 # Specify site name
 sitename <- "Hegna vest 1"
 
@@ -239,12 +233,9 @@ datedat <- model_dates(sitedates = siter, date_groups = date_groups)
 
 # Find local displacement curve
 sitecurve <- interpolate_curve(years = xvals,
-                                 isobase1 = sitel$isobase1,
-                                 isobase2 = sitel$isobase2,
                                  target = sitel,
                                  dispdat = displacement_curves,
-                                 isodat = isobases,
-                                 direction_rel_curve1 = sitel$dir_rel_1)
+                                 isodat = isobases)
 # Add site name
 sitecurve$name <- sitename
 
@@ -257,19 +248,20 @@ overview_map <- overview_plot(bmap, sitel, sites_sa, isobases,
                                os_tdist = 0.03, os_xpos = 20000, os_ypos = 8000,
                                os_bheight = 0.02, os_tsize = 3)
 
-dispdata <- filter(displacement_curves, name %in% c("Larvik", "Tvedestrand"))
 
 curve_plot <- ggplot() + 
-              geom_line(data = dispdata, 
+              geom_line(data = displacement_curves, 
                         aes(x = years, y = upperelev, col = name)) +
-  geom_line(data = dispdata, 
+  geom_line(data =  displacement_curves, 
                         aes(x = years, y = lowerelev, col = name)) +
   geom_line(data = sitecurve,
             aes(x = years, y = upperelev, col = name)) +
   geom_line(data = sitecurve,
             aes(x = years, y = lowerelev, col = name)) +
-  scale_colour_manual(values = c("Larvik" = "darkgreen",
-                                  "Tvedestrand" = "blue",
+  scale_colour_manual(values = c("Arendal" = "black",
+                                   "Larvik" = "darkgreen",
+                                   "Tvedestrand" = "blue",
+                                   "Horten" = "darkorange",
                                  "Hegna vest 1" = "red")) +
   ylab("Meters above present sea-level") +
   xlab("cal BCE/CE") +
@@ -289,13 +281,11 @@ ggsave(file = here("analysis/figures/example_map.png"), plot = plt, width = 250,
 
 ```
 
-```{r example-1, echo = FALSE, fig.cap = "Example site Hegna vest 1 (Fossum 2017). A) Location of the site in the present day landscape. The red outline is the site limit. B) Radiocarbon dates associated with the site. Fill colour indicates what dates are assumed to belong to the same settlement phase. Multiple dates are modelled using the Boundary function in OxCal and then summed. The red outline indicates that the date does not match the typological indicators in the artefact assemblage of the site. C) The location of the site within the study area relative to isobases of the employed displacement curves. D) Displacement curve interpolated to the site location based on the distance between the site and the isobases of the two closest displacement curves.", out.width = "500px", fig.align="center", regfloat=TRUE}
+```{r example-1, echo = FALSE, fig.cap = "Example site Hegna vest 1 (Fossum 2017). A) Location of the site in the present day landscape. The red outline is the site limit. B) Radiocarbon dates associated with the site. Fill colour indicates what dates are assumed to belong to the same settlement phase. Multiple dates are modelled using the Boundary function in OxCal and then summed. The red outline indicates that the date does not match the typological indicators in the artefact assemblage of the site. C) The location of the site within the study area relative to isobases of the employed displacement curves. D) Displacement curve interpolated to the site location.", out.width = "500px", fig.align="center", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/example_map.png"))
 ```
 
 ```{r example-site-cont2, fig.show='hide'}
-set.seed(1)
-
 # Retrieve example date to be used. The posterior sum of date group 1
 posteriorprobs <- filter(datedat, group == 1 & class == "sum")
 
@@ -597,7 +587,7 @@ knitr::include_graphics(here("analysis/figures/brunlanes.png"))
 
 # Shoreline dating
 
-```{r redate, echo = FALSE, fig.cap = "95% probability ranges of shoreline dated sites in the study area without radiocarbon dates or with radiocarbon dates that do not correspond to the artefact inventories. These are comapred to the dates originally proposed by the excavation reports in black.", out.width = "525px", fig.align="center", regfloat=TRUE}
+```{r redate, echo = FALSE, fig.cap = "95\\% probability ranges of shoreline dated sites in the study area without radiocarbon dates or with radiocarbon dates that do not correspond to the artefact inventories. These are comapred to the dates originally proposed by the excavation reports in black.", out.width = "525px", fig.align="center", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/redate.png"))
 ```
 
