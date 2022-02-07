@@ -142,6 +142,19 @@ siteelev <- terra::extract(dtm, vect(sitel), fun = min)[2]
 # a = original amount before decay (1 here)
 # x = time (distance here)
 
+# 1/200 x sannsynlighet
+inc <- seq(0, 70, 0.1)
+
+expdat <- data.frame(
+  offset = inc,
+  px = pexp(inc, rate = expfit$estimate))
+
+plot(y = expdat$px, x = inc)
+
+expdat <- expdat %>%
+  mutate(prob = px - lag(px, default =  first(px))) %>%
+  tail(-1)
+
 probs <- c()
 prob <- 1
 i <- 1
@@ -151,18 +164,15 @@ while(prob > 0.00001) {
   i <- i + 1
 }
 
-
-offsets <- seq(1, length(probs), 1)/10
 dates <- data.frame(matrix(ncol = 3, nrow = length(probs)))
 names(dates) <- c("earliest_date", "latest_date", "probability")
 dates$probability <- probs
 
-for(i in 1:length(offsets)){
-  negative_offset <- as.numeric(siteelev - offsets[i])
+for(i in 1:nrow(expdat)){
+  negative_offset <- as.numeric(siteelev - expdat$offset[i])
   if(!(negative_offset > 0)) {
     negative_offset <- 0.01
   }
-  positive_offset <- as.numeric(siteelev + offsets[i])
 
   # Find lower date, subtracting offset (defaults to 0)
   lowerd1 <- round(approx(sitecurve[,"lowerelev"],
@@ -172,17 +182,15 @@ for(i in 1:length(offsets)){
   upperd1 <- round(approx(sitecurve[,"upperelev"],
                           xvals, xout =  negative_offset)[['y']])
 
-  lowerd2 <- round(approx(sitecurve[,"lowerelev"],
-                          xvals, xout = positive_offset)[['y']])
-
-  upperd2 <- round(approx(sitecurve[,"upperelev"],
-                          xvals, xout =  positive_offset)[['y']])
-
   # Find youngest and oldest date
   earliest <- min(c(lowerd1, upperd1), na.rm = TRUE)
   latest <- max(c(lowerd1, upperd1), na.rm = TRUE)
 
-  yrs <- data.frame(year = seq(earliest, latest, 1), prob = probs[i])
+  # Assign probability to each year in range
+  yrs <- data.frame(year = seq(earliest, latest, 1)) %>%
+    mutate(prob = 1/nrow(.)*expdat$prob[i])
+
+
   dates[i, 1:2] <- cbind(earliest, latest)
 }
 
