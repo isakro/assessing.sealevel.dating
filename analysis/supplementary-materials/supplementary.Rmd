@@ -121,7 +121,7 @@ filter(rcarbon, site_name  == "Auve") %>%
 
 ```
 
-The site limit for Auve was drawn manually based on the description in the publication of the site and the site geometry available in the database Askeladden. The area to the has reportedly been affected by land-slides, but the extent of this is difficult to ascertain based on maps of the area. As the simulation results appear reasonable, nothing was done to try to correct for this. 
+The site limit for Auve was drawn manually based on the description in the publication of the site and the site geometry available in the database Askeladden. The area to the has reportedly been affected by land-slides, but the extent of this is difficult to ascertain based on maps of the area. As the simulation results appear reasonable [see also map in @ostmo2008, fig.142], nothing was done to try to correct for this. 
 
 ```{r bakke, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/bakke.png"))

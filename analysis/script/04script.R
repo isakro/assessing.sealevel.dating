@@ -346,7 +346,6 @@ group_dates <- function(data, sitename){
   return(date_groups)
   }
 
-
 # Interpolate displacement curve for
 interpolate_curve <- function(years, target, dispdat, isodat){
 
@@ -356,7 +355,13 @@ interpolate_curve <- function(years, target, dispdat, isodat){
   values <- data.frame(matrix(ncol = 3, nrow = length(years)))
   names(values) <- c("years", "lowerelev", "upperelev")
 
-  for(i in 1:length(years)){
+  # In the case that a site is on the isobase of a
+  # displacement curve (e.g. Alveberget 8), simply return that displacement
+  # curve
+  if(any(as.numeric(dists) == 0)){
+    values <- dispdat[dispdat$name == names(dists)[which(as.numeric(dists) == 0)],]
+
+  } else { for(i in 1:length(years)){
     for(j in 1:ncol(dists)){
       le <- dispdat[which(dispdat$name == names(dists)[j] &
                             dispdat$years == years[i]),
@@ -372,8 +377,8 @@ interpolate_curve <- function(years, target, dispdat, isodat){
     distdat <- as.data.frame(t(dists))
     names(distdat) <- c("distance", "lower", "upper")
 
-    # No sites are older than the lowest limit of any displacement curve
-    # so in case of NA values, simply assign NA
+      # No sites are older than the lowest limit of any displacement curve
+      # so in case of NA values, simply assign NA
     if(any(is.na(distdat))){
       lowerval <- upperval <- NA
     } else {
@@ -388,8 +393,8 @@ interpolate_curve <- function(years, target, dispdat, isodat){
     }
     values[i,] <- c(years[i], lowerval, upperval)
   }
-
-  return(values)
+  }
+    return(values)
 }
 
 # Function to identify and load the correct raster if it is split up into
