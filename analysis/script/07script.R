@@ -117,22 +117,13 @@ ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
 
 
 # Example site for development
-
-sites_sa <- st_join(st_make_valid(sites_sa), isopolys,
-                    join = st_intersects, largest = TRUE) %>%
-  filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
-
-sitename <- "Krøgenes D2" #
+sitename <- "Alveberget 8" #
 sitel <- filter(sites_sa, name == sitename)
 
-
 sitecurve <- interpolate_curve(years = xvals,
-                               isobase1 = sitel$isobase1,
-                               isobase2 = sitel$isobase2,
                                target = sitel,
                                dispdat = displacement_curves,
-                               isodat = isobases,
-                               direction_rel_curve1 = sitel$dir_rel_1)
+                               isodat = isobases)
 sitecurve$name <- sitename
 
 siteelev <- terra::extract(dtm, vect(sitel), fun = min)[2]
@@ -142,12 +133,12 @@ siteelev <- terra::extract(dtm, vect(sitel), fun = min)[2]
 # a = original amount before decay (1 here)
 # x = time (distance here)
 
-inc <- seq(0, 70, 0.1)
+inc <- seq(0, 70, 0.001)
 
 expdat <- data.frame(
   offset = inc,
   px = pexp(inc, rate = expfit$estimate)) %>%
-  mutate(probs = px - lag(px, default =  first(px))) %>%
+  mutate(probs = px - lag(px, default =  dplyr::first(px))) %>%
   tail(-1)
 
 dategrid <- data.frame(
@@ -187,8 +178,24 @@ for(i in 1:nrow(expdat)){
 dategrid %>%
 ggplot() +
   ggridges::geom_ridgeline(aes(x = years, y = 0, height = probability),
-                           colour = "black", fill = "grey")
+                           colour = "black", fill = "grey") +
+  theme_bw()
 
+
+
+cd <- ggplot() +
+  geom_hline(yintercept = as.numeric(siteelev), linetype = "dashed", col = "red") +
+  geom_line(data = sitecurve,
+            aes(x = years, y = upperelev)) +
+  geom_line(data = sitecurve,
+            aes(x = years, y = lowerelev)) +
+  ylab("Meters above present sea-level") +
+  xlab("cal BCE/CE") +
+  theme_bw() +
+  theme(legend.title = element_blank(), legend.position = "bottom",
+        legend.direction = "horizontal")
+
+cd + dt
 
 tst <- shoreline_date("Krøgenes D2", expratio = expfit$estimate)
 
