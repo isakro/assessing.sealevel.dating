@@ -458,10 +458,10 @@ ggsave(file = here("analysis/figures/gunnarsrod10.png"), width = 250,
 sitename <- "Hegna vest 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/hegnavest1.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/hegnavest1.RData"))
 load(here("analysis/data/derived_data/hegnavest1.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -917,10 +917,10 @@ ggsave(file = here("analysis/figures/langemyr.png"), width = 250,
 sitename <- "Lunaveien"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 3000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/lunaveien.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 3000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/lunaveien.RData"))
 load(here("analysis/data/derived_data/lunaveien.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1043,10 +1043,10 @@ ggsave(file = here("analysis/figures/nauenc.png"), width = 250,
 sitename <- "Nordby 1"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-# save(output,
-#      file = here::here("analysis/data/derived_data/nordby1.RData"))
+output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+save(output,
+     file = here::here("analysis/data/derived_data/nordby1.RData"))
 load(here("analysis/data/derived_data/nordby1.RData"))
 
 sitearea <- rast(file.path(siterpath,
