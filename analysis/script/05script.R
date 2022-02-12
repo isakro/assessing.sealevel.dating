@@ -1429,10 +1429,10 @@ ggsave(file = here("analysis/figures/tverdal.png"), width = 250,
 sitename <- "Vallermyrene 1a"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene1a.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene1a.RData"))
 load(here("analysis/data/derived_data/vallermyrene1a.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1450,10 +1450,10 @@ ggsave(file = here("analysis/figures/vallermyrene1a.png"), width = 250,
 sitename <- "Vallermyrene 1b"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene1b.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene1b.RData"))
 load(here("analysis/data/derived_data/vallermyrene1b.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1471,12 +1471,12 @@ ggsave(file = here("analysis/figures/vallermyrene1b.png"), width = 250,
 sitename <- "Vallermyrene 2"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-# Use dated feature instead of site limit
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 200, siterpath,
-                          sitelimit = FALSE)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene2.RData"))
+# # Use dated feature instead of site limit
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 200, siterpath,
+#                           sitelimit = FALSE)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene2.RData"))
 load(here("analysis/data/derived_data/vallermyrene2.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1494,10 +1494,10 @@ ggsave(file = here("analysis/figures/vallermyrene2.png"), width = 250,
 sitename <- "Vallermyrene 4a"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene4a.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                            isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene4a.RData"))
 load(here("analysis/data/derived_data/vallermyrene4a.RData"))
 
 sitearea <- rast(file.path(siterpath,
@@ -1515,10 +1515,10 @@ ggsave(file = here("analysis/figures/vallermyrene4a.png"), width = 250,
 sitename <- "Vallermyrene 4b"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/vallermyrene4b.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 400, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/vallermyrene4b.RData"))
 load(here("analysis/data/derived_data/vallermyrene4b.RData"))
 
 sitearea <- rast(file.path(siterpath,

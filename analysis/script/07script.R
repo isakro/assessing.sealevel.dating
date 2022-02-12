@@ -133,7 +133,9 @@ siteelev <- terra::extract(dtm, vect(sitel), fun = min)[2]
 # a = original amount before decay (1 here)
 # x = time (distance here)
 
-inc <- seq(0, 70, 0.001)
+inc <- seq(0, 70, 0.1)
+
+plot(expdat$offset, expdat$probs)
 
 expdat <- data.frame(
   offset = inc,
@@ -146,17 +148,17 @@ dategrid <- data.frame(
   probability = 0)
 
 for(i in 1:nrow(expdat)){
-  negative_offset <- as.numeric(siteelev - expdat$offset[i])
-  if(!(negative_offset > 0)) {
-    negative_offset <- 0.01
+  adjusted_elev <- as.numeric(siteelev - expdat$offset[i])
+  if(!(adjusted_elev > 0)) {
+    adjusted_elev <- 0.01
   }
   # Find lower date, subtracting offset (defaults to 0)
   lowerd <- round(approx(sitecurve[,"lowerelev"],
-                          xvals, xout = negative_offset)[['y']])
+                          xvals, xout = adjusted_elev)[['y']])
 
   # Find upper date, subtracting offset (defaults to 0)
   upperd <- round(approx(sitecurve[,"upperelev"],
-                          xvals, xout =  negative_offset)[['y']])
+                          xvals, xout = adjusted_elev)[['y']])
 
   # Find youngest and oldest date
   earliest <- min(c(lowerd, upperd))
