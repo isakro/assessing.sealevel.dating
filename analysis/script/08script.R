@@ -32,22 +32,22 @@ brunlanes <- sitespol %>%
   rename("name" = "site_name",
          "limit" = "name")
 
-brunlanes <- st_join(st_make_valid(brunlanes), isopolys,
-                    join = st_intersects, largest = TRUE)
-
 # Use elevations provided by Jaksland
 brunlanes$elevation <- c(108, 98, 127, 124, 114, 110.5, 98, 95, 108)
 
 sdatesp <- list()
 for(i in 1:nrow(brunlanes)){
   print(brunlanes$name[i])
-  sdatesp[[i]] <- shoreline_date_exp(sitename = brunlanes$name[i],
+  sdatesp[[i]] <- shoreline_date(sitename = brunlanes$name[i],
                                         elev = dtm,
                                         disp_curves = displacement_curves,
                                         sites = brunlanes,
                                         iso = isobases,
-                                        expratio = expfit2$estimate,
-                                        specified_elev = brunlanes$elevation[i])
+                                        expratio = expfit$estimate,
+                                        siteelev = "min",
+                                        reso = 0.01,
+                                 specified_elev = brunlanes$elevation[i])
+
 
 
 }
@@ -57,11 +57,12 @@ bdates <- bind_rows(sdatesp)
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
 hdr <- bdates %>%  group_by(site_name) %>%
-  filter(cumsum(replace_na(probability, 0)) < 0.95) %>%
+  filter(cumsum(replace_na(probability, 0)) < 0.95 &
+           probability != 0) %>%
   summarise(
-    year_min = min(year, na.rm = TRUE),
-    year_max = max(year, na.rm = TRUE),
-    year_median = median(year, na.rm = TRUE))
+    year_min = min(years, na.rm = TRUE),
+    year_max = max(years, na.rm = TRUE),
+    year_median = median(years, na.rm = TRUE))
 
 
 # Lasse Jaksland's dates of the Brunlanes sites. He provided a maximum age,
@@ -77,7 +78,7 @@ dateplot <- ggplot(data = hdr, aes(x = year_median, y = reorder(site_name, -year
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red") +
   ggridges::geom_ridgeline(data = bdates,
-                           aes(x = year, y = site_name,
+                           aes(x = years, y = site_name,
                                height = probability*50),
                            colour = "grey", fill = "grey") +
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
@@ -94,6 +95,7 @@ dateplot <- ggplot(data = hdr, aes(x = year_median, y = reorder(site_name, -year
   #                                   y = site_name, yend = site_name),
   #              col = "black", size = 5) +
   labs(y = "", x = "BCE") +
+  xlim(c(-10000, -2500)) +
   theme_bw()
 
 pauler <- filter(brunlanes, str_detect(name, 'Pauler|Sky'))
@@ -102,12 +104,10 @@ sitename <- "Pauler 1"
 sitel <- filter(pauler, name == sitename)
 
 sitecurve <- interpolate_curve(years = xvals,
-                               isobase1 = sitel$isobase1,
-                               isobase2 = sitel$isobase2,
                                target = sitel,
                                dispdat = displacement_curves,
-                               isodat = isobases,
-                               direction_rel_curve1 = sitel$dir_rel_1)
+                               isodat = isobases)
+
 # Add site name
 sitecurve$name <- sitename
 
@@ -117,14 +117,13 @@ location_bbox <- bboxpoly(sitel, 1000)
 # Use this to clip the dtm to the site area
 sitearea <- terra::crop(dtm, location_bbox)
 
-# Retrieve the posterior density estimate for each date group
 samplingframe <- dplyr::filter(bdates, site_name == sitename) %>%
-  rename("dates" = "year", "probabilities" = "probability") %>%
+  rename("dates" = "years", "probabilities" = "probability") %>%
   na.omit()
 samplingframe$rcarb_cor = "t"
 
 
-# Simulate sea-level and retrieve distances (uncomment to re-run)
+# # Simulate sea-level and retrieve distances (uncomment to re-run)
 # output <- sample_shoreline(1000, sitel, sitecurve, sitearea,
 #                               posteriorprobs = samplingframe)
 # save(output,
@@ -251,10 +250,10 @@ inset_map <- ggdraw() +
   draw_plot(overview, x = 0.088, y = 0.64, width = 0.35, height = 0.35)
 
 dateplot + inset_map
+dateplot + bmap
 
-ggsave(file = here("analysis/figures/brunlanes2.png"), width = 1325*2,
-       height = 558*2,
-       units = "px")
+ggsave(file = here("analysis/figures/brunlanes2.png"),
+       width = 280, height = 230, units = "mm")
 
 
 psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%

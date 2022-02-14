@@ -76,9 +76,6 @@ knitr::knit_hooks$set(plot = function (x, options) {
 ```
 
 ```{r get-data-functions, include = FALSE}
-# For reproducibility
-set.seed(123)
-
 # Load all sites and radiocarbon data
 sites <- read.csv(here('analysis/data/raw_data/sites.csv'))
 rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
@@ -188,7 +185,7 @@ disp_curves <- ggplot(displacement_curves, aes(x = years, col = name)) +
   geom_line(aes(y =  upperelev)) +
   geom_line(aes(y = lowerelev)) +
   ylab("Meters above present sea-level") +
-  xlab("cal BCE/CE") +
+  xlab("BCE/CE") +
   scale_colour_manual(values = c("Arendal" = "black",
                                    "Larvik" = "darkgreen",
                                    "Tvedestrand" = "blue",
@@ -266,7 +263,7 @@ curve_plot <- ggplot() +
                                    "Horten" = "darkorange",
                                  "Hegna vest 1" = "red")) +
   ylab("Meters above present sea-level") +
-  xlab("cal BCE/CE") +
+  xlab("BCE/CE") +
   theme_bw() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.direction = "horizontal")
@@ -288,6 +285,9 @@ knitr::include_graphics(here("analysis/figures/example_map.png"))
 ```
 
 ```{r example-site-cont2, fig.show='hide'}
+# For reproducibility
+set.seed(1234)
+
 # Retrieve example date to be used. The posterior sum of date group 1
 posteriorprobs <- filter(datedat, group == 1 & class == "sum")
 
@@ -309,7 +309,7 @@ datsamp <- ggplot(posteriorprobs) +
                      (posteriorprobs[round(dates) == sdate,
                                      "probabilities"]) * 50),
                colour = "red") +
-  labs(x = "cal BCE")  +
+  labs(x = "BCE")  +
   #scale_y_discrete(expand = c(0.01, 0)) +
   theme_bw() + theme(
     legend.position = "none",
@@ -332,7 +332,7 @@ elevsamp <- ggplot(sitecurve, aes(x = years)) +
   geom_line(aes(y =  upperelev), colour = "red") +
   geom_line(aes(y = lowerelev), colour = "red") +
   ylab("Meters above present sea-level") +
-  xlab("cal BCE/CE") +
+  xlab("BCE/CE") +
   theme_bw() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.direction = "horizontal") +
@@ -497,7 +497,7 @@ dat2 <- ggplot(probsdat2) +
                                    fill = as.factor(group),
                                    alpha = class,
                                    colour = as.factor(rcarb_cor))) +
-  labs(x = "cal BCE")  +
+  labs(x = "BCE")  +
   #scale_y_discrete(expand = c(0.01, 0)) +
   theme_bw() + theme(
     legend.position = "none",
@@ -572,7 +572,7 @@ knitr::include_graphics(here("analysis/figures/results.png"))
 knitr::include_graphics(here("analysis/figures/results2.png"))
 ```
 
-```{r shoredate, echo = FALSE, fig.cap = "The result of backwards shoreline dating the sites with radiocarbon dates corresponding to the artefact inventory. The sites are dated using the mean elevation of the site polygon, accounting for distance to closest isobase and by employing the exponential decay function identified in Figure 7 for the distance between sites and shoreline. The shoreline dates in gray are plotted against the oldest radiocarbon-informed phase for each site in black. The red line indicates the 95\\% probability range for the shoreline date.", out.width = "525px", fig.align="center", regfloat=TRUE}
+```{r shoredate, echo = FALSE, fig.cap = "The result of backwards shoreline dating the sites with radiocarbon dates corresponding to the artefact inventory. The sites are dated using the lowest elevation of the site polygon and by employing the exponential decay function identified in Figure 7 for the distance between sites and shoreline. The shoreline dates in gray are plotted against the oldest radiocarbon-informed phase for each site in black. The red line indicates the 95\\% probability range for the shoreline date.", out.width = "525px", fig.align="center", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/shoredate.png"))
 ```
 
