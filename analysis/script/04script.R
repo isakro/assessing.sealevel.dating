@@ -1082,6 +1082,80 @@ shoreline_date <- function(sitename, elev = dtm,
                            disp_curves = displacement_curves,
                            sites = sites_sa,
                            iso = isobases,
+                           reso = 0.1,
+                           expratio, siteelev = "mean",
+                           specified_elev = NA){
+
+  sitel <- filter(sites, name == sitename)
+  siteu <- st_union(sitel)
+  sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
+
+  sitecurve <- interpolate_curve(years = xvals,
+                                 target = sitel,
+                                 dispdat = displacement_curves,
+                                 isodat = isobases)
+
+  if(!(is.na(specified_elev))){
+    siteelev <- specified_elev
+  } else{
+    if(siteelev == "mean") {
+      siteelev <- terra::extract(elev, vect(sitel), fun = mean)[2]
+    } else if(siteelev == "min"){
+      siteelev <- terra::extract(elev, vect(sitel), fun = min)[2]
+    }
+  }
+
+  inc <- seq(0, 80, reso)
+
+  expdat <- data.frame(
+    offset = inc,
+    px = pexp(inc, rate = expfit$estimate)) %>%
+    mutate(probs = px - lag(px, default =  dplyr::first(px))) %>%
+    tail(-1) %>%
+    filter(px < 0.99999) # Probability cut-off
+
+  dategrid <- data.frame(
+    years = seq(-10000, 2000, 1),
+    probability = 0)
+
+  for(i in 1:nrow(expdat)){
+    adjusted_elev <- as.numeric(siteelev - expdat$offset[i])
+    if(!(adjusted_elev > 0)) {
+      adjusted_elev <- 0.01
+    }
+    # Find lower date, subtracting offset (defaults to 0)
+    lowerd <- round(approx(sitecurve[,"lowerelev"],
+                           xvals, xout = adjusted_elev)[['y']])
+
+    # Find upper date, subtracting offset (defaults to 0)
+    upperd <- round(approx(sitecurve[,"upperelev"],
+                           xvals, xout = adjusted_elev)[['y']])
+
+    # Find youngest and oldest date
+    earliest <- min(c(lowerd, upperd))
+    latest <- max(c(lowerd, upperd))
+
+    # Add probability to each year in range
+    if(!is.na(latest) && !is.na(earliest)){
+
+      year_range <- seq(earliest, latest, 1)
+      prob <- 1/length(year_range)*expdat$probs[i]
+
+      dategrid[dategrid$years %in% year_range, "probability"] <-
+        dategrid[dategrid$years %in% year_range, "probability"] + prob
+    }
+  }
+  dategrid$site_name <- sitename
+
+  return(dategrid)
+}
+
+
+# Shoreline date, using exponential function for elevation offset
+shoreline_date1 <- function(sitename, elev = dtm,
+                           disp_curves = displacement_curves,
+                           sites = sites_sa,
+                           iso = isobases,
                            expratio, siteelev = "mean",
                            specified_elev = NA){
 
@@ -1147,92 +1221,7 @@ shoreline_date <- function(sitename, elev = dtm,
         dategrid[dategrid$years %in% year_range, "probability"] + prob
     }
   }
+  dategrid$site_name <- sitename
+
   return(dategrid)
-}
-
-
-# Shoreline date, using exponential decay for elevation offset
-shoreline_date_exp <- function(sitename, elev = dtm,
-                               disp_curves = displacement_curves,
-                               sites = sites_sa,
-                               iso = isobases,
-                               expratio, siteelev = "mean",
-                               specified_elev = NA){
-
-  # site limit
-  sitel <- filter(sites, name == sitename)
-  siteu <- st_union(sitel)
-  sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
-
-  sitecurve <- interpolate_curve(years = xvals,
-                                 isobase1 = sitel$isobase1,
-                                 isobase2 = sitel$isobase2,
-                                 target = sitel,
-                                 dispdat = disp_curves,
-                                 isodat = iso,
-                                 direction_rel_curve1 = sitel$dir_rel_1)
-
-  if(!(is.na(specified_elev))){
-    siteelev <- specified_elev
-  } else{
-    if(siteelev == "mean") {
-      siteelev <- terra::extract(elev, vect(sitel), fun = mean)[2]
-    } else if(siteelev == "min"){
-      siteelev <- terra::extract(elev, vect(sitel), fun = min)[2]
-    }
-  }
-
-  probs <- c()
-  prob <- 1
-  i <- 1
-  while(prob > 0.00001) {
-    prob <- (1 * (1 - (expratio/10)))^i
-    probs[i] <- as.numeric(prob)
-    i <- i + 1
-  }
-
-
-  offsets <- seq(1, length(probs), 1)/10
-  dates <- data.frame(matrix(ncol = 2))
-  names(dates) <- c("year", "probability")
-
-  for(i in 1:length(offsets)){
-    negative_offset <- as.numeric(siteelev - offsets[i])
-    if(!(negative_offset > 0)) {
-      # Make sure the sea level can not be lower than the present
-      negative_offset <- 0.01
-    }
-
-    lowerd <- round(approx(sitecurve[,"lowerelev"],
-                            xvals, xout = negative_offset)[['y']])
-
-    upperd <- round(approx(sitecurve[,"upperelev"],
-                            xvals, xout =  negative_offset)[['y']])
-
-
-    # Find youngest and oldest date
-    earliest <- min(c(lowerd, upperd))
-    latest <- max(c(lowerd, upperd))
-
-    if(!is.na(earliest)){
-      yrs <- seq(earliest, latest, 1)
-      yrs <- yrs[!(yrs %in% dates$year)]
-    } else if(is.na(earliest && latest)) {
-      yrs <- NA
-    } else {
-      seq(max(dates$year, na.rm = TRUE), latest, 1)
-      yrs <- yrs[!(yrs %in% dates$year)]
-    }
-
-    if(length(yrs) > 0){
-      dates <- rbind(dates, cbind(year = yrs, probability = as.numeric(probs[i])))
-    }
-  }
-
-  dates <- dates %>%
-    mutate(probability = probability/sum(probability, na.rm = TRUE))
-
-  dates$site_name <- sitename
-
-  return(dates)
 }
