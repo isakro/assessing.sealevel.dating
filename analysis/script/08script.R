@@ -263,9 +263,7 @@ psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv")
 
 sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f")
 
-sites_sl <- st_join(st_make_valid(sites_sl), isopolys,
-                    join = st_intersects, largest = TRUE) %>%
-  filter(!is.na(dir_rel_1)) %>%
+sites_sl <- sites_sl %>%
   filter(name %in% psdates$site_name)
 
 sites_sl <- inner_join(sites_sl,
@@ -275,13 +273,15 @@ sites_sl <- inner_join(sites_sl,
 sitdates <- list()
 for(i in 1:nrow(sites_sl)){
   print(sites_sl$name[i])
-  sitdates[[i]] <- shoreline_date_exp(sitename = sites_sl$name[i],
-                                     elev = dtm,
-                                     disp_curves = displacement_curves,
-                                     sites = sites_sl,
-                                     iso = isobases,
-                                     expratio = expfit$estimate,
-                                     specified_elev = sites_sl$min_elev[i])
+  sitdates[[i]] <- shoreline_date(sitename = sites_sl$name[i],
+                                 elev = dtm,
+                                 disp_curves = displacement_curves,
+                                 sites = sites_sl,
+                                 iso = isobases,
+                                 expratio = expfit$estimate,
+                                 siteelev = "min",
+                                 reso = 0.1,
+                                 specified_elev = sites_sl$min_elev[i])
 }
 
 bdates <- bind_rows(sitdates)
