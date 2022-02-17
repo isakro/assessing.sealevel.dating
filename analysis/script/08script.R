@@ -289,11 +289,12 @@ bdates <- bind_rows(sitdates)
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
 hdr <- bdates %>%  group_by(site_name) %>%
-  filter(cumsum(replace_na(probability, 0)) < 0.95) %>%
+  filter(cumsum(replace_na(probability, 0)) < 0.95 &
+           probability != 0) %>%
   summarise(
-    year_min = min(year, na.rm = TRUE),
-    year_max = max(year, na.rm = TRUE),
-    year_median = median(year, na.rm = TRUE))
+    year_min = min(years, na.rm = TRUE),
+    year_max = max(years, na.rm = TRUE),
+    year_median = median(years, na.rm = TRUE))
 
 hdr <- hdr[order(hdr$year_median, decreasing = TRUE),]
 hdr$site_name <- factor(hdr$site_name, levels = hdr$site_name)

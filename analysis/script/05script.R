@@ -1276,10 +1276,10 @@ ggsave(file = here("analysis/figures/sageneb2.png"), width = 250,
 sitename <- "Solum 3"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 3500, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/solum3.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 3500, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/solum3.RData"))
 load(here("analysis/data/derived_data/solum3.RData"))
 
 sitearea <- rast(file.path(siterpath,
