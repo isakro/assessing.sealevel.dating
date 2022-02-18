@@ -47,9 +47,26 @@ sites_sa <- sites_sa %>%
   filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C",
                        "Bratsberg", "Lar\xf8nningen")))
 
+# Specify for which sites to not shoreline date the site limit
+# (see supplementary material for more on this)
+feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
+
 shorelinedates <- list()
 for(i in 1:nrow(sites_sa)){
-  print(sites_sa$name[i])
+  print(c(i, sites_sa$name[i]))
+  if(sites_sa$name[i] %in% feature_sites){
+    shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+                                          elev = dtm,
+                                          disp_curves = displacement_curves,
+                                          sites = sites_sa,
+                                          iso = isobases,
+                                          expratio = expfit$estimate,
+                                          siteelev = "min",
+                                          reso = 0.001,
+                                          specified_elev = NA,
+                                          sitelimit = FALSE,
+                                          features = rcarb_sa)
+  } else {
   shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
                                         elev = dtm,
                                         disp_curves = displacement_curves,
@@ -59,6 +76,7 @@ for(i in 1:nrow(sites_sa)){
                                         siteelev = "min",
                                         reso = 0.001,
                                         specified_elev = NA)
+  }
 }
 l
 sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
@@ -66,7 +84,7 @@ sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
 
 # Radiocarbon dates corresponding to site inventory and older than 2500 BCE
 corsites <- rdates %>%
-  # Excluded, see supplmenetary
+  # Excluded, see supplementary
   filter(!(site_name %in% c("Dybdalshei 2", "Lunaveien"))) %>%
   group_by(site_name) %>%
   # Exclude Late Neolithic sites
