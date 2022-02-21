@@ -327,7 +327,7 @@ ggsave(file = here("analysis/figures/dybdalshei2.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 
-######### Gunnarsrød 4. Edited raster #########
+######### Gunnarsrød 4 #########
 sitename <- "Gunnarsrød 4"
 # Oldest interpreted as unrelated in original report, manually seperated
 date_groups <- c(2, 1)
@@ -349,7 +349,7 @@ ggsave(file = here("analysis/figures/gunnarsrod4.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
 
-######### Gunnarsrød 5 Edited raster #########
+######### Gunnarsrød 5 #########
 sitename <- "Gunnarsrød 5"
 date_groups <- group_dates(rcarb_sa, sitename)
 

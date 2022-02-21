@@ -89,6 +89,23 @@ filter(rcarbon, site_name  == "Adal vestre 2") %>%
 
 Adal vestre 2 has a similar location in the present day landscape to that of Adal vestre 1 (above).
 
+```{r alveberget8,  echo = FALSE, out.width = "500px", regfloat=TRUE}
+include_graphics(here("analysis/figures/alveberget8.png"))
+
+filter(rcarbon, site_name  == "Alveberget 8") %>% 
+  select(lab_code, c14_bp, error, material, context) %>% 
+   kable(caption = "Alveberget 8", col.names = c("ID",
+                    "\\textsuperscript{14}C BP",
+                    "Error",
+                    "Material",
+                    "Context"),
+        booktabs = TRUE,  linesep = c(""), escape = FALSE)
+
+
+```
+
+The artefact inventory at Alveberget 8 matches the radiocarbon dates [@mansrud2021]. The site is located in an undisturbed area of the DTM.
+
 ```{r anvik,  echo = FALSE, out.width = "500px", regfloat=TRUE}
 include_graphics(here("analysis/figures/anvik.png"))
 
