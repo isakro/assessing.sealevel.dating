@@ -1088,16 +1088,16 @@ shoreline_date <- function(sitename, elev = dtm,
                            sitelimit = TRUE,
                            features = NA){
 
-  # If site features and not site limit is to be used
-  siter <- filter(features, site_name == sitename)
-
   # If the site limit is to be used
   if(sitelimit == TRUE){
     sitel <- filter(sites, name == sitename)
     siteu <- st_union(sitel)
     sitel <- st_as_sf(cbind(siteu, st_drop_geometry(sitel[1,])))
   } else {
-    # If not create a convex hull around the dated features
+    # If site features and not site limit is to be used
+    siter <- filter(features, site_name == sitename)
+
+    # Create a convex hull around the dated features
     sitel <- st_convex_hull(siter)
     # And assign the values from the limit to the convex hull
     sitel <- left_join(sitel, st_drop_geometry(filter(sites_sa,
@@ -1106,6 +1106,10 @@ shoreline_date <- function(sitename, elev = dtm,
     sitel <- st_as_sf(sitel)
   }
 
+  sitecurve <- interpolate_curve(years = xvals,
+                                 target = sitel,
+                                 dispdat = disp_curves,
+                                 isodat = iso)
 
   if(!(is.na(specified_elev))){
     siteelev <- specified_elev

@@ -1,5 +1,5 @@
-library(ggplot2)
 library(tidyverse)
+library(patchwork)
 library(here)
 library(terra)
 library(sf)
@@ -53,7 +53,7 @@ feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
 
 shorelinedates <- list()
 for(i in 1:nrow(sites_sa)){
-  print(c(i, sites_sa$name[i]))
+  print(paste(i, sites_sa$name[i]))
   if(sites_sa$name[i] %in% feature_sites){
     shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
                                           elev = dtm,
@@ -61,7 +61,7 @@ for(i in 1:nrow(sites_sa)){
                                           sites = sites_sa,
                                           iso = isobases,
                                           expratio = expfit$estimate,
-                                          siteelev = "min",
+                                          siteelev = "mean",
                                           reso = 0.001,
                                           specified_elev = NA,
                                           sitelimit = FALSE,
@@ -78,9 +78,16 @@ for(i in 1:nrow(sites_sa)){
                                         specified_elev = NA)
   }
 }
-l
+
+save(shorelinedates,
+     file = here("analysis/data/derived_data/07data.RData"))
+
+load(here("analysis/data/derived_data/07data.RData"))
+
 sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
-  filter(cumsum(replace_na(probability, 0)) < 0.95)
+  filter(cumsum(replace_na(probability, 0)) < 0.95  &
+           probability != 0)
+
 
 # Radiocarbon dates corresponding to site inventory and older than 2500 BCE
 corsites <- rdates %>%
@@ -107,7 +114,7 @@ hdr <- corshore %>%  group_by(site_name) %>%
 shrplt <- ggplot(data = hdr,
                  aes(x = year_median, y = reorder(site_name, -year_median))) +
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = "red", size = 0.75) +
+                               yend = site_name), col = "red", size = 0.5) +
   ggridges::geom_ridgeline(data = corshore,
                            aes(x = years, y = site_name,
                                height = probability * 200),
@@ -116,11 +123,72 @@ shrplt <- ggplot(data = hdr,
                            aes(x = dates, y = site_name,
                                height = probabilities * 50),
                            colour = "black", fill = NA) +
-  labs(x = "cal BCE/CE", y = "", title = paste("\U03BB =",
+  labs(x = "BCE/CE", y = "", title = paste("\U03BB =",
                                   as.numeric(round(expfit$estimate, 3)))) +
+  scale_x_continuous(breaks = seq(-10000,2000, 2000)) +
   theme_bw()
 
-ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
+shorelinedates <- bind_rows(shorelinedates) %>%
+  filter(site_name %in% unique(corsites$site_name))
+
+agedif <- setNames(data.frame(matrix(ncol = 2, nrow = 0)), c("age_diff", "site_name"))
+for(i in 1:length(unique(shorelinedates$site_name))){
+  samplingframe <- list(x = shorelinedates[shorelinedates$site_name ==
+                                            unique(shorelinedates$site_name)[i],
+                                           "years"],
+                        y = shorelinedates[shorelinedates$site_name ==
+                                             unique(shorelinedates$site_name)[i],
+                                           "probability"])
+  sdate <- with(samplingframe, sample(x, size = 100000, prob = y,
+                                      replace = TRUE))
+
+  samplingframe <- list(x = corsites[corsites$site_name ==
+                                            unique(shorelinedates$site_name)[i],
+                                           "dates"]$dates,
+                        y = corsites[corsites$site_name ==
+                                            unique(shorelinedates$site_name)[i],
+                                           "probabilities"]$probabilities)
+
+  rdate <- with(samplingframe, sample(x, size = 100000, prob = y,
+                                      replace = TRUE))
+
+  age_diff <- rdate - sdate
+  agedif <- rbind(agedif, data.frame(age_diff,
+                      site_name =  unique(shorelinedates$site_name)[i]))
+}
+
+quantile_func <- function(x) {
+  r <- quantile(x, probs=c(0.025, 0.25, 0.5, 0.75, 0.975))
+  names(r) <- c("ymin", "lower", "middle", "upper", "ymax")
+  return(r)
+}
+
+
+agedif <- agedif %>%  group_by(site_name) %>%
+  mutate(cross = ifelse(between(0, quantile(age_diff, probs=c(0.025)),
+                                quantile(age_diff, probs=c(0.975))), "true",
+                        "false"))
+
+# Use shorline date data to the get the ordering correct first
+agedfplt <- ggplot(data = hdr,
+       aes(x = year_median, y = reorder(site_name, -year_median))) +
+  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
+                               yend = site_name), col = NA, size = 0.25) +
+  stat_summary(data = agedif, aes(y = site_name, x = age_diff, colour = cross),
+               fun.data = quantile_func, geom = 'errorbar', size = 0.5) +
+  geom_vline(xintercept = 0, colour = "black", linetype = "dashed") +
+  labs(x = "Age difference", y = "") +
+  scale_colour_manual(values = c('red','black')) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+plt <- shrplt + agedfplt + plot_layout(widths = c(2, 1.5)) +
+        plot_annotation(tag_levels = 'A')
+
+ggsave(file = here("analysis/figures/shoredate.png"), plt,
        width = 200, height = 230, units = "mm")
 
 
