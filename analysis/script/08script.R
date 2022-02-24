@@ -279,7 +279,7 @@ for(i in 1:nrow(sites_sl)){
                                  sites = sites_sl,
                                  iso = isobases,
                                  expratio = expfit$estimate,
-                                 siteelev = "min",
+                                 siteelev = "mean",
                                  reso = 0.1,
                                  specified_elev = sites_sl$min_elev[i])
 }
