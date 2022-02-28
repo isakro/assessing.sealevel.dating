@@ -259,7 +259,7 @@ ggsave(file = here("analysis/figures/brunlanes2.png"),
 psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
   mutate(start = start * -1,
          end = end * -1) %>%
-  rename(site_name = name)
+  rename("site_name" = "name")
 
 sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f")
 
@@ -272,16 +272,17 @@ sites_sl <- inner_join(sites_sl,
 
 sitdates <- list()
 for(i in 1:nrow(sites_sl)){
-  print(sites_sl$name[i])
+  print(c(i, sites_sl$name[i]))
+
   sitdates[[i]] <- shoreline_date(sitename = sites_sl$name[i],
                                  elev = dtm,
                                  disp_curves = displacement_curves,
                                  sites = sites_sl,
                                  iso = isobases,
                                  expratio = expfit$estimate,
-                                 siteelev = "mean",
                                  reso = 0.1,
-                                 specified_elev = sites_sl$min_elev[i])
+                                 specified_elev = (sites_sl$min_elev[i]+
+                                                 sites_sl$max_elev[i])/2)
 }
 
 bdates <- bind_rows(sitdates)
@@ -327,4 +328,4 @@ redateplt <- ggplot(data = hdr, aes(x = year_median, y = site_name)) +
   theme_bw()
 
 ggsave(file = here("analysis/figures/redate.png"), redateplt,
-       width = 200, height = 230, units = "mm")
+       width = 180, height = 230, units = "mm")
