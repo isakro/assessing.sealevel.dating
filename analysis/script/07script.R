@@ -114,7 +114,7 @@ hdr <- corshore %>%  group_by(site_name) %>%
 shrplt <- ggplot(data = hdr,
                  aes(x = year_median, y = reorder(site_name, -year_median))) +
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = "red", size = 0.5) +
+                               yend = site_name), col = "red", size = 0.6) +
   ggridges::geom_ridgeline(data = corshore,
                            aes(x = years, y = site_name,
                                height = probability * 200),
@@ -173,9 +173,11 @@ agedif <- agedif %>%  group_by(site_name) %>%
 agedfplt <- ggplot(data = hdr,
        aes(x = year_median, y = reorder(site_name, -year_median))) +
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = NA, size = 0.25) +
+                               yend = site_name), col = NA) +
   stat_summary(data = agedif, aes(y = site_name, x = age_diff, colour = cross),
                fun.data = quantile_func, geom = 'errorbar', size = 0.5) +
+  # geom_violin(data = agedif, aes(y = site_name, x = age_diff, colour = cross,
+  #                                fill = cross), fill = "white") +
   geom_vline(xintercept = 0, colour = "black", linetype = "dashed") +
   labs(x = "Age difference", y = "") +
   scale_colour_manual(values = c('red','black')) +
