@@ -82,7 +82,7 @@ h1 <- ggplot(distances, aes(x = year, y = hordist,
                             colour = type)) +
   geom_point(shape = 16, alpha = 0.01) +
   scale_colour_manual(values = colsh) +
-  labs(y = "Horisontal distance (m)", x = "cal BCE",
+  labs(y = "Horisontal distance (m)", x = "BCE",
        title = "All dates") +
   scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
   theme_bw() +
@@ -105,7 +105,7 @@ h2 <- distances %>%  filter(rcarb_cor == "t") %>%
                         colour = type)) +
   geom_point(shape = 16, alpha = 0.01) +
   scale_colour_manual(values = colsh) +
-  labs(y = "Horisontal distance (m)", x = "cal BCE",
+  labs(y = "Horisontal distance (m)", x = "BCE",
        title = "Corresponding dates") +
   scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
   theme_bw() +
@@ -124,7 +124,7 @@ t1 <- ggplot(distances, aes(x = year, y = topodist,
                             colour = type)) +
   geom_point(shape = 16, alpha = 0.01) +
   scale_colour_manual(values = colst) +
-  labs(y = "Topographic distance (m)", x = "cal BCE", title = "") +
+  labs(y = "Topographic distance (m)", x = "BCE", title = "") +
   scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
   theme_bw() +
   theme(legend.position = "none")
@@ -143,7 +143,7 @@ t2 <- distances %>%  filter(rcarb_cor == "t") %>%
                         colour = type)) +
   geom_point(shape = 16, alpha = 0.01) +
   scale_colour_manual(values = colst) +
-  labs(y = "Topographic distance (m)", x = "cal BCE", title = "") +
+  labs(y = "Topographic distance (m)", x = "BCE", title = "") +
    scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
   theme_bw() +
   theme(legend.position = "none")
@@ -161,7 +161,7 @@ v1 <- ggplot(distances, aes(x = year, y = vertdist,
                             colour = type)) +
   geom_point(shape = 16, alpha = 0.01) +
   scale_colour_manual(values = colsv) +
-  labs(y = "Vertical distance (m)", x = "cal BCE", title = "") +
+  labs(y = "Vertical distance (m)", x = "BCE", title = "") +
   scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
   ylim(-30, 90) +
   theme_bw() +
@@ -182,7 +182,7 @@ v2 <- distances %>%  filter(rcarb_cor == "t") %>%
   geom_point(shape = 16, alpha = 0.01) +
   scale_colour_manual(values = colsv) +
   scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
-  labs(y = "Vertical distance (m)", x = "cal BCE", title = "") +
+  labs(y = "Vertical distance (m)", x = "BCE", title = "") +
   ylim(-30, 90) +
   theme_bw() +
   theme(legend.position = "none")

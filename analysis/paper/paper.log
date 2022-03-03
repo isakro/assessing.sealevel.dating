@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  2 MAR 2022 19:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  3 MAR 2022 13:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1090,7 +1090,7 @@ Overfull \hbox (32.12819pt too wide) in paragraph at lines 198--199
 ng (PNG copy)>] [10 </home/isak/phd/assessing.sealevel.dating/analysis/figures/
 example_sim_map.png (PNG copy)>] [11 </home/isak/phd/assessing.sealevel.dating/
 analysis/figures/example_sim_result.png (PNG copy)>]
-</home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png, id=103,
+</home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png, id=104,
  734.2632pt x 589.0005pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png Gra
 phic file (type png)
@@ -1103,7 +1103,7 @@ Overfull \hbox (32.12546pt too wide) in paragraph at lines 220--221
  [][] 
  []
 
-</home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png, id=104
+</home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png, id=105
 , 734.2632pt x 589.0005pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/results2.png Gr
 aphic file (type png)
@@ -1117,7 +1117,7 @@ Overfull \hbox (57.22227pt too wide) in paragraph at lines 229--230
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png, id=10
-5, 569.0058pt x 654.2844pt>
+6, 569.0058pt x 654.2844pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png G
 raphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/shoredate.png>
@@ -1130,13 +1130,13 @@ Overfull \hbox (57.21828pt too wide) in paragraph at lines 238--239
  []
 
 
-LaTeX Warning: Float too large for page by 40.02235pt on input line 243.
+LaTeX Warning: Float too large for page by 51.46678pt on input line 243.
 
 [12] [13 </home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png
  (PNG copy)>] [14 </home/isak/phd/assessing.sealevel.dating/analysis/figures/re
 sults2.png (PNG copy)>] [15 </home/isak/phd/assessing.sealevel.dating/analysis/
 figures/shoredate.png (PNG copy)>]
-</home/isak/phd/assessing.sealevel.dating/analysis/figures/redate.png, id=129, 
+</home/isak/phd/assessing.sealevel.dating/analysis/figures/redate.png, id=128, 
 511.9125pt x 654.2844pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/redate.png Grap
 hic file (type png)
@@ -1153,7 +1153,7 @@ Overfull \hbox (39.16455pt too wide) in paragraph at lines 252--253
 LaTeX Warning: Float too large for page by 47.9735pt on input line 257.
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png, id=13
-3, 853.5087pt x 654.2844pt>
+2, 853.5087pt x 654.2844pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png G
 raphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/brunlanes.png>
@@ -1168,22 +1168,22 @@ Overfull \hbox (57.21394pt too wide) in paragraph at lines 263--264
 [16] [17 </home/isak/phd/assessing.sealevel.dating/analysis/figures/redate.png 
 (PNG copy)>] [18 </home/isak/phd/assessing.sealevel.dating/analysis/figures/bru
 nlanes.png (PNG copy)>] [19] [20] [21] [22] [23]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 555.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 571.
 [24]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 555.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 571.
 (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 555.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 555.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 555.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 571.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 571.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 571.
  ) 
 Here is how much of TeX's memory you used:
- 13780 strings out of 492982
- 198687 string characters out of 6134896
- 315835 words of memory out of 5000000
+ 13786 strings out of 492982
+ 198770 string characters out of 6134896
+ 318167 words of memory out of 5000000
  16884 multiletter control sequences out of 15000+600000
  61499 words of font info for 108 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,10n,38p,3358b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,10n,38p,3330b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dv
 ips/lm/lm-mathsy.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/s
 hare/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/publi
@@ -1191,10 +1191,10 @@ c/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/te
 xmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr
 7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/
 type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb>
-Output written on paper.pdf (24 pages, 4365698 bytes).
+Output written on paper.pdf (24 pages, 4374399 bytes).
 PDF statistics:
- 409 PDF objects out of 1000 (max. 8388607)
- 357 compressed objects within 4 object streams
- 139 named destinations out of 1000 (max. 500000)
+ 418 PDF objects out of 1000 (max. 8388607)
+ 366 compressed objects within 4 object streams
+ 145 named destinations out of 1000 (max. 500000)
  14451 words of extra memory for PDF output out of 17280 (max. 10000000)
 

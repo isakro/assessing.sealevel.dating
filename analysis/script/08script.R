@@ -47,9 +47,6 @@ for(i in 1:nrow(brunlanes)){
                                         siteelev = "min",
                                         reso = 0.01,
                                  specified_elev = brunlanes$elevation[i])
-
-
-
 }
 
 bdates <- bind_rows(sdatesp)
