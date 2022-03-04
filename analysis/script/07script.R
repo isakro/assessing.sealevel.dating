@@ -3,6 +3,10 @@ library(patchwork)
 library(here)
 library(terra)
 library(sf)
+library(hdrcde)
+
+# For reproducibility
+set.seed(1)
 
 # Load required functions and prepared data
 source(here("analysis/script/04script.R"))
@@ -44,8 +48,7 @@ rdates <- rdates %>%  group_by(site_name) %>%
 
 # Exclude sites not analysed
 sites_sa <- sites_sa %>%
-  filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C",
-                       "Bratsberg", "Lar\xf8nningen")))
+  filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
 
 # Specify for which sites to not shoreline date the site limit
 # (see supplementary material for more on this)
@@ -103,12 +106,35 @@ corshore <- sdates %>%  filter(site_name %in% unique(corsites$site_name))
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
 hdr <- corshore %>%  group_by(site_name) %>%
-  filter(cumsum(replace_na(probability, 0)) < 0.95 &
-           probability != 0) %>%
-  summarise(
-    year_min = min(years, na.rm = TRUE),
-    year_max = max(years, na.rm = TRUE),
-    year_median = median(years, na.rm = TRUE))
+  mutate(hdr = list(hdr(den = list("x" = years,
+                              "y" = probability), prob = 95)$hdr),
+         year_median = hdr(den = list("x" = years,
+                                      "y" = probability), prob = 95)$mode)
+
+
+ggplot(da)
+
+ggplot(data = hdrs,
+       aes(x = year_median, y = reorder(site_name, -year_median))) +
+  ggridges::geom_density_ridges_gradient(data = corshore,
+                               aes(x = years, y = site_name,
+                                   fill = stat(quantile)),
+                               quantile_lines = TRUE,
+                               quantile_fun = HDInterval::hdi,
+                               vline_linetype = 2) +
+  scale_fill_manual(values = c("transparent", "lightblue", "transparent"),
+                    guide = "none")
+
+
+  geom_segment(data = hdrs, aes(x = bind_rows(hdr), xend = bind_rows(hdr),
+                               yend = site_name), col = "red", size = 0.6)
+
+  mutate(year_min = min(hdr(den = list("x" = years,
+                                       "y" = probability), prob = 95)$hdr),
+         year_max = max(hdr(den = list("x" = years,
+                                       "y" = probability), prob = 95)$hdr),
+         year_median = hdr(den = list("x" = years,
+                                      "y" = probability), prob = 95)$mode)
 
 # Call to plot
 shrplt <- ggplot(data = hdr,
@@ -137,7 +163,7 @@ for(i in 1:length(unique(shorelinedates$site_name))){
                                             unique(shorelinedates$site_name)[i],
                                            "years"],
                         y = shorelinedates[shorelinedates$site_name ==
-                                             unique(shorelinedates$site_name)[i],
+                                            unique(shorelinedates$site_name)[i],
                                            "probability"])
   sdate <- with(samplingframe, sample(x, size = 100000, prob = y,
                                       replace = TRUE))
@@ -157,17 +183,18 @@ for(i in 1:length(unique(shorelinedates$site_name))){
                       site_name =  unique(shorelinedates$site_name)[i]))
 }
 
-quantile_func <- function(x) {
-  r <- quantile(x, probs=c(0.025, 0.25, 0.5, 0.75, 0.975))
-  names(r) <- c("ymin", "lower", "middle", "upper", "ymax")
+hdr_func <- function(x) {
+  r <- hdr(x, prob = 95)
+  r <- data.frame("ymin" = min(r$hdr), "median" = r$mode,
+                  "ymax" =  max(r$hdr))
   return(r)
 }
 
-
 agedif <- agedif %>%  group_by(site_name) %>%
-  mutate(cross = ifelse(between(0, quantile(age_diff, probs=c(0.025)),
-                                quantile(age_diff, probs=c(0.975))), "true",
-                        "false"))
+  mutate(cross = ifelse(between(0, min(hdr(age_diff,
+                                           prob = 95)$hdr),
+                                max(hdr(age_diff,
+                                        prob = 95)$hdr)), "true", "false"))
 
 # Use shorline date data to the get the ordering correct first
 agedfplt <- ggplot(data = hdr,
@@ -175,7 +202,7 @@ agedfplt <- ggplot(data = hdr,
   geom_segment(data = hdr, aes(x = year_min, xend = year_max,
                                yend = site_name), col = NA) +
   stat_summary(data = agedif, aes(y = site_name, x = age_diff, colour = cross),
-               fun.data = quantile_func, geom = 'errorbar', size = 0.5) +
+               fun.data = hdr_func, geom = 'errorbar', size = 0.5) +
   # geom_violin(data = agedif, aes(y = site_name, x = age_diff, colour = cross,
   #                                fill = cross), fill = "white") +
   geom_vline(xintercept = 0, colour = "black", linetype = "dashed") +
