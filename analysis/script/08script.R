@@ -43,24 +43,37 @@ for(i in 1:nrow(brunlanes)){
                                         disp_curves = displacement_curves,
                                         sites = brunlanes,
                                         iso = isobases,
-                                        expratio = expfit$estimate,
+                                        expratio = expfit2$estimate,
                                         siteelev = "min",
-                                        reso = 0.01,
+                                        reso = 0.001,
                                  specified_elev = brunlanes$elevation[i])
 }
 
-bdates <- bind_rows(sdatesp)
+bdates <- as_tibble(bind_rows(sdatesp))
 
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
-hdr <- bdates %>%  group_by(site_name) %>%
-  filter(cumsum(replace_na(probability, 0)) < 0.95 &
-           probability != 0) %>%
-  summarise(
-    year_min = min(years, na.rm = TRUE),
-    year_max = max(years, na.rm = TRUE),
-    year_median = median(years, na.rm = TRUE))
+hdrdat <- data.frame()
+for(i in 1:length(unique(bdates$site_name))){
+  dat <- hdrcde::hdr(den = list("x" = bdates[bdates$site_name ==
+                                         unique(bdates$site_name)[i],
+                                       "years"][[1]],
+                        "y" = bdates[bdates$site_name ==
+                                         unique(bdates$site_name)[i],
+                                       "probability"][[1]]), prob = 95)
+  segdat <- data.frame(t(dat$hdr))
+  groupdat <- data.frame(matrix(nrow = length(segdat[seq(1, nrow(segdat), 2),]),
+                                ncol = 5))
+  names(groupdat) <- c("site_name", "start", "end", "group", "year_median")
 
+  groupdat$site_name <-  unique(bdates$site_name)[i]
+  groupdat$start <- segdat[seq(1, nrow(segdat), 2), "X95."]
+  groupdat$end <- segdat[seq(2, nrow(segdat), 2), "X95."]
+  groupdat$group <- seq(1:length(dat$hdr[c(TRUE, FALSE)]))
+  groupdat$year_median <- dat$mode
+
+  hdrdat <- rbind(hdrdat, groupdat)
+}
 
 # Lasse Jaksland's dates of the Brunlanes sites. He provided a maximum age,
 # and argued that the relative uncertainty would be around 50 years.
@@ -71,28 +84,28 @@ jaksland <- data.frame(site_name = sort(unique(bdates$site_name)),
          latest_date2 = earliest_date + 200)
 
 # Call to plot
-dateplot <- ggplot(data = hdr, aes(x = year_median, y = reorder(site_name, -year_median))) +
-  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = "red") +
+dateplot <- ggplot(data = hdrdat, aes(x = year_median, y = reorder(site_name, -year_median))) +
+  geom_segment(data = hdrdat, aes(x = start, xend = end,
+                               yend = site_name), col = NA) +
   ggridges::geom_ridgeline(data = bdates,
                            aes(x = years, y = site_name,
                                height = probability*50),
                            colour = "grey", fill = "grey") +
-  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = "red") +
+  geom_linerange(data = hdrdat, aes(xmin = start, xmax = end,
+                                      y = site_name), size = 0.5, col = "black",
+                 position = position_dodge(width = 0.1, preserve = 'single'),
+                 inherit.aes = FALSE) +
   geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date1,
-                                      y = site_name), size = 1.75,
-                 position = position_dodge(width = 0.3, preserve = 'single'),
+                                      y = site_name), size = 1.75, col = "red",
+                 position = position_dodge(width = 0.4, preserve = 'single'),
                  inherit.aes = FALSE) +
   geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date2,
-                                      y = site_name), size = 0.5,
-                 position = position_dodge(width = 0.3, preserve = 'single'),
+                                      y = site_name), size = 0.5, col = "red",
+                 position = position_dodge(width = 0.4, preserve = 'single'),
                  inherit.aes = FALSE) +
-  # geom_segment(data = jaksland, aes(x = earliest_date, xend = latest_date,
-  #                                   y = site_name, yend = site_name),
-  #              col = "black", size = 5) +
-  labs(y = "", x = "BCE") +
-  xlim(c(-10000, -2500)) +
+  labs(y = "", x = "BCE", title = paste("\U03BB =",
+                          as.numeric(round(expfit2$estimate, 3)))) +
+  xlim(c(-10000, -6000)) +
   theme_bw()
 
 pauler <- filter(brunlanes, str_detect(name, 'Pauler|Sky'))
@@ -231,8 +244,8 @@ bmap <- ggplot() +
   scale_alpha_continuous(range = c(0.01, 1), na.value = 0) +
   ggsn::scalebar(data = pauler, dist = 200, dist_unit = "m",
                  transform = FALSE, st.size = 3, height = 0.06,
-                 border.size = 0.1, st.dist = 0.07,
-                 anchor = c(x = anc[2] - 190, y = anc[1]) + 100) +
+                 border.size = 0.1, st.dist = 0.09,
+                 anchor = c(x = anc[2] - 250, y = anc[1]) + 100) +
   coord_sf(expand = FALSE) +
   theme_bw() + theme(axis.title=element_blank(),
                      axis.text.y = element_blank(),
@@ -249,7 +262,7 @@ inset_map <- ggdraw() +
 dateplot + inset_map
 dateplot + bmap
 
-ggsave(file = here("analysis/figures/brunlanes2.png"),
+ggsave(file = here("analysis/figures/brunlanes.png"),
        width = 280, height = 230, units = "mm")
 
 
@@ -258,7 +271,7 @@ psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv")
          end = end * -1) %>%
   rename("site_name" = "name")
 
-sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f")
+sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" && rcarb_cor == "f")
 
 sites_sl <- sites_sl %>%
   filter(name %in% psdates$site_name)
@@ -286,7 +299,18 @@ bdates <- bind_rows(sitdates)
 
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
-hdr <- bdates %>%  group_by(site_name) %>%
+hdrdat <- bdates %>%  group_by(site_name) %>%
+  mutate(year_min = min(hdrcde::hdr(den = list("x" = years, "y" = probability),
+                                    prob = 95)$hdr),
+         year_max = max(hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$hdr),
+         year_median = hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$mode)
+
+
+  r <- hdr(x, prob = 95)
+r <- data.frame("ymin" = min(r$hdr), "median" = r$mode,
+                "ymax" =  max(r$hdr))
+
+
   filter(cumsum(replace_na(probability, 0)) < 0.95 &
            probability != 0) %>%
   summarise(
@@ -294,10 +318,10 @@ hdr <- bdates %>%  group_by(site_name) %>%
     year_max = max(years, na.rm = TRUE),
     year_median = median(years, na.rm = TRUE))
 
-hdr <- hdr[order(hdr$year_median, decreasing = TRUE),]
-hdr$site_name <- factor(hdr$site_name, levels = hdr$site_name)
+hdrdat <- hdrdat[order(hdrdat$year_median, decreasing = TRUE),]
+hdrdat$site_name <- factor(hdrdat$site_name, levels = hdrdat$site_name)
 
-psdates <- psdates[order(match(psdates$site_name, hdr$site_name)),]
+psdates <- psdates[order(match(psdates$site_name, hdrdat$site_name)),]
 psdates$site_name <- factor(psdates$site_name, levels = psdates$site_name)
 
 psdates1 <- psdates %>%  filter(start != end)
@@ -305,21 +329,21 @@ psdates2 <- psdates %>%  filter(start == end)
 
 
 # Call to plot
-redateplt <- ggplot(data = hdr, aes(x = year_median, y = site_name)) +
-  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
+redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
+  geom_segment(data = hdrdat, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red") +
   # ggridges::geom_ridgeline(data = bdates,
   #                          aes(x = year, y = site_name,
   #                              height = probability*50),
   #                          colour = "grey", fill = "grey") +
-  geom_segment(data = hdr, aes(x = year_min, xend = year_max,
+  geom_segment(data = hdrdat, aes(x = year_min, xend = year_max,
                                yend = site_name), col = "red") +
   geom_segment(data = psdates1, aes(x = start, xend = end, yend = site_name)) +
   # geom_linerange(data = psdates1, aes(xmin = start, xmax = end,
   #                                     y = site_name), size = 0.4,
   #                position = position_dodge(width = 0.5, preserve = 'single'),
   #                inherit.aes = FALSE) +
-  scale_y_discrete(limits = hdr$site_name) +
+  scale_y_discrete(limits = hdrdat$site_name) +
   geom_point(data = psdates2, aes(x = start), col = "black", size = 0.8) +
   labs(y = "", x = "BCE") +
   theme_bw()
