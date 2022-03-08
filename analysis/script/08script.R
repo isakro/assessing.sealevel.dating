@@ -29,7 +29,7 @@ dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
 brunlanes <- sitespol %>%
   filter(str_detect(site_name, 'Pauler|Bakke|Sky 1')) %>%
   st_zm() %>%
-  rename("name" = "site_name",
+  dplyr::rename("name" = "site_name",
          "limit" = "name")
 
 # Use elevations provided by Jaksland
@@ -269,9 +269,9 @@ ggsave(file = here("analysis/figures/brunlanes.png"),
 psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
   mutate(start = start * -1,
          end = end * -1) %>%
-  rename("site_name" = "name")
+  dplyr::rename("site_name" = "name")
 
-sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" && rcarb_cor == "f")
+sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f")
 
 sites_sl <- sites_sl %>%
   filter(name %in% psdates$site_name)
