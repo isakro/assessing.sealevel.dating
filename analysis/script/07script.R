@@ -88,8 +88,7 @@ feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
 load(here("analysis/data/derived_data/07data.RData"))
 
 sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
-  filter(cumsum(replace_na(probability, 0)) < 0.95  &
-           probability != 0)
+  filter(cumsum(replace_na(probability, 0)) & probability != 0)
 
 
 # Radiocarbon dates corresponding to site inventory and older than 2500 BCE
@@ -216,6 +215,33 @@ plt <- shrplt + agedfplt + plot_layout(widths = c(2, 1.5)) +
 
 ggsave(file = here("analysis/figures/shoredate.png"), plt,
        width = 200, height = 250, units = "mm")
+
+# Re-running shoreline dating of Langemyr and Kvastad A2, reducing the
+# decay ratio
+esites <- sites_sa %>%
+  filter((name %in% c("Langemyr", "Kvastad A2")))
+
+shoredates <- list()
+for(i in 1:nrow(esites)){
+  print(paste(i, esites$name[i]))
+  shoredates[[i]] <- shoreline_date(sitename = esites$name[i],
+                                                  elev = dtm,
+                                      disp_curves = displacement_curves,
+                                      expratio = expfit3$estimate,
+                                      siteelev = "mean",
+                                      reso = 0.001,
+                                      specified_elev = NA)
+}
+
+shdates <- bind_rows(shoredates) %>% group_by(site_name) %>%
+  filter(cumsum(replace_na(probability, 0))  &
+           probability != 0)
+
+ggplot()+
+ggridges::geom_ridgeline(data = shdates,
+                         aes(x = years, y = site_name,
+                             height = probability * 200),
+                         colour = "grey", fill = "grey")
 
 
 # # Example site for development

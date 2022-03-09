@@ -271,7 +271,7 @@ psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv")
          end = end * -1) %>%
   dplyr::rename("site_name" = "name")
 
-sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f")
+sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f" | name == "Viulsrød 2")
 
 sites_sl <- sites_sl %>%
   filter(name %in% psdates$site_name)
@@ -290,7 +290,7 @@ for(i in 1:nrow(sites_sl)){
                                  sites = sites_sl,
                                  iso = isobases,
                                  expratio = expfit$estimate,
-                                 reso = 0.1,
+                                 reso = 0.01,
                                  specified_elev = (sites_sl$min_elev[i]+
                                                  sites_sl$max_elev[i])/2)
 }
@@ -303,7 +303,7 @@ hdrdat <- bdates %>%  group_by(site_name) %>%
   mutate(year_min = min(hdrcde::hdr(den = list("x" = years, "y" = probability),
                                     prob = 95)$hdr),
          year_max = max(hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$hdr),
-         year_median = hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$mode)
+         year_median = median(hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$mode))
 
 
   r <- hdr(x, prob = 95)
@@ -319,10 +319,10 @@ r <- data.frame("ymin" = min(r$hdr), "median" = r$mode,
     year_median = median(years, na.rm = TRUE))
 
 hdrdat <- hdrdat[order(hdrdat$year_median, decreasing = TRUE),]
-hdrdat$site_name <- factor(hdrdat$site_name, levels = hdrdat$site_name)
+hdrdat$site_name <- factor(hdrdat$site_name, levels = unique(hdrdat$site_name))
 
 psdates <- psdates[order(match(psdates$site_name, hdrdat$site_name)),]
-psdates$site_name <- factor(psdates$site_name, levels = psdates$site_name)
+psdates$site_name <- factor(psdates$site_name, levels = unique(psdates$site_name))
 
 psdates1 <- psdates %>%  filter(start != end)
 psdates2 <- psdates %>%  filter(start == end)
@@ -331,22 +331,24 @@ psdates2 <- psdates %>%  filter(start == end)
 # Call to plot
 redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
   geom_segment(data = hdrdat, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = "red") +
+                               yend = site_name), col = "grey", size = 2) +
   # ggridges::geom_ridgeline(data = bdates,
   #                          aes(x = year, y = site_name,
   #                              height = probability*50),
   #                          colour = "grey", fill = "grey") +
-  geom_segment(data = hdrdat, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = "red") +
-  geom_segment(data = psdates1, aes(x = start, xend = end, yend = site_name)) +
+  geom_segment(data = psdates1, aes(x = start, xend = end, yend = site_name),
+               size = 1, col = "red", alpha = 1) +
   # geom_linerange(data = psdates1, aes(xmin = start, xmax = end,
   #                                     y = site_name), size = 0.4,
   #                position = position_dodge(width = 0.5, preserve = 'single'),
   #                inherit.aes = FALSE) +
-  scale_y_discrete(limits = hdrdat$site_name) +
-  geom_point(data = psdates2, aes(x = start), col = "black", size = 0.8) +
-  labs(y = "", x = "BCE") +
+  scale_y_discrete(limits = hdrdat$site_name,
+                   expand = expansion(add = c(5000, 0))) +
+  geom_point(data = psdates2, aes(x = start), col = "red",
+             size = 1, alpha = 1) +
+  labs(y = "", x = "BCE", title = paste("\U03BB =",
+                                     as.numeric(round(expfit$estimate, 3)))) +
   theme_bw()
 
-ggsave(file = here("analysis/figures/redate.png"), redateplt,
-       width = 180, height = 230, units = "mm")
+ggsave(file = here("analysis/figures/redate2.png"), redateplt,
+       width = 180, height = 250, units = "mm")

@@ -218,7 +218,15 @@ distances2 <- distances %>%
 
 # Dates older than 4000 (which also excludes agricultural sites)
 distances3 <- distances %>%
-  filter(year <= -4000 & rcarb_cor == "t" & type == "forager") %>%
+  filter(year <= -4000 & rcarb_cor == "t") %>%
+  mutate(hordist = ifelse(hordist < 0, 0, hordist),
+         topodist = ifelse(topodist < 0, 0, topodist),
+         vertdist = ifelse(vertdist < 0, 0, vertdist))
+
+# Dates older than 7000, to accommodate for more uncertaint relationship
+# between sites and shorelines for the earliest sites.
+distances4 <- distances %>%
+  filter(year <= -7000 & rcarb_cor == "t") %>%
   mutate(hordist = ifelse(hordist < 0, 0, hordist),
          topodist = ifelse(topodist < 0, 0, topodist),
          vertdist = ifelse(vertdist < 0, 0, vertdist))
@@ -236,6 +244,8 @@ expfit2 <- fitdistr(distances3$vertdist, "exponential")
 expdat2 <- data.frame(
   x = distances3$vertdist,
   px = dexp(as.numeric(distances3$vertdist), rate = expfit2$estimate))
+
+expfit3 <- fitdistr(distances4$vertdist, "exponential")
 
 # # Visualise in base R
 # hist(distances2$vertdist, freq =  FALSE)
@@ -390,5 +400,5 @@ ggsave(file = here("analysis/figures/results2.png"), grd,
        bg = "white")
 
 # Save results and exponential functions
-save(distances, expfit, expfit2,
+save(distances, expfit, expfit2, expfit3,
      file = here("analysis/data/derived_data/06data.RData"))
