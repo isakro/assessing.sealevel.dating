@@ -43,7 +43,7 @@ for(i in 1:nrow(brunlanes)){
                                         disp_curves = displacement_curves,
                                         sites = brunlanes,
                                         iso = isobases,
-                                        expratio = expfit2$estimate,
+                                        expratio = expfit3$estimate,
                                         siteelev = "min",
                                         reso = 0.001,
                                  specified_elev = brunlanes$elevation[i])
@@ -75,6 +75,10 @@ for(i in 1:length(unique(bdates$site_name))){
   hdrdat <- rbind(hdrdat, groupdat)
 }
 
+bdates <- bdates %>%  group_by(site_name) %>%
+  filter(cumsum(replace_na(probability, 0)) < 0.99999  &
+           probability != 0)
+
 # Lasse Jaksland's dates of the Brunlanes sites. He provided a maximum age,
 # and argued that the relative uncertainty would be around 50 years.
 jaksland <- data.frame(site_name = sort(unique(bdates$site_name)),
@@ -93,19 +97,19 @@ dateplot <- ggplot(data = hdrdat, aes(x = year_median, y = reorder(site_name, -y
                            colour = "grey", fill = "grey") +
   geom_linerange(data = hdrdat, aes(xmin = start, xmax = end,
                                       y = site_name), size = 0.5, col = "black",
-                 position = position_dodge(width = 0.1, preserve = 'single'),
+                 position = position_dodge(width = 0.12, preserve = 'single'),
                  inherit.aes = FALSE) +
   geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date1,
-                                      y = site_name), size = 1.75, col = "red",
-                 position = position_dodge(width = 0.4, preserve = 'single'),
+                                      y = site_name), size = 2, col = "red",
+                 position = position_dodge(width = 0.5, preserve = 'single'),
                  inherit.aes = FALSE) +
   geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date2,
-                                      y = site_name), size = 0.5, col = "red",
-                 position = position_dodge(width = 0.4, preserve = 'single'),
+                                      y = site_name), size = 0.75, col = "red",
+                 position = position_dodge(width = 0.5, preserve = 'single'),
                  inherit.aes = FALSE) +
   labs(y = "", x = "BCE", title = paste("\U03BB =",
-                          as.numeric(round(expfit2$estimate, 3)))) +
-  xlim(c(-10000, -6000)) +
+                          as.numeric(round(expfit3$estimate, 3)))) +
+  xlim(c(-10000, -7000)) +
   theme_bw()
 
 pauler <- filter(brunlanes, str_detect(name, 'Pauler|Sky'))
@@ -132,18 +136,20 @@ samplingframe <- dplyr::filter(bdates, site_name == sitename) %>%
   na.omit()
 samplingframe$rcarb_cor = "t"
 
-
 # # Simulate sea-level and retrieve distances (uncomment to re-run)
 # output <- sample_shoreline(1000, sitel, sitecurve, sitearea,
 #                               posteriorprobs = samplingframe)
-# save(output,
+# save(output, bdates,
+#      file = here("analysis/data/derived_data/08data.RData"))
+
+# # Generate grid with dtm resolution holding number of overlaps for each cell
+# # (also takes quite some time to execute)
+# simsea <- sea_overlaps(sitearea, output$seapol)
+#
+# save(simsea, bdates,
 #      file = here("analysis/data/derived_data/08data.RData"))
 
 load(here("analysis/data/derived_data/08data.RData"))
-
-# Generate grid with dtm resolution holding number of overlaps for each cell
-# (also takes quite some time to execute)
-simsea <- sea_overlaps(sitearea, output$seapol)
 
 # Create overview map for inset
 imap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
@@ -237,10 +243,10 @@ bmap <- ggplot() +
   new_scale_fill() +
   geom_sf(data = simsea, aes(alpha = overlaps), col = NA,
           fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff #"#dbe3f3"
-  geom_sf(data = st_centroid(pauler), size = 2, shape = 21, fill = NA) +
+  geom_sf(data = st_centroid(pauler), size = 1, shape = 21, fill = NA) +
   # geom_label_repel(data = site_coords, aes(x = X, y = Y, label = name),
   #                  force = 50, min.segment.length = 0) +
-  geom_sf(data = st_centroid(pauler1), size = 2, shape = 21, fill = "red") +
+  geom_sf(data = st_centroid(pauler1), size = 1, shape = 21, fill = "red") +
   scale_alpha_continuous(range = c(0.01, 1), na.value = 0) +
   ggsn::scalebar(data = pauler, dist = 200, dist_unit = "m",
                  transform = FALSE, st.size = 3, height = 0.06,
@@ -263,7 +269,7 @@ dateplot + inset_map
 dateplot + bmap
 
 ggsave(file = here("analysis/figures/brunlanes.png"),
-       width = 280, height = 230, units = "mm")
+       width = 200, height = 150, units = "mm")
 
 
 psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
