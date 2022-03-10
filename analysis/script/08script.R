@@ -145,11 +145,6 @@ samplingframe$rcarb_cor = "t"
 # # Generate grid with dtm resolution holding number of overlaps for each cell
 # # (also takes quite some time to execute)
 # simsea <- sea_overlaps(sitearea, output$seapol)
-#
-# save(simsea, bdates,
-#      file = here("analysis/data/derived_data/08data.RData"))
-
-load(here("analysis/data/derived_data/08data.RData"))
 
 # Create overview map for inset
 imap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
@@ -301,28 +296,20 @@ for(i in 1:nrow(sites_sl)){
                                                  sites_sl$max_elev[i])/2)
 }
 
-bdates <- bind_rows(sitdates)
+bdates2 <- bind_rows(sitdates)
+
+# save(simsea, bdates, bdates2,
+#      file = here("analysis/data/derived_data/08data.RData"))
+
+load(here("analysis/data/derived_data/08data.RData"))
 
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
-hdrdat <- bdates %>%  group_by(site_name) %>%
+hdrdat <- bdates2 %>%  group_by(site_name) %>%
   mutate(year_min = min(hdrcde::hdr(den = list("x" = years, "y" = probability),
                                     prob = 95)$hdr),
          year_max = max(hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$hdr),
          year_median = median(hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$mode))
-
-
-  r <- hdr(x, prob = 95)
-r <- data.frame("ymin" = min(r$hdr), "median" = r$mode,
-                "ymax" =  max(r$hdr))
-
-
-  filter(cumsum(replace_na(probability, 0)) < 0.95 &
-           probability != 0) %>%
-  summarise(
-    year_min = min(years, na.rm = TRUE),
-    year_max = max(years, na.rm = TRUE),
-    year_median = median(years, na.rm = TRUE))
 
 hdrdat <- hdrdat[order(hdrdat$year_median, decreasing = TRUE),]
 hdrdat$site_name <- factor(hdrdat$site_name, levels = unique(hdrdat$site_name))
@@ -337,7 +324,7 @@ psdates2 <- psdates %>%  filter(start == end)
 # Call to plot
 redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
   geom_segment(data = hdrdat, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = "grey", size = 2) +
+                               yend = site_name), col = "grey", size = 2.5) +
   # ggridges::geom_ridgeline(data = bdates,
   #                          aes(x = year, y = site_name,
   #                              height = probability*50),
@@ -350,11 +337,12 @@ redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
   #                inherit.aes = FALSE) +
   scale_y_discrete(limits = hdrdat$site_name,
                    expand = expansion(add = c(5000, 0))) +
+  scale_x_continuous(breaks = c(-8000, -6000, -4000, -2000, 0))+
   geom_point(data = psdates2, aes(x = start), col = "red",
              size = 1, alpha = 1) +
   labs(y = "", x = "BCE", title = paste("\U03BB =",
                                      as.numeric(round(expfit$estimate, 3)))) +
   theme_bw()
 
-ggsave(file = here("analysis/figures/redate2.png"), redateplt,
+ggsave(file = here("analysis/figures/redate.png"), redateplt,
        width = 180, height = 250, units = "mm")

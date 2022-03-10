@@ -32,14 +32,14 @@ for(i in 1:length(datfiles)){
   posterior_list[[i]] <- output[!(names(output) %in%
                                   c("", "sitel", "sitecurve"))]$datedat %>%
     filter(rcarb_cor == "t") %>%
-    filter(group == min(group)) %>%
+    # filter(group == min(group)) %>%
     # Make sure site name is included on all rows (sums have NA)
     mutate(site_name = unique(na.omit(site_name)))
 }
 
 # Unpack list of lists
 rdates <- posterior_list %>% bind_rows()
-rdates <- rdates %>%  group_by(site_name) %>%
+rdates <- rdates %>%  group_by(site_name, group) %>%
   # If there is a sum, exclude the rest
   filter(class == 'sum' | all(class != 'sum')) %>%
   ungroup() %>%
@@ -91,14 +91,26 @@ sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
   filter(cumsum(replace_na(probability, 0)) < 0.99  &
            probability != 0)
 
-
-# Radiocarbon dates corresponding to site inventory and older than 2500 BCE
+# Radiocarbon dates corresponding to site inventory.
+# First group
 corsites <- rdates %>%
   # Excluded, see supplementary
   filter(!(site_name %in% c("Dybdalshei 2", "Lunaveien"))) %>%
   group_by(site_name) %>%
-  # Exclude Late Neolithic sites
-  filter(n() != sum(is.na(name)) & min(dates) < -2500)
+  filter(group == min(group))
+
+corgroupsn <- rdates %>%
+  # Excluded, see supplementary
+  filter(!(site_name %in% c("Dybdalshei 2", "Lunaveien"))) %>%
+  group_by(site_name) %>%
+  filter(group != min(group)) %>%
+  mutate(group2 = ifelse(group == min(group), 2,
+                         ifelse(group == min(group)+1 , 3, 4))) %>%
+  filter(n() != sum(is.na(name)))
+
+corgroupsn2 <- corgroupsn %>%  filter(group2 == 2)
+corgroupsn3 <- corgroupsn %>%  filter(group2 == 3)
+corgroupsn4 <- corgroupsn %>%  filter(group2 == 4)
 
 # Retrieve shoreline date data for the same sites
 corshore <- sdates %>%  filter(site_name %in% unique(corsites$site_name))
@@ -136,18 +148,30 @@ shrplt <- ggplot(data = hdrdat,
   ggridges::geom_ridgeline(data = corshore,
                            aes(x = years, y = site_name,
                                height = probability * 200),
-                           colour = "grey", fill = "grey") +
-  ggridges::geom_ridgeline(data = corsites,
+                           col = "grey", fill = "grey") +
+  ggridges::geom_ridgeline(data = corgroupsn2,
                            aes(x = dates, y = site_name,
                                height = probabilities * 50),
-                           colour = "red", fill = NA) +
+                           col = "gold", fill = NA) +
+  ggridges::geom_ridgeline(data = corgroupsn3,
+                           aes(x = dates, y = site_name,
+                               height = probabilities * 50),
+                           col = "blue", fill = NA) +
+  ggridges::geom_ridgeline(data = corgroupsn4,
+                           aes(x = dates, y = site_name,
+                               height = probabilities * 50),
+                           col = "forestgreen", fill = NA) +
+  ggridges::geom_ridgeline(data = corgroupsn5,
+                           aes(x = dates, y = site_name,
+                               height = probabilities * 50),
+                           col = "red", fill = NA) +
   geom_linerange(data = hdrdat, aes(xmin = start, xmax = end,
                                       y = site_name), size = 0.5, col = "black",
                  position = position_dodge(width = 0.3, preserve = 'single'),
                  inherit.aes = FALSE) +
   labs(x = "BCE/CE", y = "", title = paste("\U03BB =",
                                   as.numeric(round(expfit$estimate, 3)))) +
-  scale_x_continuous(breaks = seq(-10000,2000, 2000)) +
+  scale_x_continuous(breaks = c(seq(-10000, -4000, 2000), -2500, 0, 2000) ) +
   theme_bw()
 
 shorelinedates <- bind_rows(shorelinedates) %>%
