@@ -1241,3 +1241,45 @@ shoreline_date1 <- function(sitename, elev = dtm,
 
   return(dategrid)
 }
+
+# Function to find age difference between shoreline and radiocarbondates
+age_diff <- function(shorelinedata, radiocarbondata, nsamp = 100000){
+
+  shorelinedata <- filter(shorelinedata,
+                          site_name %in% unique(radiocarbondata$site_name))
+
+  agedif <- setNames(data.frame(matrix(ncol = 2, nrow = 0)),
+                     c("age_diff", "site_name"))
+
+  for(i in 1:length(unique(shorelinedata[,"site_name"]))){
+    samplingframe <- list(x = shorelinedata[shorelinedata$site_name ==
+                                        unique(shorelinedata[,"site_name"])[i],
+                                            "years"],
+                          y = shorelinedata[shorelinedata$site_name ==
+                                        unique(shorelinedata[,"site_name"])[i],
+                                            "probability"])
+    sdate <- with(samplingframe, sample(x, size = nsamp, prob = y,
+                                        replace = TRUE))
+
+    samplingframe <- list(x = radiocarbondata[radiocarbondata$site_name ==
+                                        unique(shorelinedata[,"site_name"])[i],
+                                              "dates"]$dates,
+                          y = radiocarbondata[radiocarbondata$site_name ==
+                                        unique(shorelinedata[,"site_name"])[i],
+                                              "probabilities"]$probabilities)
+
+    rdate <- with(samplingframe, sample(x, size = nsamp, prob = y,
+                                        replace = TRUE))
+    age_diff <- rdate - sdate
+    agedif <- rbind(agedif, data.frame(age_diff,
+                                       site_name =  unique(shorelinedata$site_name)[i]))
+  }
+
+  agedif <- agedif %>%  group_by(site_name) %>%
+    mutate(cross = ifelse(between(0, min(hdrcde::hdr(age_diff,
+                                                     prob = 95)$hdr),
+                                  max(hdrcde::hdr(age_diff,
+                                  prob = 95)$hdr)), "true", "false"))
+
+  return(agedif)
+}
