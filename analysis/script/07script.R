@@ -5,8 +5,8 @@ library(terra)
 library(sf)
 library(hdrcde)
 
-# For reproducibility
-set.seed(123)
+# For reproducibility and the meaning of life
+set.seed(42)
 
 # Load required functions and prepared data
 source(here("analysis/script/04script.R"))
@@ -156,11 +156,11 @@ shrplt <- ggplot(data = hdrdat,
   ggridges::geom_ridgeline(data = corgroupsn2,
                            aes(x = dates, y = site_name,
                                height = probabilities * 50),
-                           col = "darkorange", fill = NA) +
+                           col = "blue", fill = NA) +
   ggridges::geom_ridgeline(data = corgroupsn3,
                            aes(x = dates, y = site_name,
                                height = probabilities * 50),
-                           col = "blue", fill = NA) +
+                           col = "darkorange", fill = NA) +
   ggridges::geom_ridgeline(data = corgroupsn4,
                            aes(x = dates, y = site_name,
                                height = probabilities * 50),
@@ -218,8 +218,8 @@ agedfplt2 <-  agedfplt + stat_summary(data = agedif2, aes(y = site_name,
                                       x = age_diff, colour = cross),
                                       fun.data = hdr_func, geom = "errorbar",
                                       size = 0.5) +
-  scale_colour_manual(values = c("darkorange", "black")) +
-  theme(panel.border = element_rect(colour = "darkorange"),
+  scale_colour_manual(values = c("blue", "black")) +
+  theme(panel.border = element_rect(colour = "blue"),
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
@@ -229,8 +229,8 @@ agedfplt3 <-  agedfplt + stat_summary(data = agedif3, aes(y = site_name,
                                       x = age_diff, colour = cross),
                                       fun.data = hdr_func, geom = "errorbar",
                                       size = 0.5) +
-  scale_colour_manual(values = c("blue","black")) +
-  theme(panel.border= element_rect(colour = "blue"),
+  scale_colour_manual(values = c("darkorange","black")) +
+  theme(panel.border= element_rect(colour = "darkorange"),
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
@@ -251,10 +251,10 @@ splt <- agedfplt1 + agedfplt2 + agedfplt3 + agedfplt4 + plot_layout(nrow = 1)
 difplt <- gridExtra::grid.arrange(patchworkGrob(splt),
                                   bottom = "Age difference")
 
-ggsave(file = here("analysis/figures/shoredate2.png"), shrplt,
+ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
        width = 200, height = 250, units = "mm")
 
-ggsave(file = here("analysis/figures/shoredate3.png"), difplt,
+ggsave(file = here("analysis/figures/shoredate2.png"), difplt,
        width = 200, height = 250, units = "mm")
 
 # # Example site for development

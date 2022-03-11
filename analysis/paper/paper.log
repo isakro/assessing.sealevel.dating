@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  11 MAR 2022 13:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  11 MAR 2022 17:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1185,7 +1185,7 @@ Overfull \hbox (50.6805pt too wide) in paragraph at lines 259--260
  []
 
 
-LaTeX Warning: Float too large for page by 47.94864pt on input line 264.
+LaTeX Warning: Float too large for page by 60.50421pt on input line 264.
 
 [13 </home/isak/phd/assessing.sealevel.dating/analysis/figures/results.png (PNG
  copy)>] [14 </home/isak/phd/assessing.sealevel.dating/analysis/figures/results
@@ -2291,7 +2291,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 814.
 Here is how much of TeX's memory you used:
  14243 strings out of 492982
  205380 string characters out of 6134896
- 320611 words of memory out of 5000000
+ 320764 words of memory out of 5000000
  17261 multiletter control sequences out of 15000+600000
  70371 words of font info for 134 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -2304,7 +2304,7 @@ xmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr
 7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/
 type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss8.pfb></
 usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb>
-Output written on paper.pdf (27 pages, 4802392 bytes).
+Output written on paper.pdf (27 pages, 4804626 bytes).
 PDF statistics:
  448 PDF objects out of 1000 (max. 8388607)
  391 compressed objects within 4 object streams
