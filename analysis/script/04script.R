@@ -1248,8 +1248,17 @@ age_diff <- function(shorelinedata, radiocarbondata, nsamp = 100000){
   shorelinedata <- filter(shorelinedata,
                           site_name %in% unique(radiocarbondata$site_name))
 
-  agedif <- setNames(data.frame(matrix(ncol = 2, nrow = 0)),
-                     c("age_diff", "site_name"))
+  prob95 <- radiocarbondata %>% group_by(site_name) %>%
+    summarise(
+      year_min = min(hdrcde::hdr(den = list("x" = dates, "y" = probabilities),
+                                 prob = 95)$hdr),
+      year_max = max(hdrcde::hdr(den = list("x" = dates, "y" = probabilities),
+                                 prob = 95)$hdr)
+    )
+
+  agedif <- setNames(data.frame(matrix(ncol = 6, nrow = 0)),
+                     c("age_diff", "site_name", "year_min",
+                       "year_max", "phase", "cross"))
 
   for(i in 1:length(unique(shorelinedata[,"site_name"]))){
     samplingframe <- list(x = shorelinedata[shorelinedata$site_name ==
@@ -1272,14 +1281,24 @@ age_diff <- function(shorelinedata, radiocarbondata, nsamp = 100000){
                                         replace = TRUE))
     age_diff <- rdate - sdate
     agedif <- rbind(agedif, data.frame(age_diff,
-                                       site_name =  unique(shorelinedata$site_name)[i]))
+                    site_name =  unique(shorelinedata$site_name)[i],
+                    year_min = prob95[prob95$site_name ==
+                                        unique(shorelinedata$site_name)[i],
+                                      "year_min"][[1]],
+                    year_max = prob95[prob95$site_name ==
+                                        unique(shorelinedata$site_name)[i],
+                                      "year_max"][[1]],
+                    phase = ifelse(prob95[prob95$site_name ==
+                                            unique(shorelinedata$site_name)[i],
+                                          "year_min"][[1]] < -4000, "meso",
+                    ifelse(prob95[prob95$site_name ==
+                                    unique(shorelinedata$site_name)[i],
+                                  "year_min"][[1]] < -2500, "pre-ln", "ln")),
+                    cross = ifelse(between(0, min(hdrcde::hdr(age_diff,
+                                                              prob = 95)$hdr),
+                                           max(hdrcde::hdr(age_diff,
+                                       prob = 95)$hdr)), "true", "false")))
   }
-
-  agedif <- agedif %>%  group_by(site_name) %>%
-    mutate(cross = ifelse(between(0, min(hdrcde::hdr(age_diff,
-                                                     prob = 95)$hdr),
-                                  max(hdrcde::hdr(age_diff,
-                                  prob = 95)$hdr)), "true", "false"))
 
   return(agedif)
 }

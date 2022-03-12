@@ -46,6 +46,8 @@ rdates <- rdates %>%  group_by(site_name, group) %>%
   filter(class != "aprior")
 
 
+
+
 # Exclude sites not analysed
 sites_sa <- sites_sa %>%
   filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
@@ -54,6 +56,7 @@ sites_sa <- sites_sa %>%
 # (see supplementary material for more on this)
 feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
 
+# # Uncomment to rerun
 # shorelinedates <- list()
 # for(i in 1:nrow(sites_sa)){
 #   print(paste(i, sites_sa$name[i]))
@@ -186,6 +189,7 @@ agedif2 <- age_diff(shorelinedates, corgroupsn2)
 agedif3 <- age_diff(shorelinedates, corgroupsn3)
 agedif4 <- age_diff(shorelinedates, corgroupsn4)
 
+
 hdr_func <- function(x) {
   r <- hdrcde::hdr(x, prob = 95)
   r <- data.frame("ymin" = min(r$hdr), "median" = r$mode,
@@ -208,39 +212,47 @@ agedfplt <- ggplot(data = hdrdat,
   theme(legend.position = "none")
 
 agedfplt1 <- agedfplt + stat_summary(data = agedif, aes(y = site_name,
-                                           x = age_diff, colour = cross),
+                                           x = age_diff, colour = phase,
+                                           linetype = cross),
                         fun.data = hdr_func, geom = 'errorbar', size = 0.5) +
-  scale_colour_manual(values = c('red','black')) +
+  scale_linetype_manual(values=c("dashed", "solid")) +
+  scale_colour_manual(values = c("black", "#91bfdb", "#e0f3f8")) +
   theme(panel.border = element_rect(colour="red"),
         axis.title.x = element_blank())
 
 agedfplt2 <-  agedfplt + stat_summary(data = agedif2, aes(y = site_name,
-                                      x = age_diff, colour = cross),
-                                      fun.data = hdr_func, geom = "errorbar",
-                                      size = 0.5) +
-  scale_colour_manual(values = c("blue", "black")) +
+                                                         x = age_diff, colour = phase,
+                                                         linetype = cross),
+                                      fun.data = hdr_func, geom = 'errorbar'
+                                      , size = 0.5) +
+  scale_linetype_manual(values=c("dashed", "solid")) +
+  scale_colour_manual(values = c("black", "#91bfdb", "#e0f3f8")) +
   theme(panel.border = element_rect(colour = "blue"),
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
         axis.title.x = element_blank())
 
-agedfplt3 <-  agedfplt + stat_summary(data = agedif3, aes(y = site_name,
-                                      x = age_diff, colour = cross),
-                                      fun.data = hdr_func, geom = "errorbar",
-                                      size = 0.5) +
-  scale_colour_manual(values = c("darkorange","black")) +
-  theme(panel.border= element_rect(colour = "darkorange"),
+agedfplt3 <- agedfplt + stat_summary(data = agedif3, aes(y = site_name,
+                                                         x = age_diff, colour = phase,
+                                                         linetype = cross),
+                                     fun.data = hdr_func, geom = 'errorbar'
+                                     , size = 0.5) +
+  scale_linetype_manual(values=c("dashed", "solid")) +
+  scale_colour_manual(values = c("black", "#91bfdb", "#e0f3f8")) +
+  theme(panel.border = element_rect(colour = "darkorange"),
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
         axis.title.x = element_blank())
 
 agedfplt4 <-agedfplt + stat_summary(data = agedif4, aes(y = site_name,
-                                      x = age_diff, colour = cross),
-                                      fun.data = hdr_func, geom = "errorbar",
-                                      size = 0.5) +
-  scale_colour_manual(values = c("black", "forestgreen")) +
+                                                        x = age_diff, colour = phase,
+                                                        linetype = cross),
+                                    fun.data = hdr_func, geom = 'errorbar'
+                                    , size = 0.5) +
+  scale_linetype_manual(values=c("solid", "dashed")) +
+  scale_colour_manual(values = c("black", "#91bfdb", "#e0f3f8")) +
   theme(panel.border = element_rect(colour = "forestgreen"),
         axis.title.y = element_blank(),
         axis.text.y = element_blank(),
