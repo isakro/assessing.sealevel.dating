@@ -1300,5 +1300,6 @@ age_diff <- function(shorelinedata, radiocarbondata, nsamp = 100000){
                                        prob = 95)$hdr)), "true", "false")))
   }
 
+  agedif$phase <- factor(agedif$phase, levels=c("meso", "pre-ln", "ln"))
   return(agedif)
 }
