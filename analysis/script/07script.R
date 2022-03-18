@@ -181,8 +181,11 @@ shrplt <- ggplot(data = hdrdat,
   scale_x_continuous(breaks = c(seq(-10000, -4000, 2000), -2500, 0, 2000) ) +
   theme_bw()
 
-#values = c("black", "#21908CFF", "#A6611A"),
+# Save plot
+ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
+       width = 200, height = 250, units = "mm")
 
+# Next sections finds synchroneity between radiocarbon and shoreline dates
 shorelinedates <- bind_rows(shorelinedates) %>%
   filter(site_name %in% unique(corsites$site_name))
 
@@ -192,25 +195,33 @@ agedif3 <- age_diff(shorelinedates, corgroupsn3)
 agedif4 <- age_diff(shorelinedates, corgroupsn4)
 
 phasedt <- agedif %>% group_by(site_name) %>%
-  group_by(phase) %>%  summarise(n = n() / 100000) %>%
+  group_by(phase, cross) %>%  summarise(n = n() / 100000) %>%
   pivot_wider(names_from = phase, values_from = n)
 
 phasedt2 <- agedif2 %>% group_by(site_name) %>%
-  group_by(phase) %>%  summarise(n = n() / 100000) %>%
+  group_by(phase, cross) %>%  summarise(n = n() / 100000) %>%
   pivot_wider(names_from = phase, values_from = n)
 
 phasedt3 <- agedif3 %>% group_by(site_name) %>%
-  group_by(phase) %>%  summarise(n = n() / 100000) %>%
-  pivot_wider(names_from = phase, values_from = n) %>%
-  mutate(ln = NA)
+  group_by(phase, cross) %>%  summarise(n = n() / 100000) %>%
+  pivot_wider(names_from = phase, values_from = n)
 
 phasedt4 <- agedif4 %>% group_by(site_name) %>%
-  group_by(phase) %>%  summarise(n = n() / 100000) %>%
+  group_by(phase, cross) %>%  summarise(n = n() / 100000) %>%
   pivot_wider(names_from = phase, values_from = n) %>%
-  mutate(meso = NA, ln = NA) # Hacky solution given the single observation
+  mutate(meso = NA, ln = NA)
 
-phasedata <- rbind(phasedt, phasedt2, phasedt3, phasedt4) %>%
-  summarise_all(sum, na.rm = TRUE)
+synchdt <- rbind(phasedt, phasedt2, phasedt3, phasedt4)
+
+phasedata <- synchdt %>% summarise_if(is.numeric, sum, na.rm = TRUE)
+
+synchdata <- synchdt  %>% group_by(cross) %>%
+  summarise_all(sum, na.rm = TRUE) %>%
+  ungroup() %>%
+  mutate(row_total = rowSums(across(where(is.numeric))))
+
+save(synchdata,
+     file = here("analysis/data/derived_data/07agediff.RData"))
 
 hdr_func <- function(x) {
   r <- hdrcde::hdr(x, prob = 95)
@@ -225,8 +236,6 @@ agedfplt <- ggplot(data = hdrdat,
        aes(x = year_median, y = reorder(site_name, -year_median))) +
   geom_segment(data = hdrdat, aes(x = start, xend = end,
                                yend = site_name), col = NA) +
-  # geom_violin(data = agedif, aes(y = site_name, x = age_diff, colour = cross,
-  #                                fill = cross), fill = "white") +
   geom_vline(xintercept = 0, colour = "grey", linetype = "solid") +
   labs(x = "Age difference", y = "") +
   scale_x_continuous(breaks = c(-5000, 0, 5000)) +
@@ -234,8 +243,12 @@ agedfplt <- ggplot(data = hdrdat,
 
 agedfplt1 <- agedfplt + stat_summary(data = agedif, aes(y = site_name,
                                            x = age_diff, colour = phase,
-                                           linetype = cross, width = 0.15),
+                                          width = 0),
                         fun.data = hdr_func, geom = 'errorbar', size = 0.7) +
+  stat_summary(data = filter(agedif, cross == "false"), aes(y = site_name,
+                                  x = age_diff, colour = phase,
+                                  width = 0.7),
+               fun.data = hdr_func, geom = 'errorbar', size = 0.5) +
   geom_hline(yintercept = Inf, col = "red", size = 2) +
   xlab("Age difference") +
   theme(legend.position = "none")
@@ -243,10 +256,20 @@ agedfplt1 <- agedfplt + stat_summary(data = agedif, aes(y = site_name,
 agedfplt2 <-  agedfplt + stat_summary(data = agedif2, aes(y = site_name,
                                                          x = age_diff,
                                                          colour = phase,
-                                                         linetype = cross,
-                                                         width = 0.15),
+                                                         width = 0),
                                       fun.data = hdr_func, geom = 'errorbar',
                                       size = 0.7) +
+  stat_summary(data = filter(agedif2, cross == "false"), aes(y = site_name,
+                                   x = age_diff,
+                                   colour = phase,
+                                   width = 0.7),
+               fun.data = hdr_func, geom = 'errorbar',
+               size = 0.7) +
+  scale_color_manual(name = "", labels = c("Mesolithic",
+                                           "Early and Middle Neolithic",
+                                           "Late Neolithic"),
+                     values = c("black", "#00BA38", "deeppink1"),
+                     guide = "none") +
   geom_hline(yintercept = Inf, col = "blue", size = 2) +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
@@ -257,15 +280,19 @@ agedfplt2 <-  agedfplt + stat_summary(data = agedif2, aes(y = site_name,
 agedfplt3 <- agedfplt + stat_summary(data = agedif3, aes(y = site_name,
                                                          x = age_diff,
                                                          colour = phase,
-                                                         linetype = cross,
-                                                         width = 0.15),
+                                                         width = 0),
                                      fun.data = hdr_func, geom = 'errorbar',
                                      size = 0.7) +
-  scale_linetype_manual(values = c("dotted", "solid"), guide = "none") +
+  stat_summary(data = filter(agedif3, cross == "false"), aes(y = site_name,
+                                   x = age_diff,
+                                   colour = phase,
+                                   width = 0.7),
+               fun.data = hdr_func, geom = 'errorbar',
+               size = 0.7) +
   scale_color_manual(name = "", labels = c("Mesolithic",
                                            "Early and Middle Neolithic",
                                            "Late Neolithic"),
-                     values = c("#6A3D9A", "#00BA38", "deeppink1"),
+                     values = c("black", "#00BA38", "deeppink1"),
                      guide = "none") +
   geom_hline(yintercept = Inf, col = "darkorange", size = 2) +
   theme(axis.title.y = element_blank(),
@@ -277,15 +304,13 @@ agedfplt3 <- agedfplt + stat_summary(data = agedif3, aes(y = site_name,
 agedfplt4 <- agedfplt + stat_summary(data = agedif4, aes(y = site_name,
                                                         x = age_diff,
                                                         colour = phase,
-                                                        linetype = cross,
-                                                        width = 0.15),
+                                                        width = 0),
                                     fun.data = hdr_func, geom = 'errorbar',
                                     size = 0.7) +
-  scale_linetype_manual(values = c("solid", "dotted"), guide = "none") +
   scale_color_manual(name = "", labels = c("Mesolithic",
                                            "Early and Middle Neolithic",
                                            "Late Neolithic"),
-                     values = c("#6A3D9A", "#00BA38", "deeppink1"),
+                     values = c("black", "#00BA38", "deeppink1"),
                      guide = "none") +
   geom_hline(yintercept = Inf, col = "forestgreen", size = 2) +
   theme(axis.title.y = element_blank(),
@@ -295,22 +320,18 @@ agedfplt4 <- agedfplt + stat_summary(data = agedif4, aes(y = site_name,
         legend.position = "none")
 
 
-splt <- agedfplt1 + agedfplt2 +
+splt <- agedfplt1 +
   plot_layout(nrow = 1, guides = "collect") &
   scale_color_manual(name = "", labels = c(paste0("Mesolithic (",
                                                   phasedata$meso, ")"),
-                                           paste0("Early and Middle Neolithic (",
-                                                  phasedata$`pre-ln`, ")"),
-                                           paste0("Late Neolithic (",
+                                          paste0("Early and Middle Neolithic (",
+                                                  phasedata$pre_ln, ")"),
+                                          paste0("Late Neolithic (",
                                                   phasedata$ln, ")")),
-                     values = c("#6A3D9A", "#00BA38", "deeppink1")) &
-  scale_linetype_manual(values = c("dotted", "solid"), guide = "none") &
+                     values = c("black", "#00BA38", "deeppink1")) &
   theme(legend.position = 'bottom')
 
-difplt <- splt + agedfplt3 + agedfplt4 + plot_layout(nrow = 1)
-
-ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
-       width = 200, height = 250, units = "mm")
+difplt <- splt +  agedfplt2 + agedfplt3 + agedfplt4 + plot_layout(nrow = 1)
 
 # width = 200, height = 250
 ggsave(file = here("analysis/figures/shoredate2.png"), difplt,

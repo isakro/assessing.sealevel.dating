@@ -1293,13 +1293,13 @@ age_diff <- function(shorelinedata, radiocarbondata, nsamp = 100000){
                                           "year_min"][[1]] < -4000, "meso",
                     ifelse(prob95[prob95$site_name ==
                                     unique(shorelinedata$site_name)[i],
-                                  "year_min"][[1]] < -2500, "pre-ln", "ln")),
+                                  "year_min"][[1]] < -2500, "pre_ln", "ln")),
                     cross = ifelse(between(0, min(hdrcde::hdr(age_diff,
                                                               prob = 95)$hdr),
                                            max(hdrcde::hdr(age_diff,
                                        prob = 95)$hdr)), "true", "false")))
   }
 
-  agedif$phase <- factor(agedif$phase, levels=c("meso", "pre-ln", "ln"))
+  agedif$phase <- factor(agedif$phase, levels=c("meso", "pre_ln", "ln"))
   return(agedif)
 }
