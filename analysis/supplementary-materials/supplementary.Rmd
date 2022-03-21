@@ -606,7 +606,8 @@ filter(rcarbon, site_name  == "Langangen Vestgård 5") %>%
                     "Error",
                     "Material",
                     "Context"),
-        booktabs = TRUE,  linesep = c(""), escape = FALSE)
+        booktabs = TRUE,  linesep = c(""), escape = FALSE) %>% 
+  kable_styling(latex_options="scale_down")
 ```
 
 Langangen Vestgård 5. Typology match the ^14^C-dates and a division of two phases, one Late Mesolithic and one Early Neolithic [@reitan2014b]. No editing of the DTM necessary.
@@ -681,7 +682,8 @@ filter(rcarbon, site_name  == "Løvås 2") %>%
                     "Error",
                     "Material",
                     "Context"),
-        booktabs = TRUE,  linesep = c(""), escape = FALSE)
+        booktabs = TRUE,  linesep = c(""), escape = FALSE) %>% 
+  kable_styling(latex_options="scale_down")
 ```
 
 Løvås 2. Similar situation to that on Løvås 1 and 3 (above and below).

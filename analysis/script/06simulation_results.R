@@ -77,12 +77,12 @@ colsh = c("forager" = "#00ba38", "agricultural" = "darkgrey")
 colst = c("forager" = "#fad510", "agricultural" = "darkgrey")
 colsv = c("forager" = "steelblue", "agricultural" = "darkgrey")
 
-# Horisontal distance, all dates to the Stone Age
+# Horizontal distance, all dates to the Stone Age
 h1 <- ggplot(distances, aes(x = year, y = hordist,
                             colour = type)) +
   geom_point(shape = 16, alpha = 0.01) +
   scale_colour_manual(values = colsh) +
-  labs(y = "Horisontal distance (m)", x = "BCE",
+  labs(y = "Horizontal distance (m)", x = "BCE",
        title = "All dates") +
   scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
   theme_bw() +
@@ -99,13 +99,13 @@ th <- sum(th1$heights)
 # Arrange plot and table
 hor1 <- grid.arrange(h1, th1, heights = unit.c(unit(1, "null"), th))
 
-# Horisontal distance, dates corresponding to inventory
+# Horizontal distance, dates corresponding to inventory
 h2 <- distances %>%  filter(rcarb_cor == "t") %>%
   ggplot(aes(x = year, y = hordist,
                         colour = type)) +
   geom_point(shape = 16, alpha = 0.01) +
   scale_colour_manual(values = colsh) +
-  labs(y = "Horisontal distance (m)", x = "BCE",
+  labs(y = "Horizontal distance (m)", x = "BCE",
        title = "Corresponding dates") +
   scale_x_continuous(breaks = seq(-8000, -1000, by = 2000)) +
   theme_bw() +
@@ -198,7 +198,7 @@ vert2 <- grid.arrange(v2, vt2, heights = unit.c(unit(1, "null"), th))
 grd1 <- grid.arrange(hor1, topo1, vert1, nrow = 1)
 grd2 <- grid.arrange(hor2, topo2, vert2, nrow = 1)
 
-grd <- plot_grid(grd1, grd2, ncol = 1, scale = 0.9)
+grd <- plot_grid(grd1, grd2, labels = c("A", "B"), ncol = 1, scale = 0.9)
 
 ggsave(file = here("analysis/figures/results.png"), grd,
        bg = "white")
@@ -270,10 +270,10 @@ histhor <- distances2 %>%
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
-  labs(title= "Horisontal distance (m) \nBinwidth = 20m",
+  labs(title= "Horizontal distance (m) \nBinwidth = 20m",
        x = "", y = "Density")
 
-# Table for horisontal statistics after exclusion of younger sites
+# Table for Horizontal statistics after exclusion of younger sites
 tabhor3 <- tableGrob(sum_cor2[c("hordist_fn1", "hordist_fn2",
                                 "hordist_fn3", "hordist_fn4")],
                      cols = c("Mean", "Median",
@@ -282,7 +282,7 @@ tabhor3 <- tableGrob(sum_cor2[c("hordist_fn1", "hordist_fn2",
 
 th <- sum(tabhor3$heights)
 
-# Assemble horisontal histogram and table
+# Assemble Horizontal histogram and table
 hor3 <- grid.arrange(histhor, tabhor3, heights = unit.c(unit(1, "null"), th))
 
 histtopo <- distances2 %>%
@@ -337,7 +337,7 @@ histhor2 <- distances3 %>%
                             colour = "black",
                             alpha = 0.5) +
   theme_bw() +
-  labs(title= "Horisontal distance (m) \nBinwidth = 20m",
+  labs(title= "Horizontal distance (m) \nBinwidth = 20m",
        x = "", y = "Density")
 
 tabhor4 <- tableGrob(sum_cor3[c("hordist_fn1", "hordist_fn2",
@@ -393,7 +393,7 @@ vert4 <- grid.arrange(histvert2, tabvert4,
 
 grd4 <- grid.arrange(hor4, topo4, vert4, nrow = 1)
 
-grd <- plot_grid(grd3, grd4, ncol = 1, scale = 0.9)
+grd <- plot_grid(grd3, grd4, labels = c("A", "B"), ncol = 1, scale = 0.9)
 
 # Save plot
 ggsave(file = here("analysis/figures/results2.png"), grd,

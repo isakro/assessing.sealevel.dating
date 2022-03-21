@@ -400,7 +400,8 @@ interpolate_curve <- function(years, target, dispdat, isodat){
   # displacement curve (e.g. Alveberget 8), simply return that displacement
   # curve
   if(any(as.numeric(dists) == 0)){
-    values <- dispdat[dispdat$name == names(dists)[which(as.numeric(dists) == 0)],]
+    values <-
+      dispdat[dispdat$name == names(dists)[which(as.numeric(dists) == 0)],]
 
   } else { for(i in 1:length(years)){
     for(j in 1:ncol(dists)){
@@ -868,8 +869,9 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
 }
 
 # Define function to plot site relative to simulated sea-levels
-shore_plot <- function(locationraster, overlapgrid, sitelimit, dist, date_groups,
-                       s_tdist, s_xpos, s_ypos, s_bheight, s_tsize) {
+shore_plot <- function(locationraster, overlapgrid, sitelimit, dist,
+                       date_groups, s_tdist, s_xpos, s_ypos, s_bheight,
+                       s_tsize) {
 
   bboxgrid <- st_bbox(overlapgrid)
   anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
@@ -975,7 +977,7 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
        colour = as.factor(rcarb_cor),
        alpha = class))+
       scale_alpha_manual(values = c("aprior" = 0.05,
-                                    "bposterior" = 0.4,
+                                    "bposterior" = 0.3, #0.4
                                     "sum" = 1)) +
       scale_colour_manual(breaks = c("f", "t", NA),
                           values = c("red", "black", "yellow")) +
@@ -994,7 +996,7 @@ plot_dates <- function(datedata, sitename, multigroup = TRUE, groupn = NA,
       scale_colour_manual(breaks = c("f", "t", NA),
                          values = c("red", "black", "yellow")) +
       scale_alpha_manual(values = c("aprior" = 0.05,
-                                    "bposterior" = 0.4,
+                                    "bposterior" = 0.3, #0.4
                                     "sum" = 1)) +
       theme_bw() +
       labs(y = "", x = "") +
@@ -1215,13 +1217,14 @@ shoreline_date1 <- function(sitename, elev = dtm,
     if(!(negative_offset > 0)) {
       negative_offset <- 0.01
     }
-    # Find lower date, subtracting offset (defaults to 0)
+
+    # Find lower date
     lowerd <- round(approx(sitecurve[,"lowerelev"],
                            xvals, xout = negative_offset)[['y']])
 
-    # Find upper date, subtracting offset (defaults to 0)
+    # Find upper date
     upperd <- round(approx(sitecurve[,"upperelev"],
-                           xvals, xout =  negative_offset)[['y']])
+                           xvals, xout = negative_offset)[['y']])
 
     # Find youngest and oldest date
     earliest <- min(c(lowerd, upperd))
