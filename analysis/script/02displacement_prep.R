@@ -56,10 +56,11 @@ horten$name <- "Horten"
 
 # # Transform to BCE/CE using Joe Roe's era package and make BCE negative
 # # to corresponds to oxcAAR later on. [This gave some issue with rounding
-# errors]
+# errors and as been solved differently]
 # displacement_curves <- rbind(larvik, tvedestrand, arendal, horten)
 # displacement_curves$years <- yr(displacement_curves$years, "cal BP")
-# displacement_curves$years <- yr_transform(displacement_curves$years, "BCE") * -1
+# displacement_curves$years <- yr_transform(displacement_curves$years,
+#                              "BCE") * -1
 # xvals <- as.integer(yr_transform(yr(xvals, "cal BP"), "BCE") * -1)
 
 displacement_curves <- rbind(larvik, tvedestrand, arendal, horten)

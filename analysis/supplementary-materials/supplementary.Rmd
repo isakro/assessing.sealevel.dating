@@ -153,7 +153,7 @@ filter(rcarbon, site_name  == "Bakke") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-The radiocarbon date to the Stone Age is not related to the site inventory, which is distinctly Early Mesolithic in character [@nyland2012b].
+The radiocarbon date to the Stone Age is not related to the site inventory at Bakke, which is distinctly Early Mesolithic in character [@nyland2012b].
 
 ```{r brunstad24, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/brunstad24.png"))
