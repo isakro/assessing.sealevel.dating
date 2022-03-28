@@ -267,12 +267,14 @@ ggsave(file = here("analysis/figures/brunlanes.png"),
        width = 200, height = 150, units = "mm")
 
 
-psdates <- read.csv((here("analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
+psdates <- read.csv((here(
+  "analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
   mutate(start = start * -1,
          end = end * -1) %>%
   dplyr::rename("site_name" = "name")
 
-sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" & rcarb_cor == "f" | name == "Viulsrød 2")
+sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" &
+                                     rcarb_cor == "f" | name == "Viulsrød 2")
 
 sites_sl <- sites_sl %>%
   filter(name %in% psdates$site_name)

@@ -44,7 +44,7 @@ rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
 
 This document shows the simulation results for each individual site analysed in the study with some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order. All underlying and derived data are available in the online repository for the paper at https://osf.io/7F9SU
 
-Stone Age sites for which no spatial data was readily available are Frebergsvik A--C [@mikkelsen1975], Nedre Holtan [@sjursjeike], Rugtvedt [@odgaard1994], Tangen [@glorstad2005], and Torsrød [@østmo1975]. These sites are therefore not included in the analysis. Furthermore, @nielsen2021 has recently interpreted features from the otherwise younger sites Bratsberg and Larønningen as possibly related to farming activity in the Early Neolithic. However, given the limited number of features, the lack of any artefacts directly related to these, and the therefore somewhat speculative nature of this suggestion, the sites are kept out of the analysis here.
+Stone Age sites for which no spatial data was readily available are Frebergsvik A--C [@mikkelsen1975], Nedre Holtan [@sjursjeike], Rugtvedt [@odgaard1994], Tangen [@glorstad2005], and Torsrød [@østmo1975]. These sites are therefore not included in the analysis. Furthermore, @nielsen2021b has recently interpreted features from the otherwise younger sites Bratsberg and Larønningen as possibly related to farming activity in the Early Neolithic. However, given the limited number of features, the lack of any artefacts directly related to these, and the therefore somewhat speculative nature of this suggestion, the sites are kept out of the analysis here.
 
 The first figure shows the result of a test run for the site Hovland 5, where the simulations were run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving a wide uncertainty range, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
 
@@ -138,7 +138,7 @@ filter(rcarbon, site_name  == "Auve") %>%
 
 ```
 
-The site limit for Auve was drawn manually based on the description in the publication of the site and the site geometry available in the database Askeladden. The area to the has reportedly been affected by land-slides, but the extent of this is difficult to ascertain based on maps of the area. As the simulation results appear reasonable [see also map in @ostmo2008, fig.142], nothing was done to try to correct for this. 
+The site limit for Auve was drawn manually based on the description in the publication of the site and the site geometry available in the database Askeladden. The site is located in and around an intersection of the road, parts of the area has been levelled and farmed, and an area to north-west of the site has reportedly been affected by land-slides [@ostmo2008, 16--29] , but the extent of this is difficult to ascertain based on maps of the area. As the simulation results appear reasonable [see also map in @ostmo2008, fig.142], nothing was done to try to correct for these factors. 
 
 ```{r bakke, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/bakke.png"))

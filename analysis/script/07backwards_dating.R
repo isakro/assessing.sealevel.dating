@@ -9,7 +9,7 @@ library(hdrcde)
 set.seed(321)
 
 # Load required functions and prepared data
-source(here("analysis/script/04script.R"))
+source(here("analysis/script/04functions.R"))
 load(here("analysis/data/derived_data/01data.RData"))
 load(here("analysis/data/derived_data/02data.RData"))
 load(here("analysis/data/derived_data/06data.RData"))
