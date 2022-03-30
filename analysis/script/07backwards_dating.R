@@ -45,9 +45,6 @@ rdates <- rdates %>%  group_by(site_name, group) %>%
   ungroup() %>%
   filter(class != "aprior")
 
-
-
-
 # Exclude sites not analysed
 sites_sa <- sites_sa %>%
   filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
