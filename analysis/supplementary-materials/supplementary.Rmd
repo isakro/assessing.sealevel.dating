@@ -168,6 +168,8 @@ filter(rcarbon, site_name  == "Brunstad 24") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
+Typological indicators in the lithic inventory from Brunstad 24 matches the ^14^C-dates [@danielsen2018]. The footprint of a large building structure covering a large part of the site from the south required editing of the DTM. Apart from that the landscape appears relatively undisturbed. 8 fragments from a pot could potentially correspond with the ^14^C-dates to the Late Bronze Age and Early Iron Age, but given their uncetaint nature and the limited number of sherds this was disregarded here.
+
 ```{r brunstad25, echo = FALSE, out.width = "500px", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/brunstad25.png"))
 
@@ -180,6 +182,8 @@ filter(rcarbon, site_name  == "Brunstad 25") %>%
                     "Context"),
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
+
+As with Brunstad 24 (above), the artefact inventory from Brunstad 25 matches the radiocarbon dates [@reitan2018], and the building structure covering the southern part of the site had impacted the DTM and had to be removed. 
 
 ```{r dordal, echo = FALSE, out.width = "500px", regfloat=TRUE}
 

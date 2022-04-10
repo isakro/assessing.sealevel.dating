@@ -22,6 +22,13 @@ load(here("analysis/data/derived_data/06data.RData"))
 sitespol <- read_sf(
   here('analysis/data/raw_data/site_limits/site_limits.gpkg'))
 
+# Read in previous shoreline dates and reported elevations
+prevdates <- read.csv((here(
+  "analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
+  mutate(start = start * -1,
+         end = end * -1) %>%
+  dplyr::rename("site_name" = "name")
+
 # Read in raster
 dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
 
@@ -32,8 +39,9 @@ brunlanes <- sitespol %>%
   dplyr::rename("name" = "site_name",
          "limit" = "name")
 
-# Use elevations provided by Jaksland
-brunlanes$elevation <- c(108, 98, 127, 124, 114, 110.5, 98, 95, 108)
+brun_rep <- prevdates %>% filter(str_detect(site_name, 'Pauler|Bakke|Sky 1'))
+
+brunlanes <- full_join(brunlanes, brun_rep, by = c("name" = "site_name"))
 
 sdatesp <- list()
 for(i in 1:nrow(brunlanes)){
@@ -46,7 +54,7 @@ for(i in 1:nrow(brunlanes)){
                                         expratio = expfit3$estimate,
                                         siteelev = "min",
                                         reso = 0.001,
-                                 specified_elev = brunlanes$elevation[i])
+                                 specified_elev = brunlanes$min_elev[i])
 }
 
 bdates <- as_tibble(bind_rows(sdatesp))
@@ -81,14 +89,12 @@ bdates <- bdates %>%  group_by(site_name) %>%
 
 # Lasse Jaksland's dates of the Brunlanes sites. He provided a maximum age,
 # and argued that the relative uncertainty would be around 50 years.
-jaksland <- data.frame(site_name = sort(unique(bdates$site_name)),
-                       earliest_date = c(-8850, -9200, -9150, -9000,
-                                         -8950, -8975, -8850, -8800, -8950)) %>%
-  mutate(latest_date1 = earliest_date + 50,
-         latest_date2 = earliest_date + 200)
+jaksland <- brunlanes %>%
+  mutate(end2 = start + 200)
 
 # Call to plot
-dateplot <- ggplot(data = hdrdat, aes(x = year_median, y = reorder(site_name, -year_median))) +
+dateplot <- ggplot(data = hdrdat, aes(x = year_median,
+                                      y = reorder(site_name, -year_median))) +
   geom_segment(data = hdrdat, aes(x = start, xend = end,
                                yend = site_name), col = NA) +
   ggridges::geom_ridgeline(data = bdates,
@@ -99,12 +105,12 @@ dateplot <- ggplot(data = hdrdat, aes(x = year_median, y = reorder(site_name, -y
                                       y = site_name), size = 0.5, col = "black",
                  position = position_dodge(width = 0.12, preserve = 'single'),
                  inherit.aes = FALSE) +
-  geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date1,
-                                      y = site_name), size = 2, col = "red",
+  geom_linerange(data = jaksland, aes(xmin = start, xmax = end,
+                                      y = name), size = 2, col = "red",
                  position = position_dodge(width = 0.5, preserve = 'single'),
                  inherit.aes = FALSE) +
-  geom_linerange(data = jaksland, aes(xmin = earliest_date, xmax = latest_date2,
-                                      y = site_name), size = 0.75, col = "red",
+  geom_linerange(data = jaksland, aes(xmin = start, xmax = end2,
+                                      y = name), size = 0.75, col = "red",
                  position = position_dodge(width = 0.5, preserve = 'single'),
                  inherit.aes = FALSE) +
   labs(y = "", x = "BCE", title = paste("\U03BB =",
@@ -266,12 +272,7 @@ dateplot + bmap
 ggsave(file = here("analysis/figures/brunlanes.png"),
        width = 200, height = 150, units = "mm")
 
-
-psdates <- read.csv((here(
-  "analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
-  mutate(start = start * -1,
-         end = end * -1) %>%
-  dplyr::rename("site_name" = "name")
+psdates <- prevdates %>%  filter(!str_detect(site_name, 'Pauler|Bakke|Sky 1'))
 
 sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" &
                                      rcarb_cor == "f" | name == "Viulsrød 2")
@@ -293,7 +294,7 @@ for(i in 1:nrow(sites_sl)){
                                  sites = sites_sl,
                                  iso = isobases,
                                  expratio = expfit$estimate,
-                                 reso = 0.01,
+                                 reso = 0.001,
                                  specified_elev = (sites_sl$min_elev[i]+
                                                  sites_sl$max_elev[i])/2)
 }
@@ -310,14 +311,18 @@ load(here("analysis/data/derived_data/08data.RData"))
 hdrdat <- bdates2 %>%  group_by(site_name) %>%
   mutate(year_min = min(hdrcde::hdr(den = list("x" = years, "y" = probability),
                                     prob = 95)$hdr),
-         year_max = max(hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$hdr),
-         year_median = median(hdrcde::hdr(den = list("x" = years, "y" = probability), prob = 95)$mode))
+         year_max = max(hdrcde::hdr(den = list("x" = years, "y" = probability),
+                                    prob = 95)$hdr),
+         year_median = median(hdrcde::hdr(den = list("x" = years,
+                                                     "y" = probability),
+                                          prob = 95)$mode))
 
 hdrdat <- hdrdat[order(hdrdat$year_median, decreasing = TRUE),]
 hdrdat$site_name <- factor(hdrdat$site_name, levels = unique(hdrdat$site_name))
 
 psdates <- psdates[order(match(psdates$site_name, hdrdat$site_name)),]
-psdates$site_name <- factor(psdates$site_name, levels = unique(psdates$site_name))
+psdates$site_name <- factor(psdates$site_name,
+                            levels = unique(psdates$site_name))
 
 psdates1 <- psdates %>%  filter(start != end)
 psdates2 <- psdates %>%  filter(start == end)
