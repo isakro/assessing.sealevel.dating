@@ -299,10 +299,11 @@ for(i in 1:nrow(sites_sl)){
                                                  sites_sl$max_elev[i])/2)
 }
 
-bdates2 <- bind_rows(sitdates)
+bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
+  filter(probability != 0)
 
-# save(simsea, bdates, bdates2,
-#      file = here("analysis/data/derived_data/08data.RData"))
+save(bdates, bdates2,
+     file = here("analysis/data/derived_data/08data.RData"))
 
 load(here("analysis/data/derived_data/08data.RData"))
 
@@ -316,6 +317,29 @@ hdrdat <- bdates2 %>%  group_by(site_name) %>%
          year_median = median(hdrcde::hdr(den = list("x" = years,
                                                      "y" = probability),
                                           prob = 95)$mode))
+
+hdrdat <- data.frame()
+for(i in 1:length(unique(bdates2$site_name))){
+  dat <-hdrcde::hdr(den = list("x" = bdates2[bdates2$site_name ==
+                                                unique(bdates2$site_name)[i],
+                                              "years"][[1]],
+                               "y" = bdates2[bdates2$site_name ==
+                                                unique(bdates2$site_name)[i],
+                                              "probability"][[1]]), prob = 95)
+  segdat <- data.frame(t(dat$hdr))
+  groupdat <- data.frame(matrix(nrow = length(segdat[seq(1, nrow(segdat), 2),]),
+                                ncol = 5))
+  names(groupdat) <- c("site_name", "start", "end", "group", "year_median")
+
+  groupdat$site_name <-  unique(bdates2$site_name)[i]
+  groupdat$start <- segdat[seq(1, nrow(segdat), 2), "X95."]
+  groupdat$end <- segdat[seq(2, nrow(segdat), 2), "X95."]
+  groupdat$group <- seq(1:length(dat$hdr[c(TRUE, FALSE)]))
+  groupdat$year_median <- dat$mode
+
+  hdrdat <- rbind(hdrdat, groupdat)
+}
+
 
 hdrdat <- hdrdat[order(hdrdat$year_median, decreasing = TRUE),]
 hdrdat$site_name <- factor(hdrdat$site_name, levels = unique(hdrdat$site_name))
@@ -351,5 +375,25 @@ redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
                                      as.numeric(round(expfit$estimate, 3)))) +
   theme_bw()
 
-ggsave(file = here("analysis/figures/redate.png"), redateplt,
+redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
+  geom_segment(data = hdrdat, aes(x = start, xend = end,
+                      yend = site_name), col = NA) +
+  # ggridges::geom_ridgeline(data = bdates2,
+  #                          aes(x = years, y = site_name,
+  #                              height = probability*50),
+  #                          colour = "grey", fill = "grey") +
+  geom_linerange(data = hdrdat, aes(xmin = start, xmax = end,
+                                    y = site_name), col = "grey", size = 2.5) +
+# position = position_dodge(width = 0.4, preserve = 'single'), inherit.aes = FALSE
+  geom_segment(data = psdates1, aes(x = start, xend = end, yend = site_name),
+               size = 1, col = "red", alpha = 1) +
+  geom_point(data = psdates2, aes(x = start), col = "red",
+             size = 1, alpha = 1) +
+  labs(x = "BCE/CE", y = "", title = paste("\U03BB =",
+                    as.numeric(round(expfit$estimate, 3)))) +
+  scale_x_continuous(breaks = c(seq(-10000, -4000, 2000), -2000, 0, 2000) ) +
+  theme_bw()
+
+
+ggsave(file = here("analysis/figures/redate2.png"), redateplt,
        width = 180, height = 250, units = "mm")
