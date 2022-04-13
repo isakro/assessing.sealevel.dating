@@ -142,15 +142,12 @@ samplingframe <- dplyr::filter(bdates, site_name == sitename) %>%
   na.omit()
 samplingframe$rcarb_cor = "t"
 
-# # Simulate sea-level and retrieve distances (uncomment to re-run)
-# output <- sample_shoreline(1000, sitel, sitecurve, sitearea,
-#                               posteriorprobs = samplingframe)
-# save(output, bdates,
-#      file = here("analysis/data/derived_data/08data.RData"))
-
-# # Generate grid with dtm resolution holding number of overlaps for each cell
-# # (also takes quite some time to execute)
-# simsea <- sea_overlaps(sitearea, output$seapol)
+# Simulate sea-level and retrieve distances (uncomment to re-run)
+output <- sample_shoreline(1000, sitel, sitecurve, sitearea,
+                              posteriorprobs = samplingframe)
+# Generate grid with dtm resolution holding number of overlaps for each cell
+# (also takes quite some time to execute)
+simsea <- sea_overlaps(sitearea, output$seapol)
 
 # Create overview map for inset
 imap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
@@ -266,7 +263,6 @@ inset_map <- ggdraw() +
   draw_plot(bmap) +
   draw_plot(overview, x = 0.088, y = 0.64, width = 0.35, height = 0.35)
 
-dateplot + inset_map
 dateplot + bmap
 
 ggsave(file = here("analysis/figures/brunlanes.png"),
@@ -302,22 +298,13 @@ for(i in 1:nrow(sites_sl)){
 bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
   filter(probability != 0)
 
-save(bdates, bdates2,
+save(bdates, simsea, bdates2,
      file = here("analysis/data/derived_data/08data.RData"))
 
 load(here("analysis/data/derived_data/08data.RData"))
 
-# Find 95 % probability range for shoreline dates and median shoreline date
+# Find 95 % HDR for shoreline dates and median shoreline date
 # for ordering in the plot
-hdrdat <- bdates2 %>%  group_by(site_name) %>%
-  mutate(year_min = min(hdrcde::hdr(den = list("x" = years, "y" = probability),
-                                    prob = 95)$hdr),
-         year_max = max(hdrcde::hdr(den = list("x" = years, "y" = probability),
-                                    prob = 95)$hdr),
-         year_median = median(hdrcde::hdr(den = list("x" = years,
-                                                     "y" = probability),
-                                          prob = 95)$mode))
-
 hdrdat <- data.frame()
 for(i in 1:length(unique(bdates2$site_name))){
   dat <-hdrcde::hdr(den = list("x" = bdates2[bdates2$site_name ==
@@ -351,30 +338,7 @@ psdates$site_name <- factor(psdates$site_name,
 psdates1 <- psdates %>%  filter(start != end)
 psdates2 <- psdates %>%  filter(start == end)
 
-
 # Call to plot
-redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
-  geom_segment(data = hdrdat, aes(x = year_min, xend = year_max,
-                               yend = site_name), col = "grey", size = 2.5) +
-  # ggridges::geom_ridgeline(data = bdates,
-  #                          aes(x = year, y = site_name,
-  #                              height = probability*50),
-  #                          colour = "grey", fill = "grey") +
-  geom_segment(data = psdates1, aes(x = start, xend = end, yend = site_name),
-               size = 1, col = "red", alpha = 1) +
-  # geom_linerange(data = psdates1, aes(xmin = start, xmax = end,
-  #                                     y = site_name), size = 0.4,
-  #                position = position_dodge(width = 0.5, preserve = 'single'),
-  #                inherit.aes = FALSE) +
-  scale_y_discrete(limits = hdrdat$site_name,
-                   expand = expansion(add = c(5000, 0))) +
-  scale_x_continuous(breaks = c(-8000, -6000, -4000, -2000, 0))+
-  geom_point(data = psdates2, aes(x = start), col = "red",
-             size = 1, alpha = 1) +
-  labs(y = "", x = "BCE", title = paste("\U03BB =",
-                                     as.numeric(round(expfit$estimate, 3)))) +
-  theme_bw()
-
 redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
   geom_segment(data = hdrdat, aes(x = start, xend = end,
                       yend = site_name), col = NA) +
@@ -395,5 +359,5 @@ redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
   theme_bw()
 
 
-ggsave(file = here("analysis/figures/redate2.png"), redateplt,
+ggsave(file = here("analysis/figures/redate.png"), redateplt,
        width = 180, height = 250, units = "mm")

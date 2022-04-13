@@ -53,39 +53,39 @@ sites_sa <- sites_sa %>%
 # (see supplementary material for more on this)
 feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
 
-# # Uncomment to rerun
-# shorelinedates <- list()
-# for(i in 1:nrow(sites_sa)){
-#   print(paste(i, sites_sa$name[i]))
-#   if(sites_sa$name[i] %in% feature_sites){
-#     shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-#                                           elev = dtm,
-#                                           disp_curves = displacement_curves,
-#                                           sites = sites_sa,
-#                                           iso = isobases,
-#                                           expratio = expfit$estimate,
-#                                           siteelev = "mean",
-#                                           reso = 0.001,
-#                                           specified_elev = NA,
-#                                           sitelimit = FALSE,
-#                                           features = rcarb_sa)
-#   } else {
-#   shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-#                                         elev = dtm,
-#                                         disp_curves = displacement_curves,
-#                                         sites = sites_sa,
-#                                         iso = isobases,
-#                                         expratio = expfit$estimate,
-#                                         siteelev = "mean",
-#                                         reso = 0.001,
-#                                         specified_elev = NA)
-#   }
-# }
+# Uncomment to rerun
+shorelinedates <- list()
+for(i in 1:nrow(sites_sa)){
+  print(paste(i, sites_sa$name[i]))
+  if(sites_sa$name[i] %in% feature_sites){
+    shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+                                          elev = dtm,
+                                          disp_curves = displacement_curves,
+                                          sites = sites_sa,
+                                          iso = isobases,
+                                          expratio = expfit$estimate,
+                                          siteelev = "min",
+                                          reso = 0.001,
+                                          specified_elev = NA,
+                                          sitelimit = FALSE,
+                                          features = rcarb_sa)
+  } else {
+  shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+                                        elev = dtm,
+                                        disp_curves = displacement_curves,
+                                        sites = sites_sa,
+                                        iso = isobases,
+                                        expratio = expfit$estimate,
+                                        siteelev = "min",
+                                        reso = 0.001,
+                                        specified_elev = NA)
+  }
+}
 
 # save(shorelinedates,
 #      file = here("analysis/data/derived_data/07data.RData"))
 
-load(here("analysis/data/derived_data/07data.RData"))
+# load(here("analysis/data/derived_data/07data.RData"))
 
 sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
   filter(cumsum(replace_na(probability, 0)) < 0.99  &
@@ -179,7 +179,7 @@ shrplt <- ggplot(data = hdrdat,
   theme_bw()
 
 # Save plot
-ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
+ggsave(file = here("analysis/figures/shoredate2.png"), shrplt,
        width = 200, height = 250, units = "mm")
 
 # Next sections finds synchroneity between radiocarbon and shoreline dates
@@ -217,8 +217,8 @@ synchdata <- synchdt  %>% group_by(cross) %>%
   ungroup() %>%
   mutate(row_total = rowSums(across(where(is.numeric))))
 
-save(synchdata,
-     file = here("analysis/data/derived_data/07agediff.RData"))
+# save(synchdata,
+#      file = here("analysis/data/derived_data/07agediff.RData"))
 
 hdr_func <- function(x) {
   r <- hdrcde::hdr(x, prob = 95)
@@ -330,8 +330,7 @@ splt <- agedfplt1 +
 
 difplt <- splt +  agedfplt2 + agedfplt3 + agedfplt4 + plot_layout(nrow = 1)
 
-# width = 200, height = 250
-ggsave(file = here("analysis/figures/shoredate2.png"), difplt,
+ggsave(file = here("analysis/figures/shoredate22.png"), difplt,
        width = 200, height = 200, units = "mm")
 
 
