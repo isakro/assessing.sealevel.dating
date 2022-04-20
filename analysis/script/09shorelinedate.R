@@ -84,17 +84,19 @@ groupdat$year_median <- dat$mode
 plt <- dategrid %>%
   filter(probability != 0) %>%
 ggplot() +
+  geom_ribbon(data= sitecurve,
+              aes(x = years, ymin = lowerelev, ymax = upperelev), fill = "red",
+              alpha = 0.2) +
   geom_line(data = sitecurve, aes(x = years, y = upperelev, col = "red")) +
   geom_line(data = sitecurve, aes(x = years, y = lowerelev, col = "red")) +
   ggridges::geom_ridgeline(aes(x = years, y = 1, height = probability * 18000),
-                              colour = "black", fill = "grey", alpha = 0.7) +
+                              colour = NA, fill = "darkgrey", alpha = 0.7) +
   geom_segment(data = groupdat, aes(x = start, xend = end,
                                   y = 0, yend = 0), col = "black") +
-  labs(y = "Meters above present sea-level", x = "BCE",
+  labs(y = "Meters above present sea-level", x = "Shoreline date (BCE)",
        title = paste("\U03BB =", as.numeric(round(expfit$estimate, 3)))) +
-  scale_x_continuous(limits = c(-9500, -4500),
-                     breaks = (seq(-9000, -5000, 1000)), expand = c(0, 0)) +
-  scale_y_continuous(limits = c(0, 80)) +
+  scale_x_continuous(breaks = (seq(-9000, -5000, 1000)), expand = c(0, 0)) +
+  coord_cartesian(ylim = c(0, 80), xlim = c(-9500, -4500)) +
   theme_bw() +
   theme(legend.position = "None")
 
@@ -109,11 +111,13 @@ x_extent <- ggplot_build(plt)$layout$panel_scales_x[[1]]$range$range
 expdatt$probs_scaled <- expdatt$probs / max(expdatt$probs) *
   diff(x_extent)/7 + x_extent[1]
 
-plt <- plt + geom_polygon(data = expdatt, aes(x =  probs_scaled,
+dplt <- plt + geom_polygon(data = expdatt, aes(x =  probs_scaled,
                                        y = as.numeric(siteelev) - offset),
-                   fill = "#046c9a", col = "black", alpha = 0.6)
-  # geom_hline(yintercept = as.numeric(siteelev), linetype = "dashed",
-  #            col = "black")
+                   fill = "#046c9a", alpha = 0.6) +
+  geom_hline(yintercept = as.numeric(siteelev), linetype = "dashed",
+             col = "darkgrey")
 
+ggsave(file = here("analysis/figures/sdate.png"), dplt,
+       width = 100, height = 100, units = "mm")
 
 

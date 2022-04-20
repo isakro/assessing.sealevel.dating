@@ -136,7 +136,7 @@ knitr::include_graphics(here("analysis/figures/deglaciation.png"))
 
 ```
 
-The method of shoreline dating has been met with scepticism as related to the fundamental premise that most sites would have been consistently shore-bound, been characterised as a relative dating method for sites located at different elevations within a constrained geographical area, or been argued to offer no more than a earliest possible date for when a site could have been in use [see review by @nordqvist1999]. The most common application in Norway has arguably been to use shoreline dating to provide an approximate date for the occupation of the sites, often in combination with other dating methods [see for example chapters in @jaksland2014; @reitan2014l; @melvold2014b; @reitan2018c; @solheim2017b and below]. Recently the method has also been used independently to date a larger number sites to get a general impression of site frequency over time. This is done by aggregating point estimates of shoreline dates in 100, 200 or 500 year bins [@breivik2014; @breivik2018a; @solheim2018; @fossum2020; @mjærum2022; @nielsen2021b; see also @jorgensen2020; @tallavaara2020]. In his review, @nordqvist1999 argues that there can be little doubt concerning the general applicability of the method -- what is less clear is the level of reliability and chronological resolution that it can offer [see also @johansen1963].
+The method of shoreline dating has been met with scepticism as related to the fundamental premise that most sites would have been consistently shore-bound, been characterised as a relative dating method for sites located at different elevations within a constrained geographical area, or been argued to offer no more than an earliest possible date for when a site could have been in use [see review by @nordqvist1999]. The most common application in Norway has arguably been to use shoreline dating to provide an approximate date for the occupation of the sites, often in combination with other dating methods [see for example chapters in @jaksland2014; @reitan2014l; @melvold2014b; @reitan2018c; @solheim2017b and below]. Recently the method has also been used independently to date a larger number sites to get a general impression of site frequency over time. This is done by aggregating point estimates of shoreline dates in 100, 200 or 500 year bins [@breivik2014; @breivik2018a; @solheim2018; @fossum2020; @mjærum2022; @nielsen2021b; see also @jorgensen2020; @tallavaara2020]. In his review, @nordqvist1999 argues that there can be little doubt concerning the general applicability of the method -- what is less clear is the level of reliability and chronological resolution that it can offer [see also @johansen1963].
 
 The shore-bound settlement location of prehistoric hunter-fisher-gatherers in Norway is generally believed to follow both from the exploitation of aquatic resources and from movement and communication, which would have been efficient on waterways [@brogger1905, 166; @bjerck1990; also discussed in @berg-hansen2009; @bergsvik2009]. The same logic has also been extended to the hinter- and inland regions, where sites are to be predominantly located along rivers and lakes [@brogger1905, 166; @glorstad2010, 57--87; but see also @gundersen2013; @mjærum2018; @schulke2020]. This is to take a dramatic turn at the transition to the Late Neolithic, around 2400 BCE, with the introduction of the Neolithic proper [@solheim2021; @prescott2020]. The introduction of a comprehensive Neolithic cultural package, including a shift to agro-pastoralism and the introduction of the farm is to have led site locations to be more withdrawn from the shoreline [e.g. @bakka1971; @prescott2012; @ostmo2008, 223]. That is not to say that waterways and aquatic resources were no longer exploited, but rather that these activities would not have been as tightly integrated with settlement and tool-production areas as in preceding periods [@glorstad2012]. At an earlier stage, at the transition to the Early Neolithic (c. 3900 BCE), pottery is introduced to the sites, and there are some indications of an initial uptake of agriculture at some sites in the Oslo fjord region. However, this appears to be small in scale and is believed to be combined with a continued and predominantly hunter-gatherer life-way, possibly followed by a complete de-Neolithisation in the Middle Neolithic [@nielsen2019; @hinsch1955; @ostmo1988, 225--227]. @nielsen2021b has recently argued that the initial uptake of agriculture in Early Neolithic south-eastern Norway is combined with a more complex settlement pattern, and that a simple foraging/agricultural dichotomy would underplay the variation present in the Early and Middle Neolithic settlement data [see also e.g. @amundsen2006; @solheim2012, 74; @ostmo1988]. Seen in relation to the question of interest here, the empirical expectation for the above outlined development would thus be a predominantly shore-bound settlement in the Mesolithic, possibly followed by a more varied association between sites and the shore-line with the transition to the Early Neolithic around 3900 BCE, and finally a decisive shift with the Late Neolithic c. 2400 BCE.
 
@@ -587,26 +587,6 @@ corln <-  synchdata %>% filter(cross == "true") %>% dplyr::select(ln)
 phasesums <- summarise_if(synchdata, is.numeric, sum, na.rm = TRUE)
 
 ```
-An exponential function has been fit to the distributions for vertical distance using maximum likelihood estimation (Figure \@ref(fig:results2)). While it makes theoretical sense that a process of exponential decay explains this relationship, it is also clear that this does not perfectly match the data. However, this can at least in part be related to methodological factors, where the accumulation of distance-values on the 0m mark likely follow from forcing negative values to zero, from the resolution of the spatial data, and from defining intersecting sea- and site polygon as having a distance of zero. If one accepts this, the probability density function for exponential decay can be used to characterise the vertical distance between sites and the shoreline:
-
-<!-- d = 1(1-\lambda)x -->
-\begin{equation} 
-  f(x) = \lambda {e}^{- \lambda x}
-  (\#eq:decay)
-\end{equation} 
-
-Where $\lambda$ is the decay ratio and $x$ is the distance to the shoreline. This can then be combined with the elevation of the site and the shoreline displacement data to provide a method for shoreline dating that takes this distance into account:
-
-<!-- p\left(t\right) = \binom{x}{x} x^x\left(x-x\right)^{x-x} -->
-\begin{equation} 
-  placeholder
-  (\#eq:shoredate)
-\end{equation} 
-
-
-Where x is [...] the site elevation, $i$ is the trajectory for shoreline displacement, here given as a uniform probability range between the upper and lower bound of the interpolated displacement curve. 
-
-Eq. \@ref(eq:shoredate) is used to shoreline date the same sites from where this relationship was derived (Figure \@ref(fig:shoredate)), employing $\lambda$ = `r round(expfit$estimate, 3)` for the decay ratio in Eq. \@ref(eq:decay). This is the ratio identified when considering all of the pre-Late Neolithic simulation results (Figure \@ref(fig:results2)A). For illustrative purposes the Late Neolithic sites were also subjected to the proposed method for shoreline dating. Following from having defined the distance between intersecting sea- and site polygons as zero during simulations, the sites were dated using the mean elevation of the site polygons to allow for some variation in elevation over the site limits. The synchroneity between radiocarbon and shoreline dates was then evaluated using the method presented by @parnell2008. Here, 100,000 age samples drawn from the probability density function of each shoreline date were subtracted from 100,000 age samples drawn from the corresponding modelled ^14^C-dates. The resulting range of the 95% highest density region [HDR, @hyndman1996] was then checked to see if it crosses zero, in which case the dates are considered to be in agreement (Figure \@ref(fig:shoredatediff)). When excluding the earliest occupation phase at Gunnarsrød 5, the deviation of which is to be expected based on issues with the DTM (see above), the shoreline date correspond to the radiocarbon dates in `r synchdata[synchdata$cross == "true", "row_total"]` out of `r sum(synchdata$row_total)-1` cases (`r round(synchdata[synchdata$cross == "true", "row_total"]/sum(synchdata$row_total)*100)`%). Only including dates modelled to be older than 2500 BCE with 95% probability, i.e. older than the Late Neolithic, improves this to `r cormeso + corpreln` out of `r phasesums["meso"] + phasesums["pre_ln"]` cases (`r round((cormeso + corpreln)  / (phasesums["meso"] + phasesums["pre_ln"])*100)`%). When only including dates older than 4000 BCE with 95% probability, i.e. only Mesolithic site phases, the success rate is further increased to `r cormeso`/`r phasesums["meso"]` (`r round(cormeso/phasesums["meso"]*100)`%). The three failed Mesolithic shoreline dates are from the early sites Langemyr and Kvastad A2, with the likely implication that a lower decay ratio than what is used for characterising the distance between site and shoreline for all sites in aggregate should be used for sites known to be from the earliest part of the Mesolithic (see also Figure \@ref(fig:results)).
 
 ```{r results, echo = FALSE, fig.cap = "The result of running the analysis across all sites. Each data point is plotted with some transparency, meaning that the more intense the colour, the more often those values occured. Results associated with agricultural acitivites are plotted in grey. The first row A) shows the result of including all dates to the Stone Age, including those seen as otherwise  unrelated to the main occupation of the sites. The second row B) shows the result of excluding these. The table under each plot lists some corresponding statistics for central tendency and dispersion.", out.width = "500px", fig.align="center", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/results.png"))
@@ -617,6 +597,45 @@ knitr::include_graphics(here("analysis/figures/results.png"))
 knitr::include_graphics(here("analysis/figures/results2.png"))
 ```
 
+```{r exampledat, echo = FALSE, fig.cap = "Shoreline dating Hegna vest 1. The dashed line indicates the elevation of the site. The decay ratio follows Figure 7A. The shoreline date in grey is underlined with the 95\\% HDR in black.", out.width = "500px", fig.align="center", regfloat=TRUE}
+knitr::include_graphics(here("analysis/figures/sdate.png"))
+
+```
+
+# Shoreline dating
+
+An exponential function has been fit to the distributions for vertical distance using maximum likelihood estimation (Figure \@ref(fig:results2)). While it makes theoretical sense that a process of exponential decay explains this relationship, it is also clear that this does not perfectly match the data. However, this can at least in part be related to methodological factors, where the accumulation of distance-values on the 0m mark likely follow from forcing negative values to zero, from the resolution of the spatial data, and from defining intersecting sea- and site polygon as having a distance of zero. If one accepts this, the probability density function for exponential decay can be used to characterise the vertical distance between sites and the shoreline and leveraged for devising a method for shoreline dating that takes this into account.
+
+The procedure is thus aimed at determining the likely age of the occupation of a site based on its altitude above present day sea-level, with reference to shoreline displacement and the likely elevation of the site above sea-level when it was in use. For simplicity, this is conceptually treated a single event and thus the possibility of multiple or continuous phases of occupation is not treated explicitly. This leads the problem to become analogous to that of the calibration of a radiocarbon date. Drawing on the standard Bayesian formulation for the calibration procedure for 14C-dates [e.g. @bronkramsey2009], the probability density associated with the calendar age can then be given as
+
+\begin{equation} 
+  p(x_{i} | \thetha_{i}) ~ p(\theta_{i} | x_{i})p(x_{i})
+  (\#eq:bayes)
+\end{equation} 
+
+where for any site i the unknown calendar date is denoted $\thetha$ and the elevation of the contemporaneous sea-level $x$. The elevation of the sea-level is dependent on the present day elevation of the site $\alpha$ and the distance between site and the shoreline $d$. Based on the simulation results above, the distance from the elevation of the site to the contemporaneous shoreline is defined by the probability density function for exponential decay
+
+<!-- d = 1(1-\lambda)x -->
+\begin{equation}
+  p(d) = \lambda {e}^{- \lambda x}
+  (\#eq:decay)
+\end{equation}
+
+Where $\lambda$ is the decay ratio. This can then be coupled with the trajectory of relative sea-level change, denoted RSL, to find the probability density for the calendar date. Here the relative sea-level change is defined by a uniform probability density function over the range between the lower and upper displacement curves interpolated to the site location
+
+\begin{equation}
+p(RSL) = U[RSL_{lower}, RSL_{upper}]	
+  (\#eq:rsl)
+\end{equation}
+
+<!-- p\left(t\right) = \binom{x}{x} x^x\left(x-x\right)^{x-x} -->
+\begin{equation} 
+  placeholder
+  (\#eq:shoredate)
+\end{equation} 
+
+Eq. \@ref(eq:shoredate) is used to shoreline date the same sites from where this relationship was derived (Figure \@ref(fig:shoredate)), employing $\lambda$ = `r round(expfit$estimate, 3)` for the decay ratio in Eq. \@ref(eq:decay). This is the ratio identified when considering all of the pre-Late Neolithic simulation results (Figure \@ref(fig:results2)A). For illustrative purposes the Late Neolithic sites were also subjected to the proposed method for shoreline dating. Following from having defined the distance between intersecting sea- and site polygons as zero during simulations, the sites were dated using the mean elevation of the site polygons to allow for some variation in elevation over the site limits. The synchroneity between radiocarbon and shoreline dates was then evaluated using the method presented by @parnell2008. Here, 100,000 age samples drawn from the probability density function of each shoreline date were subtracted from 100,000 age samples drawn from the corresponding modelled ^14^C-dates. The resulting range of the 95% highest density region [HDR, @hyndman1996] was then checked to see if it crosses zero, in which case the dates are considered to be in agreement (Figure \@ref(fig:shoredatediff)). When excluding the earliest occupation phase at Gunnarsrød 5, the deviation of which is to be expected based on issues with the DTM (see above), the shoreline date correspond to the radiocarbon dates in `r synchdata[synchdata$cross == "true", "row_total"]` out of `r sum(synchdata$row_total)-1` cases (`r round(synchdata[synchdata$cross == "true", "row_total"]/sum(synchdata$row_total)*100)`%). Only including dates modelled to be older than 2500 BCE with 95% probability, i.e. older than the Late Neolithic, improves this to `r cormeso + corpreln` out of `r phasesums["meso"] + phasesums["pre_ln"]` cases (`r round((cormeso + corpreln)  / (phasesums["meso"] + phasesums["pre_ln"])*100)`%). When only including dates older than 4000 BCE with 95% probability, i.e. only Mesolithic site phases, the success rate is further increased to `r cormeso`/`r phasesums["meso"]` (`r round(cormeso/phasesums["meso"]*100)`%). The three failed Mesolithic shoreline dates are from the early sites Langemyr and Kvastad A2, with the likely implication that a lower decay ratio than what is used for characterising the distance between site and shoreline for all sites in aggregate should be used for sites known to be from the earliest part of the Mesolithic (see also Figure \@ref(fig:results)).
+
 ```{r shoredate, echo = FALSE, fig.cap = "The result of backwards shoreline dating the sites with radiocarbon dates corresponding to the artefact inventory using the method proposed here. The shoreline dates are plotted in grey and underlined with the 95\\% HDR in black. These are plotted against the modelled radiocarbon dates, which are given colour from oldest to youngest occupation phase for each site, defined by non-overlapping dates at 99.7\\% probability.", out.width = "525px", fig.align="center", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/shoredate.png"))
 ```
@@ -624,6 +643,7 @@ knitr::include_graphics(here("analysis/figures/shoredate.png"))
 ```{r shoredatediff, echo = FALSE, fig.cap = "Evaluation of the agreement between the shoreline dates and radiocarbon dates given in Figure 8. When the range of the 95\\% HDR for age difference crosses zero, the shoreline and radiocarbon dates are considered synchronous. Line segments with vertical bars indicate that this does not cross zero and that the dates are not in agreement.  The division and colour coding at the top of the plots reflect the divison of site phases given in Figure 8.", out.width = "525px", fig.align="center", regfloat=TRUE}
 knitr::include_graphics(here("analysis/figures/shoredate2.png"))
 ```
+
 
 # Re-dating previously shoreline dated sites
 
