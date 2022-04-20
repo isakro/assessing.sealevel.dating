@@ -842,18 +842,18 @@ filter(rcarbon, site_name  == "Prestemoen 1") %>%
 
 Prestemoen 1 has a lithic inventory consistent with the ^14^C-dates [@persson2014]. The site is situated by a gravel pit that is clearly visible on the DTM to the north-east of the site. This was not edited as it has not impacted the simulated distance between site and sea. The landscape surrounding the site would, however, have been very different in the Mesolithic [@persson2014, fig. 10.20].
 
-# ```{r ragnhildrod, echo = FALSE, out.width = "500px", regfloat=TRUE}
-# include_graphics(here("analysis/figures/ragnhildrod.png"))
-# 
-# filter(rcarbon, site_name  == "Ragnhildrød") %>% 
-#   select(lab_code, c14_bp, error, material, context) %>% 
-#    kable(caption = "Ragnhildrød", col.names = c("ID",
-#                     "\\textsuperscript{14}C BP",
-#                     "Error",
-#                     "Material",
-#                     "Context"),
-#         booktabs = TRUE,  linesep = c(""), escape = FALSE)
-# ```
+```{r ragnhildrod, echo = FALSE, out.width = "500px", regfloat=TRUE, warning = FALSE}
+include_graphics(here("analysis/figures/ragnhildrod.png"))
+ 
+filter(rcarbon, site_name  == "Ragnhildrød") %>% 
+   select(lab_code, c14_bp, error, material, context) %>% 
+    kable(caption = "Ragnhildrød", col.names = c("ID",
+                     "\\textsuperscript{14}C BP",
+                     "Error",
+                     "Material",
+                     "Context"),
+         booktabs = TRUE,  linesep = c(""), escape = FALSE)
+```
 
 The earliest ^14^C-date does not match the Middle Mesolithic inventory from Ragnhildrød [@mjaerum2012]. The post-hole dated to the Late Neolithic/Bronze Age could be related to a single find of a pressure flaked object, but was not given much weight in the report [@mjaerum2012, 76].
 

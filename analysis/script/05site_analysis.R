@@ -1171,10 +1171,10 @@ ggsave(file = here("analysis/figures/prestemoen1.png"), width = 250,
 sitename <- "Ragnhildrød"
 date_groups <- group_dates(rcarb_sa, sitename)
 
-output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
-                          isobases, nsamp = nsamp, loc_bbox = 4000, siterpath)
-save(output,
-     file = here::here("analysis/data/derived_data/ragnhildrod.RData"))
+# output <- apply_functions(sitename, date_groups, dtm, displacement_curves,
+#                           isobases, nsamp = nsamp, loc_bbox = 4000, siterpath)
+# save(output,
+#      file = here::here("analysis/data/derived_data/ragnhildrod.RData"))
 load(here("analysis/data/derived_data/ragnhildrod.RData"))
 
 sitearea <- rast(file.path(siterpath,

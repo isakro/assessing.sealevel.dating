@@ -64,7 +64,7 @@ for(i in 1:nrow(sites_sa)){
                                           sites = sites_sa,
                                           iso = isobases,
                                           expratio = expfit$estimate,
-                                          siteelev = "min",
+                                          siteelev = "mean",
                                           reso = 0.001,
                                           specified_elev = NA,
                                           sitelimit = FALSE,
@@ -76,7 +76,7 @@ for(i in 1:nrow(sites_sa)){
                                         sites = sites_sa,
                                         iso = isobases,
                                         expratio = expfit$estimate,
-                                        siteelev = "min",
+                                        siteelev = "mean",
                                         reso = 0.001,
                                         specified_elev = NA)
   }
@@ -179,7 +179,7 @@ shrplt <- ggplot(data = hdrdat,
   theme_bw()
 
 # Save plot
-ggsave(file = here("analysis/figures/shoredate2.png"), shrplt,
+ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
        width = 200, height = 250, units = "mm")
 
 # Next sections finds synchroneity between radiocarbon and shoreline dates
@@ -330,7 +330,7 @@ splt <- agedfplt1 +
 
 difplt <- splt +  agedfplt2 + agedfplt3 + agedfplt4 + plot_layout(nrow = 1)
 
-ggsave(file = here("analysis/figures/shoredate22.png"), difplt,
+ggsave(file = here("analysis/figures/shoredate2.png"), difplt,
        width = 200, height = 200, units = "mm")
 
 
