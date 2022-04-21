@@ -41,14 +41,14 @@ dategrid <- data.frame(
 
 for(i in 1:nrow(expdat)){
   adjusted_elev <- as.numeric(siteelev - expdat$offset[i])
-  if(!(adjusted_elev > 0)) {
+  if(!(adjusted_elev > 0)) { # Do not allow sea-level to go below present
     adjusted_elev <- 0.01
   }
-  # Find lower date, subtracting offset (defaults to 0)
+  # Find lower date
   lowerd <- round(approx(sitecurve[,"lowerelev"],
                          xvals, xout = adjusted_elev)[['y']])
 
-  # Find upper date, subtracting offset (defaults to 0)
+  # Find upper date
   upperd <- round(approx(sitecurve[,"upperelev"],
                          xvals, xout = adjusted_elev)[['y']])
 
@@ -95,8 +95,9 @@ ggplot() +
                                   y = 0, yend = 0), col = "black") +
   labs(y = "Meters above present sea-level", x = "Shoreline date (BCE)",
        title = paste("\U03BB =", as.numeric(round(expfit$estimate, 3)))) +
-  scale_x_continuous(breaks = (seq(-9000, -5000, 1000)), expand = c(0, 0)) +
-  coord_cartesian(ylim = c(0, 80), xlim = c(-9500, -4500)) +
+  scale_x_continuous(breaks = (seq(-9000, -5000, 1000)), expand = c(0, 0),
+                     limits = c(-9500, -4500)) +
+  coord_cartesian(ylim = c(0, 80)) +
   theme_bw() +
   theme(legend.position = "None")
 
@@ -109,15 +110,13 @@ expdatt <- rbind(c(0, 0, 0), expdat)
 # Code taken from oxcAAR to plot density to y-axis
 x_extent <- ggplot_build(plt)$layout$panel_scales_x[[1]]$range$range
 expdatt$probs_scaled <- expdatt$probs / max(expdatt$probs) *
-  diff(x_extent)/7 + x_extent[1]
+  diff(x_extent)/76 + x_extent[1]
 
 dplt <- plt + geom_polygon(data = expdatt, aes(x =  probs_scaled,
                                        y = as.numeric(siteelev) - offset),
                    fill = "#046c9a", alpha = 0.6) +
   geom_hline(yintercept = as.numeric(siteelev), linetype = "dashed",
-             col = "darkgrey")
+             col = "#046c9a", alpha = 0.6)
 
 ggsave(file = here("analysis/figures/sdate.png"), dplt,
        width = 100, height = 100, units = "mm")
-
-

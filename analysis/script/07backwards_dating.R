@@ -53,43 +53,43 @@ sites_sa <- sites_sa %>%
 # (see supplementary material for more on this)
 feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
 
-# Uncomment to rerun
-shorelinedates <- list()
-for(i in 1:nrow(sites_sa)){
-  print(paste(i, sites_sa$name[i]))
-  if(sites_sa$name[i] %in% feature_sites){
-    shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-                                          elev = dtm,
-                                          disp_curves = displacement_curves,
-                                          sites = sites_sa,
-                                          iso = isobases,
-                                          expratio = expfit$estimate,
-                                          siteelev = "mean",
-                                          reso = 0.001,
-                                          specified_elev = NA,
-                                          sitelimit = FALSE,
-                                          features = rcarb_sa)
-  } else {
-  shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-                                        elev = dtm,
-                                        disp_curves = displacement_curves,
-                                        sites = sites_sa,
-                                        iso = isobases,
-                                        expratio = expfit$estimate,
-                                        siteelev = "mean",
-                                        reso = 0.001,
-                                        specified_elev = NA)
-  }
-}
-
+# # Uncomment to rerun
+# shorelinedates <- list()
+# for(i in 1:nrow(sites_sa)){
+#   print(paste(i, sites_sa$name[i]))
+#   if(sites_sa$name[i] %in% feature_sites){
+#     shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+#                                           elev = dtm,
+#                                           disp_curves = displacement_curves,
+#                                           sites = sites_sa,
+#                                           iso = isobases,
+#                                           expratio = expfit$estimate,
+#                                           siteelev = "mean",
+#                                           reso = 0.001,
+#                                           specified_elev = NA,
+#                                           sitelimit = FALSE,
+#                                           features = rcarb_sa)
+#   } else {
+#   shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+#                                         elev = dtm,
+#                                         disp_curves = displacement_curves,
+#                                         sites = sites_sa,
+#                                         iso = isobases,
+#                                         expratio = expfit$estimate,
+#                                         siteelev = "mean",
+#                                         reso = 0.001,
+#                                         specified_elev = NA)
+#   }
+# }
+#
 # save(shorelinedates,
 #      file = here("analysis/data/derived_data/07data.RData"))
 
-# load(here("analysis/data/derived_data/07data.RData"))
+load(here("analysis/data/derived_data/07data.RData"))
 
 sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
-  filter(cumsum(replace_na(probability, 0)) < 0.99  &
-           probability != 0)
+  filter(probability != 0)
+
 
 # Radiocarbon dates corresponding to site inventory.
 # First group
@@ -100,7 +100,7 @@ corsites <- rdates %>%
   # Exclude Late Neolithic sites
   filter(n() != sum(is.na(name)) & min(dates) < -1500 & group == min(group))
 
-# Regroup after min(group), some sites have non correlating first 14C-dates
+# Regroup after min(group), some sites have non-correlating first 14C-dates
 corgroupsn <- rdates %>%
   # Excluded, see supplementary
   filter(!(site_name %in% c("Dybdalshei 2", "Lunaveien"))) %>%
@@ -143,6 +143,12 @@ for(i in 1:length(unique(corshore$site_name))){
   hdrdat <- rbind(hdrdat, groupdat)
 }
 
+# As the displacement curves are collapsed for the last few centuries
+# (see Figure 2 in the main text), this causes some artefacts for the end of
+# the probability distributions when plotted. These are therefore cut off for,
+# plotting here, but does not impact the numerical result for the HDRs (above).
+corshore <- corshore %>%
+  filter(cumsum(replace_na(probability, 0)) < 0.99)
 
 # Call to plot
 shrplt <- ggplot(data = hdrdat,
@@ -175,11 +181,11 @@ shrplt <- ggplot(data = hdrdat,
                  inherit.aes = FALSE) +
   labs(x = "BCE/CE", y = "", title = paste("\U03BB =",
                                   as.numeric(round(expfit$estimate, 3)))) +
-  scale_x_continuous(breaks = c(seq(-10000, -4000, 2000), -2500, 0, 2000) ) +
+  scale_x_continuous(breaks = c(seq(-10000, -4000, 2000), -2500, 0, 2000)) +
   theme_bw()
 
 # Save plot
-ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
+ggsave(file = here("analysis/figures/shoredate_2.png"), shrplt,
        width = 200, height = 250, units = "mm")
 
 # Next sections finds synchroneity between radiocarbon and shoreline dates
@@ -330,7 +336,7 @@ splt <- agedfplt1 +
 
 difplt <- splt +  agedfplt2 + agedfplt3 + agedfplt4 + plot_layout(nrow = 1)
 
-ggsave(file = here("analysis/figures/shoredate2.png"), difplt,
+ggsave(file = here("analysis/figures/shoredate2_2.png"), difplt,
        width = 200, height = 200, units = "mm")
 
 
