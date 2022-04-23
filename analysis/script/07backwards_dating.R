@@ -185,10 +185,11 @@ shrplt <- ggplot(data = hdrdat,
   theme_bw()
 
 # Save plot
-ggsave(file = here("analysis/figures/shoredate_2.png"), shrplt,
+ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
        width = 200, height = 250, units = "mm")
 
 # Next sections finds synchroneity between radiocarbon and shoreline dates
+# Grab the probablities again without filtering for plotting
 shorelinedates <- bind_rows(shorelinedates) %>%
   filter(site_name %in% unique(corsites$site_name))
 
@@ -313,7 +314,7 @@ agedfplt4 <- agedfplt + stat_summary(data = agedif4, aes(y = site_name,
   scale_color_manual(name = "", labels = c("Mesolithic",
                                            "Early and Middle Neolithic",
                                            "Late Neolithic"),
-                     values = c("black", "#00BA38", "deeppink1"),
+                     values = c("#00BA38", "deeppink1", "black"),
                      guide = "none") +
   geom_hline(yintercept = Inf, col = "forestgreen", size = 2) +
   theme(axis.title.y = element_blank(),

@@ -110,7 +110,7 @@ expdatt <- rbind(c(0, 0, 0), expdat)
 # Code taken from oxcAAR to plot density to y-axis
 x_extent <- ggplot_build(plt)$layout$panel_scales_x[[1]]$range$range
 expdatt$probs_scaled <- expdatt$probs / max(expdatt$probs) *
-  diff(x_extent)/76 + x_extent[1]
+  diff(x_extent)/6 + x_extent[1]
 
 dplt <- plt + geom_polygon(data = expdatt, aes(x =  probs_scaled,
                                        y = as.numeric(siteelev) - offset),

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  21 APR 2022 12:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  23 APR 2022 13:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1089,7 +1089,7 @@ LaTeX Warning: Float too large for page by 47.94066pt on input line 176.
 
 [6] [7 <../figures/map-iso-1.pdf>]
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png, id=
-74, 711.1368pt x 648.5028pt>
+73, 711.1368pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png
  Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_map.png>
@@ -1103,7 +1103,7 @@ Overfull \hbox (32.12819pt too wide) in paragraph at lines 191--192
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map.png,
- id=75, 853.5087pt x 648.5028pt>
+ id=74, 853.5087pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map
 .png Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_map.
@@ -1117,7 +1117,7 @@ Overfull \hbox (32.1177pt too wide) in paragraph at lines 200--201
  []
 
 </home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_result.p
-ng, id=76, 711.1368pt x 648.5028pt>
+ng, id=75, 711.1368pt x 648.5028pt>
 File: /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_res
 ult.png Graphic file (type png)
 <use /home/isak/phd/assessing.sealevel.dating/analysis/figures/example_sim_resu
@@ -2491,11 +2491,11 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 939.
 Here is how much of TeX's memory you used:
  14290 strings out of 492982
  206271 string characters out of 6134896
- 324003 words of memory out of 5000000
+ 321886 words of memory out of 5000000
  17271 multiletter control sequences out of 15000+600000
  70761 words of font info for 137 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,11n,43p,2803b,399s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,11n,43p,2803b,405s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dv
 ips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share
 /texmf/fonts/enc/dvips/lm/lm-mathit.enc}</usr/share/texmf/fonts/type1/public/lm
@@ -2507,7 +2507,7 @@ usr/share/texmf/fonts/type1/public/lm/lmr7.pfb></usr/share/texmf/fonts/type1/pu
 blic/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share
 /texmf/fonts/type1/public/lm/lmss8.pfb></usr/share/texmf/fonts/type1/public/lm/
 lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb>
-Output written on paper.pdf (32 pages, 5388310 bytes).
+Output written on paper.pdf (32 pages, 5391493 bytes).
 PDF statistics:
  535 PDF objects out of 1000 (max. 8388607)
  468 compressed objects within 5 object streams
