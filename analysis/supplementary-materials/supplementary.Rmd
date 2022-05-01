@@ -5,9 +5,16 @@ date: "10/27/2021"
 header-includes:
   - \usepackage{placeins}
 output: 
-  pdf_document:
+  bookdown::pdf_document2:
     toc: true
+    fig_caption: yes
+    reference_docx: "../templates/template.docx" # Insert path for the DOCX file
+    pandoc_args:
+    - --lua-filter=../templates/scholarly-metadata.lua
+    - --lua-filter=../templates/author-info-blocks.lua
+    - --lua-filter=../templates/pagebreak.lua
 bibliography: references.bib
+csl: "../templates/saa.csl" # Insert path for the bib-style
 ---
 
 ```{r,  include=FALSE, message=FALSE, warning=FALSE}
@@ -42,13 +49,26 @@ knitr::knit_hooks$set(plot = function (x, options) {
 # Read in radiocarbon dates to be plotted alongside analysis for
 # each site.
 rcarbon <- read.csv(here('analysis/data/raw_data/radiocarbon.csv'))
+
+# Read in site data for references in the final table
+sitdat <- read.csv(here('analysis/data/raw_data/sites.csv'))
+
+# Read in reported shoreline dates
+prevdates <- read.csv((here(
+  "analysis/data/raw_data/previous_shoreline_dates.csv"))) %>%
+  mutate(start = start * -1,
+         end = end * -1) %>%
+  dplyr::rename("site_name" = "name")
+
+# Load results of re-dating previously shoreline dated sites
+load(here("analysis/data/derived_data/08data.RData"))
 ```
 
-## Introduction
+## Introduction {-}
 
 This document presents the sensitivity analysis performed for informing the number of simulation runs in the analysis of each site, the analysis of each individual site, and the results of re-dating previously shoreline dated sites. All underlying and derived data are available in the online repository for the paper at https://osf.io/7F9SU
 
-## Sensitivity analysis
+## Sensitivity analysis {-}
 
 The first figure shows the result of a test run for the site Hovland 5, where the simulations were run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving a wide uncertainty range, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
 
@@ -57,7 +77,7 @@ include_graphics(here("analysis/figures/sample_size.png"))
 
 ```
 
-## Site analysis
+## Site analyses {-}
 
 The presentation of simulation results for each individual site also has some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order. 
 
@@ -865,7 +885,7 @@ filter(rcarbon, site_name  == "Ragnhildrød") %>%
          booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-The earliest ^14^C-date does not match the Middle Mesolithic inventory from Ragnhildrød [@mjaerum2012]. The post-hole dated to the Late Neolithic/Bronze Age could be related to a single find of a pressure flaked object, but was not given much weight in the report [@mjaerum2012, 76].
+The earliest ^14^C-date, from an uncertain context, is argued to be older and not match the typological indicators in the inventory from Ragnhildrød [@mjaerum2012, 50, 71]. The post-hole dated to the Late Neolithic/Bronze Age could be related to a single find of a pressure flaked object, but was not given much weight in the report [@mjaerum2012, 76].
 
 ```{r rodbol54, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/rodbol54.png"))
@@ -1107,4 +1127,91 @@ filter(rcarbon, site_name  == "Vallermyrene 4b") %>%
 
 Vallermyrene 4b is slightly younger than Vallermyrene 4a (above). Typology and radiocarbon dates match [@eigeland2014]. The DTM was edited to remove the railway track running by the site and a gravel pit.
 
-## Numerical result of re-dating
+## Numerical result of re-dating {-}
+
+```{r}
+# Find 95% HDR for shoreline dates and reorder the sitesby median date 
+# (Taken directly from 08redate.R)
+
+bdates3 <- rbind(bdates, bdates2)
+
+hdrdat <- data.frame()
+for(i in 1:length(unique(bdates3$site_name))){
+  dat <-hdrcde::hdr(den = list("x" = bdates3[bdates3$site_name ==
+                                                unique(bdates3$site_name)[i],
+                                              "years"][[1]],
+                               "y" = bdates3[bdates3$site_name ==
+                                                unique(bdates3$site_name)[i],
+                                              "probability"][[1]]), prob = 95)
+  segdat <- data.frame(t(dat$hdr))
+  groupdat <- data.frame(matrix(nrow = length(segdat[seq(1, nrow(segdat), 2),]),
+                                ncol = 5))
+  names(groupdat) <- c("site_name", "start", "end", "group", "year_median")
+
+  groupdat$site_name <-  unique(bdates3$site_name)[i]
+  groupdat$start <- segdat[seq(1, nrow(segdat), 2), "X95."]
+  groupdat$end <- segdat[seq(2, nrow(segdat), 2), "X95."]
+  groupdat$group <- seq(1:length(dat$hdr[c(TRUE, FALSE)]))
+  groupdat$year_median <- dat$mode
+
+  hdrdat <- rbind(hdrdat, groupdat)
+}
+
+
+hdrdat <- hdrdat[order(hdrdat$year_median, decreasing = TRUE),]
+hdrdat$site_name <- factor(hdrdat$site_name, levels = unique(hdrdat$site_name))
+
+prevdates <- prevdates[order(match(prevdates$site_name, hdrdat$site_name)),]
+prevdates$site_name <- factor(prevdates$site_name,
+                            levels = unique(prevdates$site_name))
+prevdates$site_name <- as.character(prevdates$site_name)
+
+tabdat <- left_join(prevdates, hdrdat, by = "site_name")
+
+redat <- left_join(tabdat, sitdat, by = c("site_name" = "name")) %>% 
+  arrange(site_name) %>% 
+  group_by(site_name) %>% 
+  mutate(start95 = plyr::round_any(min(start.y), 10),
+         end95 = plyr::round_any(max(end.y), 10)) %>% 
+  # Replace minus sign/not minus sign with BCE/CE
+  mutate(start.x = ifelse(grepl("^[-]", start.x), 
+            gsub("^[-]", "", start.x), 
+            gsub("$", " CE", start.x)),
+         end.x = ifelse(grepl("^[-]", end.x), 
+            gsub("^[-](.*)", "\\1 BCE", end.x), 
+            gsub("$", " CE", end.x)),
+         end95 = ifelse(grepl("^[-]", end95), 
+            gsub("^[-](.*)", "\\1 BCE", end95), 
+            gsub("$", " CE", end95))) %>%
+  mutate(start95 = ifelse(str_detect(end95, "BCE"),
+                          ifelse(grepl("^[-]", start95), 
+            gsub("^[-](.*)", "\\1", start95), 
+            gsub("$", "", start95)),
+            ifelse(grepl("^[-]", start95), 
+            gsub("^[-](.*)", "\\1 BCE", start95), 
+            gsub("$", "CE", start95)))) %>% 
+  mutate(elev = paste0(min_elev, "\u2013", max_elev),
+         repdate = paste0(start.x, "\u2013", end.x),
+         hdrdate = paste0(start95, "\u2013", end95)) %>% 
+  select(site_name, elev, repdate, hdrdate, reference)
+
+redat[match(unique(redat$site_name), redat$site_name),] %>% 
+   rowid_to_column("id") %>% 
+   kable(caption = "Shoreline dating previously shorline dated sites. The range of the 95\\% HDR is rounded off to the nearest 10 years to reduce spurious precision.",
+         col.names = c("", 
+                     "Site",
+                    "Elevation",
+                    "Reported date",
+                    "95% HDR",
+                    "Reference"),
+        booktabs = TRUE,  linesep = c(""), escape = TRUE, longtable = TRUE)
+  
+```
+
+
+\newpage
+
+## References {-}
+
+::: {#refs}
+:::

@@ -298,8 +298,8 @@ for(i in 1:nrow(sites_sl)){
 bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
   filter(probability != 0)
 
-save(bdates, simsea, bdates2,
-     file = here("analysis/data/derived_data/08data.RData"))
+# save(bdates, simsea, bdates2,
+#      file = here("analysis/data/derived_data/08data.RData"))
 
 load(here("analysis/data/derived_data/08data.RData"))
 
@@ -348,7 +348,8 @@ redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
   #                          colour = "grey", fill = "grey") +
   geom_linerange(data = hdrdat, aes(xmin = start, xmax = end,
                                     y = site_name), col = "grey", size = 2.5) +
-# position = position_dodge(width = 0.4, preserve = 'single'), inherit.aes = FALSE
+# position = position_dodge(width = 0.4, preserve = 'single'),
+      # inherit.aes = FALSE
   geom_segment(data = psdates1, aes(x = start, xend = end, yend = site_name),
                size = 1, col = "red", alpha = 1) +
   geom_point(data = psdates2, aes(x = start), col = "red",
