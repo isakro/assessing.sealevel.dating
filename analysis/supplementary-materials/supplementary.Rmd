@@ -1,5 +1,5 @@
 ---
-title: "Supplementary material"
+title: "Supplementary material to the paper 'A simulation-based assessment of the relation between Stone Age sites and relative sea-level change along the Norwegian Skagerrak coast'"
 author: "Isak Roalkvam"
 date: "10/27/2021"
 header-includes:
