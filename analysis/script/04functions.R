@@ -1123,7 +1123,7 @@ shoreline_date <- function(sitename, elev = dtm,
     }
   }
 
-  inc <- seq(0, 80, reso)
+  inc <- seq(0, as.numeric(siteelev), reso)
 
   expdat <- data.frame(
     offset = inc,
@@ -1139,7 +1139,8 @@ shoreline_date <- function(sitename, elev = dtm,
   for(i in 1:nrow(expdat)){
     adjusted_elev <- as.numeric(siteelev - expdat$offset[i])
     if(!(adjusted_elev > 0)) {
-      adjusted_elev <- 0.01
+      adjusted_elev <- reso # Just to make sure sea-level is never
+                            #lower than present (unnecessary due to inc?)
     }
     # Find lower date, subtracting offset (defaults to 0)
     lowerd <- round(approx(sitecurve[,"lowerelev"],

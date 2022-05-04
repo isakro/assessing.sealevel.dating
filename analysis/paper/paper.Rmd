@@ -25,7 +25,7 @@ output:
 bibliography: references.bib
 csl: "../templates/saa.csl" # Insert path for the bib-style
 abstract: |
-  A central premise for the Stone Age archaeology of northern Scandinavia is that most coastal sites were located on or close to the contemporary shoreline when they were in use. By reconstructing the trajectory of rapid and continuous relative sea-level fall that characterises large regions of Fennoscandia, this offers a dating method termed shoreline dating that is separate from both radiometric and typological methods and which is widely applied. However, while the potentially immense benefits of an additional source of temporal data is undeniable, this also comes with a series of uncertainties which, due to the geographical contingency and relative rarity of the method, has been under limited scrutiny compared to more ubiquitous dating techniques in archaeology. This paper attempts to remedy this by quantifying the spatial relationship between Stone Age sites located beneath the marine limit and the prehistoric shoreline along the Norwegian Skagerrak coast. This is done by means of Monte Carlo simulation, which is employed to combine the uncertainty associated with independent temporal data on the use of the sites in the form of ^14^C-dates and the reconstruction of local shoreline displacement. The findings largely confirm previous evaluations of this relationship, indicting that sites older than the Late Neolithic tend to have been located on or close to the shoreline when they were occupied. Drawing on the quantitative nature of the results, a new and formalised method for the shoreline dating of sites in the region is proposed and compared to previous applications of the technique.
+  A central premise for the Stone Age archaeology of northern Scandinavia is that most coastal sites were located on or close to the contemporary shoreline when they were in use. By reconstructing the trajectory of rapid and continuous relative sea-level fall that characterises large regions of Fennoscandia, this offers a dating method termed shoreline dating that is separate from both radiometric and typological methods and which is widely applied. However, while the potentially immense benefits of an additional source of temporal data is undeniable, this also comes with a series of uncertainties which has been under limited scrutiny compared to more ubiquitous dating techniques due to its geographical contingency and relative rarity. This paper attempts to remedy this by quantifying the spatial relationship between Stone Age sites located beneath the marine limit and the prehistoric shoreline along the Norwegian Skagerrak coast. This is done by means of Monte Carlo simulation, which is employed to combine the uncertainty associated with independent temporal data on the use of the sites in the form of ^14^C-dates and the reconstruction of local shoreline displacement. The findings largely confirm previous evaluations of this relationship, indicting that sites older than the Late Neolithic tend to have been located on or close to the shoreline when they were occupied. Drawing on the quantitative nature of the results, a new and formalised method for the shoreline dating of sites in the region is proposed and compared to previous applications of the technique.
   
 keywords: |
   Shoreline dating; Stone Age; Settlement patterns; Scandinavia; Relative sea-level change
@@ -116,7 +116,7 @@ dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
 load(here("analysis/data/derived_data/01data.RData"))
 load(here("analysis/data/derived_data/02data.RData"))
 load(here("analysis/data/derived_data/06data.RData"))
-load(here("analysis/data/derived_data/07agediff.RData"))
+load(here("analysis/data/derived_data/08agediff.RData"))
 source(here("analysis/script/04functions.R"), local = knitr::knit_global())
 
 # Exclude Lunaveien and Dybdalshei 2 (See supplementary material)
@@ -168,7 +168,7 @@ Three of the sites have been associated with agriculture, either directly or in 
 
 The elevation data used for the analysis is a digital terrain model (DTM) freely available from the Norwegian Mapping Authority [@mapping2018, https://hoydedata.no]. It was here opted for the 10m resolution DTM rather than the higher-resolution 1m version. In addition to resulting in considerably less processing time, the higher resolution elevation model is more vulnerable to smaller-scale modern disturbances that the 10m version is not impacted by. The 10m resolution DTM of the study area is a down-sampled version of the 1m version and has a height accuracy with a systematic error of 0.1m [@mapping2018]. All data and R programming code [@rcoreteam2021] required to run the analyses, as well as the derived data are freely available in an online repository at <https://osf.io/7f9su/>, organised as a digital research compendium following @marwick2018.
 
-```{r map-iso,  fig.cap = paste("A) Distribution of the ", nrow(sites_sa), " analysed sites relative to the isobases of the displacement curves. The isobases have a direction of 327$^{\\circ}$ (Romundset et al. 2018), B) Displacement curves. Note the increasing steepness of the curves towards the north-east."), fig.height = 13, regfloat=TRUE}
+```{r map-iso,  fig.cap = paste("A) Distribution of the ", nrow(sites_sa), " analysed sites relative to the isobases of the displacement curves. The isobases have a direction of 327$^{\\circ}$ (Romundset et al. 2018, but see Sørensen et al. 2014), B) Displacement curves. Note the increasing steepness of the curves towards the north-east."), fig.height = 13, regfloat=TRUE}
 bboxsites <- st_bbox(sites_sa)
 bboxsites[1] <- bboxsites[1] - 15000
 bboxsites[3] <- bboxsites[3] + 15000
@@ -620,7 +620,7 @@ The procedure for shoreline dating to be outlined is aimed at determining the li
   (\#eq:decay)
 \end{equation}
 
-where $\lambda$ is the decay ratio. This can then be coupled with the trajectory of relative sea-level change to find the corresponding calendar date $T$ for the occupation of the site. Here this is defined by a uniform probability density function over the range between the lower $T_{l}$ and upper $T_{u}$ bounds of the displacement curve that as been interpolated to the site location:
+where $\lambda$ is the decay ratio. This can then be coupled with the trajectory of relative sea-level change to find the corresponding calendar date $T$ for the occupation of the site. Here this is defined by a uniform probability density function over the range between the lower $T_{l}$ and upper $T_{u}$ bounds of the displacement curve that has been interpolated to the site location:
 
 \begin{equation}
 p(T | \alpha - D) = U[T_{l | \alpha - D}, T_{u | \alpha - D}]	
@@ -630,11 +630,11 @@ p(T | \alpha - D) = U[T_{l | \alpha - D}, T_{u | \alpha - D}]
 Finding the probability for the date of the site then becomes a matter of transferring the probability of the distance between site and shoreline and that of the displacement curve to calendar dates:
 
 \begin{equation}
-p(T | \alpha - D) = p(T | \alpha - D)p(\alpha - D) \mbox{ [*This notation is a bit questionable*] }
+p(T | \alpha - D) = p(T | \alpha - D)p(\alpha - D) \mbox{ [This notation is somewhat questionable] }
   (\#eq:comb)
 \end{equation}
 
-We can then get rid of parameter $D$ by summarising over all possible distances between site and the shoreline. Given its elevation, the probability for the date of the occupation of the site is then:
+We can then get rid of parameter $D$ by summarising over all possible distances between site and the shoreline. Given its elevation, the probability for the date of the occupation of a site is then:
 
 <!-- p\left(t\right) = \binom{x}{x} x^x\left(x-x\right)^{x-x} -->
 \begin{equation} 

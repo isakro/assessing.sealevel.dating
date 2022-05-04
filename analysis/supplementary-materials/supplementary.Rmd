@@ -61,7 +61,7 @@ prevdates <- read.csv((here(
   dplyr::rename("site_name" = "name")
 
 # Load results of re-dating previously shoreline dated sites
-load(here("analysis/data/derived_data/08data.RData"))
+load(here("analysis/data/derived_data/09data.RData"))
 ```
 
 ## Introduction {-}
