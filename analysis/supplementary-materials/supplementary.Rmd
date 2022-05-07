@@ -15,6 +15,8 @@ output:
     - --lua-filter=../templates/pagebreak.lua
 bibliography: references.bib
 csl: "../templates/saa.csl" # Insert path for the bib-style
+nocite: | 
+  @*
 ---
 
 ```{r,  include=FALSE, message=FALSE, warning=FALSE}
@@ -1208,6 +1210,70 @@ redat[match(unique(redat$site_name), redat$site_name),] %>%
   
 ```
 
+<!-- @nyland2012b -->
+<!-- @danielsen2018 -->
+<!-- @koxvold2018 -->
+<!-- @solheim2017 -->
+<!-- @granum2018 -->
+<!-- @reitan2014l -->
+<!-- @reitan2014f -->
+<!-- @carrasco2014 -->
+<!-- @carrasco2014 -->
+<!-- @fossum2014b -->
+<!-- @fossum2014c -->
+<!-- @koxvold2017l -->
+<!-- @koxvold2017n -->
+<!-- @havstein2017a -->
+<!-- @havstein2017 -->
+<!-- @koxvold2017h -->
+<!-- @eigeland2017a -->
+<!-- @koxvold2013 -->
+<!-- @koxvold2017d -->
+<!-- @koxvold2017e -->
+<!-- @koxvold2016 -->
+<!-- @koxvold2017m -->
+<!-- @koxvold2017f -->
+<!-- @koxvold2017g -->
+<!-- @koxvold2020a -->
+<!-- @stokke2018a -->
+<!-- @reitan2018a -->
+<!-- @stokke2018a -->
+<!-- @nielsen2017 -->
+<!-- @nielsen2017 -->
+<!-- @darmark2018c -->
+<!-- @viken2018a -->
+<!-- @darmark2018b -->
+<!-- @eymundsson2014 -->
+<!-- @eggen2014b -->
+<!-- @reitan2014h -->
+<!-- @mansrud2018 -->
+<!-- @persson2008 -->
+<!-- @eigeland2014a -->
+<!-- @eigeland2014 -->
+<!-- @fossum2014a -->
+<!-- @olsen2013a -->
+<!-- @koxvold2013a -->
+<!-- @mansrud2013c -->
+<!-- @hårstad2021 -->
+<!-- @berge2012 -->
+<!-- @schallerahrberg2012 -->
+<!-- @nyland2012 -->
+<!-- @amundsen2012 -->
+<!-- @nyland2012a -->
+<!-- @amundsen2012a -->
+<!-- @jaksland2012 -->
+<!-- @jaksland2012a -->
+@carrasco2015
+@carrasco2015
+@persson2014a
+@hårstad2021b
+@koxvold2020
+@viken2018
+@darmark2018a
+@darmark2018
+@darmark2018
+@nielsen2017a
+@ekstrand2013
 
 \newpage
 
