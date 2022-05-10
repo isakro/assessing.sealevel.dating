@@ -83,7 +83,7 @@ include_graphics(here("analysis/figures/sample_size.png"))
 
 The presentation of simulation results for each individual site also has some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order. 
 
-Stone Age sites for which no spatial data was readily available are Frebergsvik A--C [@mikkelsen1975], Nedre Holtan [@sjursjeike], Rugtvedt [@odgaard1994], Tangen [@glorstad2005], and Torsrød [@østmo1975]. These sites are therefore not included in the analysis. Furthermore, @nielsen2021b has recently interpreted features from the otherwise younger sites Bratsberg and Larønningen as possibly related to farming activity in the Early Neolithic. However, given the limited number of features, the lack of any artefacts directly related to these, and the therefore somewhat speculative nature of this suggestion, the sites are kept out of the analysis here.
+Stone Age sites for which no spatial data was readily available are Frebergsvik A--C [@mikkelsen1975], Nedre Holtan [@sjurseike1991; @glorstad1998], Rugtvedt [@odgaard1994], Tangen [@glorstad2005], and Torsrød [@ostmo1976]. These sites are therefore not included in the analysis. Furthermore, @nielsen2021b has recently interpreted features from the otherwise younger sites Bratsberg and Larønningen as possibly related to farming activity in the Early Neolithic. However, given the limited number of features, the lack of any artefacts directly related to these, and the therefore somewhat speculative nature of this suggestion, the sites are kept out of the analysis here.
 
 The first plot on the first row for each site shows all calibrated radiocarbon dates from the Stone Age associated with the site (see analysis/data/raw_data/radiocarbon.csv for all dates, including those falling outside of the period). The fill colour of the radiocarbon dates indicates whether they are interpreted as belonging to the same phase, and each sum indicates that multiple dates for a phase have been modelled using the Boundary function and then summed using OxCal. Each phase is assumed to be independent of other phases. A red outline indicates that the date(s) were not seen as related to the artefact inventory in the original report. The second plot on the first row displays the site location in the present day landscape on the edited DTM (i.e. highways and railways impacting the adjusted sea-level have been removed, and elevation values are interpolated from the surroundings; see main text and analysis/script/03script.R). The third plot on the first row shows the site location within the study area relative to the isobases of the shoreline displacement curves in use.
 
@@ -917,7 +917,7 @@ filter(rcarbon, site_name  == "Rognlien") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Rognlien was originally excavated in [@ingstad1970]. The site limit has been manually defined based on the description given in the report and the spatial geometry of the site as defined in the database Askeladden. The manually defined limit could be slightly off, but should match the elevation of the site given in the publication [@ingstad1970].The ^14^C-dates from the original excavation was not seen as contemporaneous with the lithic material on the site. Burnt elk bone from the original excavation was therefore recently subjected to radiocarbon dating and is believed to match the occupation of the site [pers.comm. Steinar Solheim, also provided in @stokke2017, 24]. Given the 0m distance that the older dates give here, however, there does not appear to be grounds on which to reject the older dates based on sea-level change. 
+The first archaeological finds from Rognlien were done in the 1880s and, following some smaller investigations, was excavated by @ingstad1970 in 1957. The site limit has been manually defined based on the description given in the publication and the spatial geometry of the site as defined in the database Askeladden. The manually defined limit could be slightly off, but should match the elevation of the site given in the publication [@ingstad1970, 26]. The ^14^C-dates from the original excavation was not seen as contemporaneous with the lithic material on the site. Burnt elk bone from the original excavation was therefore recently subjected to radiocarbon dating and is believed to match the occupation of the site [pers.comm. Steinar Solheim, also provided in @stokke2017, 24]. Given the 0m distance that the older dates give here, however, there does not appear to be grounds on which to reject the older dates based on sea-level change. 
 
 ```{r sageneb1, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/sageneb1.png"))
@@ -1263,17 +1263,35 @@ redat[match(unique(redat$site_name), redat$site_name),] %>%
 <!-- @amundsen2012a -->
 <!-- @jaksland2012 -->
 <!-- @jaksland2012a -->
-@carrasco2015
-@carrasco2015
-@persson2014a
-@hårstad2021b
-@koxvold2020
-@viken2018
-@darmark2018a
-@darmark2018
-@darmark2018
-@nielsen2017a
-@ekstrand2013
+<!-- @carrasco2015 -->
+<!-- @carrasco2015 -->
+<!-- @persson2014a -->
+<!-- @hårstad2021b -->
+<!-- @koxvold2020 -->
+<!-- @viken2018 -->
+<!-- @darmark2018a -->
+<!-- @darmark2018 -->
+<!-- @darmark2018 -->
+<!-- @nielsen2017a -->
+<!-- @ekstrand2013 -->
+<!-- @ekstrand2013 -->
+<!-- @ekstrand2013 -->
+<!-- @amundsen2012b -->
+<!-- @fossum2014 -->
+<!-- @fossum2017c -->
+<!-- @mansrud2016 -->
+<!-- @koxvold2017j -->
+<!-- @fossum2017d -->
+<!-- @eggen2014 -->
+<!-- @melvold2014a -->
+<!-- @stokke2017 -->
+<!-- @stokke2017 -->
+<!-- @koxvold2017c -->
+<!-- @koxvold2017b -->
+<!-- @koxvold2017a -->
+<!-- @reitan2021 -->
+<!-- @reitan2021 -->
+<!-- @reitan2014i -->
 
 \newpage
 
