@@ -36,7 +36,7 @@ expdat <- data.frame(
   # Cumulative exponential distribution function
   px = pexp(inc, rate = expfit$estimate)) %>%
   # Probability for each elevation increment is given by subtracting the
-  # previous cumulative probability from the current
+  # previous cumulative probability
   mutate(probs = px - lag(px, default =  dplyr::first(px))) %>%
   tail(-1) %>%
   filter(px < 0.99999) # Probability cut-off
