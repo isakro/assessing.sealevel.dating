@@ -124,5 +124,5 @@ dplt <- plt + geom_polygon(data = expdatt, aes(x =  probs_scaled,
   geom_hline(yintercept = as.numeric(siteelev), linetype = "dashed",
              col = "#046c9a", alpha = 0.6)
 
-ggsave(file = here("analysis/figures/sdate2.png"), dplt,
+ggsave(file = here("analysis/figures/sdate.png"), dplt,
        width = 100, height = 100, units = "mm")

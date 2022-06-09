@@ -201,7 +201,7 @@ grd2 <- grid.arrange(hor2, topo2, vert2, nrow = 1)
 grd <- plot_grid(grd1, grd2, labels = c("A", "B"), ncol = 1, scale = 0.9)
 
 ggsave(file = here("analysis/figures/results.png"), grd,
-       bg = "white")
+       bg = "white", width = 250, height = 200, units = "mm")
 
 # Measures for vertical distance to inform recommendations for shoreline dating.
 # Using only corresponding dates, including dates to agricultural activity
@@ -397,7 +397,7 @@ grd <- plot_grid(grd3, grd4, labels = c("A", "B"), ncol = 1, scale = 0.9)
 
 # Save plot
 ggsave(file = here("analysis/figures/results2.png"), grd,
-       bg = "white")
+       bg = "white", width = 250, height = 225, units = "mm")
 
 # Save results and exponential functions
 save(distances, expfit, expfit2, expfit3,

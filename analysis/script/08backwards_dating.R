@@ -6,7 +6,7 @@ library(sf)
 library(hdrcde)
 
 # For reproducibility
-set.seed(321)
+set.seed(1)
 
 # Load required functions and prepared data
 source(here("analysis/script/04functions.R"))
@@ -55,36 +55,36 @@ sites_sa <- sites_sa %>%
 feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
 
 # # Uncomment to rerun
-# shorelinedates <- list()
-# for(i in 1:nrow(sites_sa)){
-#   print(paste(i, sites_sa$name[i]))
-#   if(sites_sa$name[i] %in% feature_sites){
-#     shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-#                                           elev = dtm,
-#                                           disp_curves = displacement_curves,
-#                                           sites = sites_sa,
-#                                           iso = isobases,
-#                                           expratio = expfit$estimate,
-#                                           siteelev = "mean",
-#                                           reso = 0.001,
-#                                           specified_elev = NA,
-#                                           sitelimit = FALSE,
-#                                           features = rcarb_sa)
-#   } else {
-#   shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-#                                         elev = dtm,
-#                                         disp_curves = displacement_curves,
-#                                         sites = sites_sa,
-#                                         iso = isobases,
-#                                         expratio = expfit$estimate,
-#                                         siteelev = "mean",
-#                                         reso = 0.001,
-#                                         specified_elev = NA)
-#   }
-# }
-#
-# save(shorelinedates,
-#      file = here("analysis/data/derived_data/08data.RData"))
+shorelinedates <- list()
+for(i in 1:nrow(sites_sa)){
+  print(paste(i, sites_sa$name[i]))
+  if(sites_sa$name[i] %in% feature_sites){
+    shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+                                          elev = dtm,
+                                          disp_curves = displacement_curves,
+                                          sites = sites_sa,
+                                          iso = isobases,
+                                          expratio = expfit$estimate,
+                                          siteelev = "mean",
+                                          reso = 0.001,
+                                          specified_elev = NA,
+                                          sitelimit = FALSE,
+                                          features = rcarb_sa)
+  } else {
+  shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+                                        elev = dtm,
+                                        disp_curves = displacement_curves,
+                                        sites = sites_sa,
+                                        iso = isobases,
+                                        expratio = expfit$estimate,
+                                        siteelev = "mean",
+                                        reso = 0.001,
+                                        specified_elev = NA)
+  }
+}
+
+save(shorelinedates,
+     file = here("analysis/data/derived_data/08data.RData"))
 
 load(here("analysis/data/derived_data/08data.RData"))
 
@@ -338,7 +338,7 @@ splt <- agedfplt1 +
 
 difplt <- splt +  agedfplt2 + agedfplt3 + agedfplt4 + plot_layout(nrow = 1)
 
-ggsave(file = here("analysis/figures/shoredate2_2.png"), difplt,
+ggsave(file = here("analysis/figures/shoredate2.png"), difplt,
        width = 200, height = 200, units = "mm")
 
 
