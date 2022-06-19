@@ -271,7 +271,8 @@ ggsave(file = here("analysis/figures/brunlanes.png"),
 psdates <- prevdates %>%  filter(!str_detect(site_name, 'Pauler|Bakke|Sky 1'))
 
 sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" &
-                                     rcarb_cor == "f" | name == "Viulsrød 2")
+                                     rcarb_cor == "f" | name == "Viulsrød 2"
+                                   | name == "Anvik")
 
 sites_sl <- sites_sl %>%
   filter(name %in% psdates$site_name)
@@ -300,8 +301,8 @@ bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
 
 # save(bdates, simsea, bdates2,
 #      file = here("analysis/data/derived_data/09data.RData"))
-
-load(here("analysis/data/derived_data/09data.RData"))
+#
+# load(here("analysis/data/derived_data/09data.RData"))
 
 # Find 95 % HDR for shoreline dates and median shoreline date
 # for ordering in the plot
@@ -358,7 +359,6 @@ redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
                     as.numeric(round(expfit$estimate, 3)))) +
   scale_x_continuous(breaks = c(seq(-10000, -4000, 2000), -2000, 0, 2000) ) +
   theme_bw()
-
 
 ggsave(file = here("analysis/figures/redate.png"), redateplt,
        width = 180, height = 250, units = "mm")
