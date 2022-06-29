@@ -83,8 +83,8 @@ for(i in 1:nrow(sites_sa)){
   }
 }
 
-save(shorelinedates,
-     file = here("analysis/data/derived_data/08data.RData"))
+# save(shorelinedates,
+#      file = here("analysis/data/derived_data/08data.RData"))
 
 load(here("analysis/data/derived_data/08data.RData"))
 
@@ -189,8 +189,8 @@ shrplt <- ggplot(data = hdrdat,
 ggsave(file = here("analysis/figures/shoredate.png"), shrplt,
        width = 200, height = 250, units = "mm")
 
-# Next sections finds synchroneity between radiocarbon and shoreline dates
-# Grab the probablities again without filtering for plotting
+# Next section finds synchroneity between radiocarbon- and shoreline dates
+# Grab the probabilities again without filtering for plotting
 shorelinedates <- bind_rows(shorelinedates) %>%
   filter(site_name %in% unique(corsites$site_name))
 
@@ -225,8 +225,8 @@ synchdata <- synchdt  %>% group_by(cross) %>%
   ungroup() %>%
   mutate(row_total = rowSums(across(where(is.numeric))))
 
-# save(synchdata,
-#      file = here("analysis/data/derived_data/08agediff.RData"))
+save(synchdata,
+     file = here("analysis/data/derived_data/08agediff.RData"))
 
 hdr_func <- function(x) {
   r <- hdrcde::hdr(x, prob = 95)
