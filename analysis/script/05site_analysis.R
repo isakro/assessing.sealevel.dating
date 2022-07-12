@@ -17,6 +17,11 @@ quickSetupOxcal()
 # source("http://bioconductor.org/biocLite.R")
 # biocLite("IRanges")
 
+#or:
+# if (!require("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install("IRanges")
+
 # For reproducibility
 set.seed(123)
 
