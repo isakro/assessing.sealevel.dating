@@ -5,13 +5,15 @@ header-includes:
    - \usepackage{afterpage}
    - \usepackage{fancyhdr}
    - \linenumbers
-author:
-  - Isak Roalkvam:
-      email: isak.roalkvam@iakh.uio.no
-      institute: [UiO]
-      correspondence: true
-institute:
-  - UiO: University of Oslo, Institute of Archaeology, Conservation and History
+author: 
+- 'Isak Roalkvam'
+- 'University of Oslo, Institute of Archaeology, Conservation and History'
+  # - Isak Roalkvam:
+  #     email: isak.roalkvam@iakh.uio.no
+  #     institute: [UiO]
+  #     correspondence: true
+# institute:
+#   - UiO: University of Oslo, Institute of Archaeology, Conservation and History
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
     bookdown::pdf_document2:
@@ -19,8 +21,8 @@ output:
       fig_caption: yes
       reference_docx: "../templates/template.docx" # Insert path for the DOCX file
       pandoc_args:
-      - --lua-filter=../templates/scholarly-metadata.lua
-      - --lua-filter=../templates/author-info-blocks.lua
+      # - --lua-filter=../templates/scholarly-metadata.lua
+      # - --lua-filter=../templates/author-info-blocks.lua
       - --lua-filter=../templates/pagebreak.lua
 bibliography: references.bib
 csl: "../templates/saa.csl" # Insert path for the bib-style
@@ -630,7 +632,7 @@ p(T | \alpha - D) = U[T_{l | \alpha - D}, T_{u | \alpha - D}]
 Finding the probability for the date of the site then becomes a matter of transferring the probability of the distance between site and shoreline to calendar dates using the displacement curve:
 
 \begin{equation}
-p(T | \alpha - D) = p(T | \alpha - D)p(\alpha - D) \mbox{ [This notation is somewhat questionable] }
+p(T | \alpha - D) = p(T | \alpha - D)p(\alpha - D)
   (\#eq:comb)
 \end{equation}
 

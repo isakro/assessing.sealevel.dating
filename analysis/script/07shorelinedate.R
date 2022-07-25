@@ -83,8 +83,8 @@ groupdat <- data.frame(matrix(nrow = 4,
 names(groupdat) <- c("start", "end", "group", "year_median")
 groupdat$start <- segdat[seq(1, nrow(segdat), 2), "X95."]
 groupdat$end <- segdat[seq(2, nrow(segdat), 2), "X95."]
-groupdat$group <- seq(1:length(dat$hdr[c(TRUE, FALSE)]))
-groupdat$year_median <- dat$mode
+groupdat$group <- seq(1:length(segdat$hdr[c(TRUE, FALSE)]))
+groupdat$year_median <- segdat$mode
 
 
 plt <- dategrid %>%
