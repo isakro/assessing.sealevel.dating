@@ -29,7 +29,7 @@ for(i in 1:length(datfiles)){
 agr <- c("Nordby 1", "Kvastad A2", "Nauen A")
 
 # results_list is a list of lists of variable length that need to be unpacked.
-# (Might be a smoother purrr solution to do all of this?)
+# (Probably a smoother purrr solution to do all of this?)
 results <- list()
 for(i in 1:length(results_list)){
   dat <- results_list[[i]]
@@ -73,9 +73,12 @@ sum_cor <- distances %>% filter(rcarb_cor == "t") %>%
                c(mean, median, sd, IQR)) %>%
    round()
 
-colsh = c("forager" = "#00ba38", "agricultural" = "darkgrey")
-colst = c("forager" = "#fad510", "agricultural" = "darkgrey")
-colsv = c("forager" = "steelblue", "agricultural" = "darkgrey")
+# Colour for horisontal distance
+colsh = c("forager" = "#00ba38", "agricultural" = "grey30")
+# Colour for topographic distance
+colst = c("forager" = "yellow3", "agricultural" = "grey30") # "#fad510"
+# Colour for vertical distance
+colsv = c("forager" = "#046c9a", "agricultural" = "grey30") # "steelblue"
 
 # Horizontal distance, all dates to the Stone Age
 h1 <- ggplot(distances, aes(x = year, y = hordist,
@@ -397,7 +400,7 @@ grd <- plot_grid(grd3, grd4, labels = c("A", "B"), ncol = 1, scale = 0.9)
 
 # Save plot
 ggsave(file = here("analysis/figures/results2.png"), grd,
-       bg = "white", width = 250, height = 225, units = "mm")
+       bg = "white", width = 250, height = 200, units = "mm")
 
 # Save results and exponential functions
 save(distances, expfit, expfit2, expfit3,
