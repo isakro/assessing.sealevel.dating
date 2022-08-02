@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  26 JUL 2022 17:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  1 AUG 2022 16:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1144,7 +1144,7 @@ Overfull \hbox (57.21584pt too wide) in paragraph at lines 253--254
 
 [9] [10 <../figures/example_map.png (PNG copy)>] [11 <../figures/example_sim_ma
 p.png (PNG copy)>] [12 <../figures/example_sim_result.png (PNG copy)>] [13 <../
-figures/results.png>] [14 <../figures/results2.png>] [15]
+figures/results.png (PNG copy)>] [14 <../figures/results2.png (PNG copy)>] [15]
 <../figures/sdate.png, id=149, 284.5029pt x 284.5029pt>
 File: ../figures/sdate.png Graphic file (type png)
 <use ../figures/sdate.png>
@@ -2626,7 +2626,7 @@ mr7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr9.pfb></usr/share/texmf/font
 s/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss8.pfb>
 </usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type
 1/public/lm/lmsy7.pfb>
-Output written on paper.pdf (32 pages, 5811541 bytes).
+Output written on paper.pdf (32 pages, 5409821 bytes).
 PDF statistics:
  586 PDF objects out of 1000 (max. 8388607)
  516 compressed objects within 6 object streams

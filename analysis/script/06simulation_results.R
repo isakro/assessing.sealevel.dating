@@ -74,11 +74,11 @@ sum_cor <- distances %>% filter(rcarb_cor == "t") %>%
    round()
 
 # Colour for horisontal distance
-colsh = c("forager" = "#00ba38", "agricultural" = "grey30")
+colsh = c("forager" = "#00ba38", "agricultural" = "darkgrey")
 # Colour for topographic distance
-colst = c("forager" = "yellow3", "agricultural" = "grey30") # "#fad510"
+colst = c("forager" = "#fad510", "agricultural" = "darkgrey") # "yellow3"
 # Colour for vertical distance
-colsv = c("forager" = "#046c9a", "agricultural" = "grey30") # "steelblue"
+colsv = c("forager" = "steelblue", "agricultural" = "darkgrey") # "#046c9a"
 
 # Horizontal distance, all dates to the Stone Age
 h1 <- ggplot(distances, aes(x = year, y = hordist,
