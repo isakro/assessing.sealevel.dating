@@ -1,7 +1,8 @@
 ---
 title: "Supplementary material to the paper 'A simulation-based assessment of the relation between Stone Age sites and relative sea-level change along the Norwegian Skagerrak coast'"
-author: "Isak Roalkvam"
-date: "10/27/2021"
+author: 
+- 'Isak Roalkvam'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 header-includes:
   - \usepackage{placeins}
 output: 
@@ -10,8 +11,8 @@ output:
     fig_caption: yes
     reference_docx: "../templates/template.docx" # Insert path for the DOCX file
     pandoc_args:
-    - --lua-filter=../templates/scholarly-metadata.lua
-    - --lua-filter=../templates/author-info-blocks.lua
+    # - --lua-filter=../templates/scholarly-metadata.lua
+    # - --lua-filter=../templates/author-info-blocks.lua
     - --lua-filter=../templates/pagebreak.lua
 bibliography: references.bib
 csl: "../templates/saa.csl" # Insert path for the bib-style
@@ -887,7 +888,7 @@ filter(rcarbon, site_name  == "Ragnhildrød") %>%
          booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-The earliest ^14^C-date, from an uncertain context, is argued to be older and not match the typological indicators in the inventory from Ragnhildrød [@mjaerum2012, 50, 71]. The post-hole dated to the Late Neolithic/Bronze Age could be related to a single find of a pressure flaked object, but was not given much weight in the report [@mjaerum2012, 76].
+The earliest ^14^C-date, from an uncertain context, is argued to be younger and not match the typological indicators in the inventory from Ragnhildrød [@mjaerum2012, 50, 71]. The post-hole dated to the Late Neolithic/Bronze Age could be related to a single find of a pressure flaked object, but was not given much weight in the report [@mjaerum2012, 76].
 
 ```{r rodbol54, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/rodbol54.png"))
