@@ -1,9 +1,7 @@
 library(tidyverse)
 library(here)
 library(sf)
-library(tmap)
 library(cowplot)
-library(era)
 
 # Load radiocarbon and site data from the first script
 load(here("analysis/data/derived_data/01data.RData"))

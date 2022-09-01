@@ -37,7 +37,7 @@ rcarb_features <- left_join(rcarbon, sitesf,
                             by = c("site_name", "context" = "name", "ask_id"))
 
 # Assign radiocarbon dates not specified to any feature/excavation unit to the
-# site limit [Causes duplicates e.g. Kvastad A1]
+# site limit
 rcarb_features <- rcarb_features %>%  left_join(sitesl,
                                       by = c("site_name", "ask_id")) %>%
   mutate(geom = ifelse(is.na(st_dimension(geom.x)), geom.y, geom.x),
