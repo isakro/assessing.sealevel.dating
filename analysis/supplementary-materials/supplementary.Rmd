@@ -707,7 +707,7 @@ filter(rcarbon, site_name  == "Løvås 1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Løvås 1. No editing of the raster appeared to be necessary. Interestingly only the Løvås sites were simulated to be situated beneath the sea-level. The typologically secure inventory combined with the many overlapping dates from various features does indicate that the issue is with the displacement curve and not the dating of the site. Similar situation to that on Løvås 2 and 3 (below).
+The artefact inventory from Løvås 1 matches the radiocarbon dates [@reitan2022]. No editing of the raster appeared to be necessary. Interestingly only the Løvås sites were simulated to be situated beneath the sea-level. The typologically secure inventory combined with the many overlapping dates from various features does indicate that the issue is with the displacement curve and not the dating of the site. Similar situation to that on Løvås 2 and 3 (below).
 
 ```{r lovas2, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 knitr::include_graphics(here("analysis/figures/lovas2.png"))
@@ -723,7 +723,7 @@ filter(rcarbon, site_name  == "Løvås 2") %>%
   kable_styling(latex_options="scale_down")
 ```
 
-Løvås 2. Similar situation to that on Løvås 1 and 3 (above and below).
+The artefact inventory from Løvås 2 matches the radiocarbon dates [@reitan2022]. Similar setting to that of Løvås 1 and 3 (above and below).
 
 ```{r lovas3, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 knitr::include_graphics(here("analysis/figures/lovas3.png"))
@@ -738,7 +738,7 @@ filter(rcarbon, site_name  == "Løvås 3") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Similar situation to that on Løvås 1 and 2 (above).
+The artefact inventory from Løvås 3 matches the radiocarbon dates [@reitan2022]. Similar setting to that of Løvås 1 and 2 (above).
 
 ```{r lunaveien, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/lunaveien.png"))
@@ -1247,10 +1247,11 @@ redat[match(unique(redat$site_name), redat$site_name),] %>%
 <!-- @eymundsson2014 -->
 <!-- @eggen2014b -->
 <!-- @reitan2014h -->
+<!-- @reitan20140 -->
 <!-- @mansrud2018 -->
 <!-- @persson2008 -->
-<!-- @eigeland2014a -->
 <!-- @eigeland2014 -->
+<!-- @eigeland2014a -->
 <!-- @fossum2014a -->
 <!-- @olsen2013a -->
 <!-- @koxvold2013a -->
@@ -1273,6 +1274,7 @@ redat[match(unique(redat$site_name), redat$site_name),] %>%
 <!-- @darmark2018a -->
 <!-- @darmark2018 -->
 <!-- @darmark2018 -->
+<!-- @darmark2018d -->
 <!-- @nielsen2017a -->
 <!-- @ekstrand2013 -->
 <!-- @ekstrand2013 -->
@@ -1293,6 +1295,7 @@ redat[match(unique(redat$site_name), redat$site_name),] %>%
 <!-- @reitan2021 -->
 <!-- @reitan2021 -->
 <!-- @reitan2014i -->
+<!-- @reitan2014f -->
 
 \newpage
 

@@ -299,7 +299,7 @@ for(i in 1:nrow(sites_sl)){
 bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
   filter(probability != 0)
 
-# save(bdates, simsea, bdates2,
+# save(bdates, bdates2,
 #      file = here("analysis/data/derived_data/09data.RData"))
 #
 # load(here("analysis/data/derived_data/09data.RData"))
