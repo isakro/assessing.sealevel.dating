@@ -707,7 +707,7 @@ filter(rcarbon, site_name  == "Løvås 1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-The artefact inventory from Løvås 1 matches the radiocarbon dates [@reitan2022]. No editing of the raster appeared to be necessary. Interestingly only the Løvås sites were simulated to be situated beneath the sea-level. The typologically secure inventory combined with the many overlapping dates from various features does indicate that the issue is with the displacement curve and not the dating of the site. Similar situation to that on Løvås 2 and 3 (below).
+The artefact inventory from Løvås 1 matches the radiocarbon dates [@reitan2022]. No editing of the raster appeared to be necessary. Interestingly only the Løvås sites were simulated to be situated beneath the sea-level. The typologically secure inventory combined with the many overlapping dates from various features does indicate that the issue is with the displacement curve and not the dating of the site (see also main text). Similar situation to that on Løvås 2 and 3 (below).
 
 ```{r lovas2, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 knitr::include_graphics(here("analysis/figures/lovas2.png"))
@@ -993,7 +993,7 @@ filter(rcarbon, site_name  == "Stokke/Polland 5") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-The ^14^C-dates matches the lithic inventory from Stokke/Polland 5 [@mansrud2017]. The site is located where the highway runs today. This appears to have been successfully edited. The excavated area is more extensive (field A--C in the report) that what is used as the site limit here, but the relation between the different areas is not clear. Field A, used as the site limit here, holds all the dated features.
+The ^14^C-dates matches the lithic inventory from Stokke/Polland 5 [@mansrud2017]. The site is located where the highway runs today. This appears to have been successfully edited. The excavated area is more extensive (field A--C in the report) than what is used as the site limit here, but the relation between the different areas is not clear. Field A, used as the site limit here, holds all the dated features.
 
 ```{r stokkep8, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/stokkep8.png"))
@@ -1023,7 +1023,7 @@ filter(rcarbon, site_name  == "Torstvet") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Typology of lithics match the ^14^C-dates from Torstvet [@mansrud2013b]. The site is located where the highway runs today. This appears to have been successfully edited, although there is a possibility that this has led to the sea-level being simulated sightly further away from the site than what would otherwise have been the case. However, as with he Hovland-sites above, this appears to rather follow from the general topography of the landscape which makes the reconstruction more uncertain than in areas with a higher relief.
+Typology of lithics match the ^14^C-dates from Torstvet [@mansrud2013b]. The site is located where the highway runs today. This appears to have been successfully edited, although there is a possibility that this has led to the sea-level being simulated sightly further away from the site than what would otherwise have been the case. However, as with he Hovland sites above, this appears to rather follow from the general topography of the landscape characterised by a low relief which makes the reconstruction more uncertain.
 
 ```{r trondalen, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/trondalen.png"))
@@ -1068,7 +1068,7 @@ filter(rcarbon, site_name  == "Vallermyrene 1a") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Vallermyrene 1 was divided into 1a and 1b based on elevation difference, typology and 14C-dates [@reitan2014f]. Vallermyene 1a is the oldest of the two. Although situated not that far from the railway, the area immediatly surrounding the site has not been disturbed in a way that appears to impact the reconstruction of the past sea-level. 
+Vallermyrene 1 was divided into 1a and 1b based on elevation difference, typology and ^14^C-dates [@reitan2014f]. Vallermyrene 1a is the oldest of the two. Although situated not that far from the railway, the area immediately surrounding the site has not been disturbed in a way that appears to impact the reconstruction of the past sea-level. 
 
 ```{r vallermyrene1b, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/vallermyrene1b.png"))
@@ -1098,7 +1098,7 @@ filter(rcarbon, site_name  == "Vallermyrene 2") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Vallermyrene 2 was a large site situated in a field [@reitan2014o]. The site has ^14^C-dates and artefacts dating occupations at the sites to multiple phases throughout prehistory, including the Bronze Age and phases up until the Viking Age. The Stone Age activity on the site was evidenced by 359 lithics and a fireplace dated to the Early Neolithic. Given it's uncertain extent, the site limit used here is defined by the fireplace.
+Vallermyrene 2 was a large site situated in a field [@reitan2014o]. The site has ^14^C-dates and artefacts dating occupations at the site to multiple phases throughout prehistory, including the Bronze Age and phases up until the Viking Age. The Stone Age activity on the site was evidenced by 359 lithics and a fireplace dated to the Early Neolithic. Given it's uncertain extent, the site limit used here is defined by the fireplace.
 
 ```{r vallermyrene4a, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/vallermyrene4a.png"))
@@ -1282,6 +1282,7 @@ redat[match(unique(redat$site_name), redat$site_name),] %>%
 <!-- @amundsen2012b -->
 <!-- @fossum2014 -->
 <!-- @fossum2017c -->
+<!-- @fossum2017b -->
 <!-- @mansrud2016 -->
 <!-- @koxvold2017j -->
 <!-- @fossum2017d -->
@@ -1296,6 +1297,7 @@ redat[match(unique(redat$site_name), redat$site_name),] %>%
 <!-- @reitan2021 -->
 <!-- @reitan2014i -->
 <!-- @reitan2014f -->
+<!-- @reitan2014s -->
 
 \newpage
 

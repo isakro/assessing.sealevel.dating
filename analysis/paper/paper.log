@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  6 SEP 2022 16:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  12 SEP 2022 15:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1081,13 +1081,13 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <7> on input line 169.
 [4] [5]
-<../figures/map-iso-1.pdf, id=54, 591.20876pt x 841.1425pt>
+<../figures/map-iso-1.pdf, id=54, 591.20876pt x 845.1575pt>
 File: ../figures/map-iso-1.pdf Graphic file (type pdf)
 <use ../figures/map-iso-1.pdf>
 Package pdftex.def Info: ../figures/map-iso-1.pdf  used on input line 188.
-(pdftex.def)             Requested size: 457.17168pt x 650.44122pt.
+(pdftex.def)             Requested size: 455.00662pt x 650.4509pt.
 
-LaTeX Warning: Float too large for page by 48.51122pt on input line 193.
+LaTeX Warning: Float too large for page by 48.52089pt on input line 193.
 
 [6] [7 <../figures/map-iso-1.pdf>] [8]
 <../figures/example_map.png, id=82, 711.1368pt x 648.5028pt>
@@ -2505,6 +2505,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 980--984
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 987--987
+[]\T1/lmr/m/n/10 (+20) in
+ []
+
+
 Overfull \hbox (2.22221pt too wide) in paragraph at lines 985--989
 [] []
  []
@@ -2645,11 +2650,11 @@ Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1047.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1047.
  ) 
 Here is how much of TeX's memory you used:
- 14386 strings out of 492982
- 205808 string characters out of 6134896
+ 14380 strings out of 492982
+ 205744 string characters out of 6134896
  325949 words of memory out of 5000000
  17317 multiletter control sequences out of 15000+600000
- 82238 words of font info for 156 fonts, out of 8000000 for 9000
+ 81889 words of font info for 153 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  34i,11n,43p,2786b,405s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dv
@@ -2666,7 +2671,7 @@ mr7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr9.pfb></usr/share/texmf/font
 s/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss8.pfb>
 </usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type
 1/public/lm/lmsy7.pfb>
-Output written on paper.pdf (33 pages, 5545920 bytes).
+Output written on paper.pdf (33 pages, 5561084 bytes).
 PDF statistics:
  597 PDF objects out of 1000 (max. 8388607)
  526 compressed objects within 6 object streams
