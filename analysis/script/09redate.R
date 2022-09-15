@@ -270,11 +270,13 @@ ggsave(file = here("analysis/figures/brunlanes.png"),
 
 psdates <- prevdates %>%  filter(!str_detect(site_name, 'Pauler|Bakke|Sky 1'))
 
-sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" &
-                                     rcarb_cor == "f" | name == "Viulsrød 2"
-                                   | name == "Anvik")
+# sites_sl <- site_limits %>% filter(radiocarbon == "f" | radiocarbon == "t" &
+#                                      rcarb_cor == "f" | name == "Viulsrød 2"
+#                                    | name == "Anvik")
+# sites_sl <- sites_sl %>%
+#   filter(name %in% psdates$site_name)
 
-sites_sl <- sites_sl %>%
+sites_sl <- site_limits %>%
   filter(name %in% psdates$site_name)
 
 sites_sl <- inner_join(sites_sl,
