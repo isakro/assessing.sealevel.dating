@@ -73,7 +73,7 @@ This document presents the sensitivity analysis performed for informing the numb
 
 ## Sensitivity analysis {-}
 
-The first figure shows the result of a test run for the site Hovland 5, where the simulations were run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving a wide uncertainty range, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
+The first figure shows the result of a test run for the site Hovland 5, where the simulations were run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving an uncertain age, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
 
 ```{r sample_size,  echo = FALSE, out.width = "500px", warning=FALSE}
 include_graphics(here("analysis/figures/sample_size.png"))
@@ -86,7 +86,7 @@ The presentation of simulation results for each individual site also has some ad
 
 Stone Age sites for which no spatial data was readily available are Frebergsvik A--C [@mikkelsen1975], Nedre Holtan [@sjurseike1991; @glorstad1998], Rugtvedt [@odgaard1994], Tangen [@glorstad2005], and Torsrød [@ostmo1976]. These sites are therefore not included in the analysis. Furthermore, @nielsen2021b has recently interpreted features from the otherwise younger sites Bratsberg and Larønningen as possibly related to farming activity in the Early Neolithic. However, given the limited number of features, the lack of any artefacts directly related to these, and the therefore somewhat speculative nature of this suggestion, the sites are kept out of the analysis here.
 
-The first plot on the first row for each site shows all calibrated radiocarbon dates from the Stone Age associated with the site (see analysis/data/raw_data/radiocarbon.csv for all dates, including those falling outside of the period). The fill colour of the radiocarbon dates indicates whether they are interpreted as belonging to the same phase, and each sum indicates that multiple dates for a phase have been modelled using the Boundary function and then summed using OxCal. Each phase is assumed to be independent of other phases. A red outline indicates that the date(s) were not seen as related to the artefact inventory in the original report. The second plot on the first row displays the site location in the present day landscape on the edited DTM (i.e. highways and railways impacting the adjusted sea-level have been removed, and elevation values are interpolated from the surroundings; see main text and analysis/script/03script.R). The third plot on the first row shows the site location within the study area relative to the isobases of the shoreline displacement curves in use.
+The first plot on the first row for each site shows all calibrated radiocarbon dates from the Stone Age associated with the site (see analysis/data/raw_data/radiocarbon.csv for all dates, including those falling outside of the period). The fill colour of the radiocarbon dates indicates whether they are interpreted as belonging to the same phase, and each sum indicates that multiple dates for a phase have been modelled using the Boundary function and then summed using OxCal. Each phase is assumed to be independent of other phases. A red outline indicates that the date(s) were not seen as related to the artefact inventory in the original report. The second plot on the first row displays the site location in the present day landscape on the edited DTM (i.e. highways and railways impacting the adjusted sea-level have been removed, and elevation values are interpolated from the surroundings; see main text and analysis/script/03dtm_edit.R). The third plot on the first row shows the site location within the study area relative to the isobases of the shoreline displacement curves in use.
 
 Subsequent rows for each site then show the simulation results. The first plot on these rows shows the probability density function from which site dates were drawn during simulation. The second plot shows the result of the simulation runs, where the intensity of the colour indicates the number of times the sea was simulated to be present at any given location. The third plot displays a violin plot of the measured distances between site and shore-line across all simulation runs.
 
@@ -104,7 +104,7 @@ filter(rcarbon, site_name  == "Adal vestre 1") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Adal vestre 1 is situated close to a field, but this does not appear to have resulted in any relevant changes to the terrain.
+The single-phased lithic inventory matches the radiocarbon dates to the Middle Mesolithic at Adal vestre 1 [@granados2022]. The site is situated close to a field, but this does not appear to have resulted in any relevant changes to the terrain.
 
 ```{r dalvestre2,  echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 knitr::include_graphics(here("analysis/figures/adalvestre2.png"))
@@ -120,7 +120,7 @@ filter(rcarbon, site_name  == "Adal vestre 2") %>%
 
 ```
 
-Adal vestre 2 has a similar location in the present day landscape to that of Adal vestre 1 (above).
+The artefact inventory from Adal vestre 2 is single-phased and matches the ^14^C-dates [@granados2022]. The site has a similar location in the present day landscape to that of Adal vestre 1 (above) with no apparent indications of relevant impact to the DTM from modern activities.
 
 ```{r alveberget8,  echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/alveberget8.png"))
@@ -171,7 +171,7 @@ filter(rcarbon, site_name  == "Auve") %>%
 
 ```
 
-The site limit for Auve was drawn manually based on the description in the publication of the site and the site geometry available in the database Askeladden. The site is located in and around an intersection of the road, parts of the area has been levelled and farmed, and an area to north-west of the site has reportedly been affected by land-slides [@ostmo2008, 16--29] , but the extent of this is difficult to ascertain based on maps of the area. As the simulation results appear reasonable [see also map in @ostmo2008, fig.142], nothing was done to try to correct for these factors. 
+The site limit for Auve was drawn manually based on the description in the publication of the site and the site geometry available in the national heritage database Askeladden. The site is located in and around an intersection of the road, parts of the area has been levelled and farmed, and an area to north-west of the site has reportedly been affected by land-slides [@ostmo2008, 16--29], but the extent of this is difficult to ascertain based on maps of the area. As the simulation results appear reasonable [see also map in @ostmo2008, fig.142], nothing was done to try to correct for these factors. 
 
 ```{r bakke, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 knitr::include_graphics(here("analysis/figures/bakke.png"))
