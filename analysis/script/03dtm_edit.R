@@ -7,21 +7,34 @@ library(rgrass7)
 # created manually based on an inspection of satellite data and the DTM.
 
 # This path has to be set to the local installation of GRASS
-grasspath <- "/usr/lib/grass78"
-# Path to raster data. Stored locally for now
-rpath <- "/home/isak/phd/eaa_presentation/dtm10/"
+# grasspath <- "/usr/lib/grass78"
 
-# Read in data
-dtm <- rast(file.path(rpath, "dtm10_32.tif"))
+try(!is.na(grasspath)) # Uncomment and det path to local GRASS installation
+                       #  above or this will throw and error.
+
+# Due to the file size (c. 1.6 GB), the DTM is stored in 400 tiles that are
+# first merged and then saved at this destination
+dtmpath <-  here::here("analysis/data/derived_data")
+
+# Get path to DTM tiles
+dtmtiles <- list.files(here::here("analysis/data/raw_data/tiled_dtm10"),
+                       pattern= ".*.tif$", full.names = TRUE)
+
+# Load the tiles and merge
+tiles <- sapply(dtmtiles, raster::raster)
+names(tiles)[1:2] <- c('x', 'y')
+dtm <- rast(do.call(raster::merge, tiles))
+
+# Read in vector data defining problem areas to be edited
 clip <- st_read(here::here("analysis/data/raw_data/clipping_poly.gpkg"))
 
 # Make the vector feature a raster
-rclip <- rasterize(vect(clip), dtm)
+rclip <- terra::rasterize(vect(clip), dtm)
 
 # Make the raster NA at the polygons
 dmask <- mask(dtm, rclip, inverse = TRUE)
 
-edrast <- file.path(rpath, "dtm10.tif")
+edrast <- file.path(dtmpath, "dtm10.tif")
 writeRaster(dmask, edrast,
             overwrite = TRUE)
 
