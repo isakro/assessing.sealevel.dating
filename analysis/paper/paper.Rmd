@@ -104,11 +104,8 @@ knitr::knit_hooks$set(plot = function (x, options) {
 ```
 
 ```{r load_dtm, include = FALSE}
-# This chunk tried to the load the edited DTM. Due to the file sizes involved
-# this is not distributed with the repository but had to be assembled by running
-# 03dtm_edit.R which compiles the original DTM stored in 400 tiles, edits this
-# and stores the derived version in the derived data folder. This requires
-# a local installation of GRASS GIS (see the script for more details).
+# This chunk tries to the load the edited DTM. Due to the file sizes involved,
+# this is distributed as tiles which have to be merged by running 00dtm_prep.R 
 
 # Digital terrain model
 dtm <- rast(here("analysis/data/derived_data/dtm10.tif"))

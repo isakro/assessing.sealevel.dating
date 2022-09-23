@@ -35,11 +35,13 @@ bmap <- st_read(here("analysis/data/raw_data/naturalearth_countries.gpkg"))
 # # Specify path to raster data (currently stored locally)
 # dtmpath <- "/home/isak/phd/eaa_presentation/dtm10/dtm10_32.tif"
 
-# Read in raster
-dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
+# This tries to the load the edited DTM. Due to the file sizes involved,
+# this is distributed as tiles which have to be merged by first
+# running 00dtm_prep.R
+dtm <- rast(here("analysis/data/derived_data/dtm10.tif"))
 
-# Path to smaller site area rasters
-siterpath <- "/home/isak/phd/eaa_presentation/sitearea"
+# Path to directory to hold smaller site area rasters
+siterpath <- here("analysis/data/derived_data/sitearea_temp")
 
 # Prespecified height of plot (to be multiplied by number of phases)
 plot_height <- 76
@@ -1535,3 +1537,6 @@ plot_results(sitename, output$sitel, output$datedat, sitearea, bmap,
 ggsave(file = here("analysis/figures/vallermyrene4b.png"), width = 250,
        height = plot_height + (plot_height * length(unique(date_groups))),
        units = "mm")
+
+# Delete all site area rasters stored in sitearea_temp
+do.call(file.remove, list(list.files(siterpath, full.names = TRUE)))

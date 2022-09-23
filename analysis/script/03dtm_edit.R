@@ -6,24 +6,25 @@ library(rgrass7)
 # new values. Polygon data with which to remove these features has been
 # created manually based on an inspection of satellite data and the DTM.
 
-# This path has to be set to the local installation of GRASS
+
+# --- Only the edited DTM is distributed with this research compendium ---
+#                         (see 00dtm_prep.R)
+# To run, this script requires a local installation of GRASS GIS as well as
+# the manual download of unedited DTM from hoydedata.no
+
+
+##  This path has to be set to the local installation of GRASS
 # grasspath <- "/usr/lib/grass78"
 
-try(!is.na(grasspath)) # Uncomment and det path to local GRASS installation
+try(!is.na(grasspath)) # Uncomment and set path to local GRASS installation
                        #  above or this will throw and error.
 
-# Due to the file size (c. 1.6 GB), the DTM is stored in 400 tiles that are
-# first merged and then saved at this destination
-dtmpath <-  here::here("analysis/data/derived_data")
+# Path to locally stored unedited version of the DTM from the
+# Norwegian Mapping Authority (freely available from hoydedata.no)
+# dtm <- rast("/home/isak/spatial_data/dtm10.tif")
 
-# Get path to DTM tiles
-dtmtiles <- list.files(here::here("analysis/data/raw_data/tiled_dtm10"),
-                       pattern= ".*.tif$", full.names = TRUE)
-
-# Load the tiles and merge
-tiles <- sapply(dtmtiles, raster::raster)
-names(tiles)[1:2] <- c('x', 'y')
-dtm <- rast(do.call(raster::merge, tiles))
+try(!is.na(dtm)) # Uncomment and read in locally stored unedited DTM
+                 # above or this will throw and error.
 
 # Read in vector data defining problem areas to be edited
 clip <- st_read(here::here("analysis/data/raw_data/clipping_poly.gpkg"))
@@ -34,6 +35,7 @@ rclip <- terra::rasterize(vect(clip), dtm)
 # Make the raster NA at the polygons
 dmask <- mask(dtm, rclip, inverse = TRUE)
 
+dtmpath <-  here::here("analysis/data/derived_data")
 edrast <- file.path(dtmpath, "dtm10.tif")
 writeRaster(dmask, edrast,
             overwrite = TRUE)

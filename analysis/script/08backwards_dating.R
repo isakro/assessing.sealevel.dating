@@ -14,8 +14,10 @@ load(here("analysis/data/derived_data/01data.RData"))
 load(here("analysis/data/derived_data/02data.RData"))
 load(here("analysis/data/derived_data/06data.RData"))
 
-# Read in raster
-dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
+# This tries to the load the edited DTM. Due to the file sizes involved,
+# this is distributed as tiles which have to be merged by first
+# running 00dtm_prep.R
+dtm <- rast(here("analysis/data/derived_data/dtm10.tif"))
 
 # List all files except those starting with a number.
 # That is, all data files resulting from analysis in 05script.R
@@ -54,39 +56,38 @@ sites_sa <- sites_sa %>%
 # (see supplementary material)
 feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
 
+load(here("analysis/data/derived_data/08data.RData"))
 # # Uncomment to rerun
-shorelinedates <- list()
-for(i in 1:nrow(sites_sa)){
-  print(paste(i, sites_sa$name[i]))
-  if(sites_sa$name[i] %in% feature_sites){
-    shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-                                          elev = dtm,
-                                          disp_curves = displacement_curves,
-                                          sites = sites_sa,
-                                          iso = isobases,
-                                          expratio = expfit$estimate,
-                                          siteelev = "mean",
-                                          reso = 0.001,
-                                          specified_elev = NA,
-                                          sitelimit = FALSE,
-                                          features = rcarb_sa)
-  } else {
-  shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-                                        elev = dtm,
-                                        disp_curves = displacement_curves,
-                                        sites = sites_sa,
-                                        iso = isobases,
-                                        expratio = expfit$estimate,
-                                        siteelev = "mean",
-                                        reso = 0.001,
-                                        specified_elev = NA)
-  }
-}
+# shorelinedates <- list()
+# for(i in 1:nrow(sites_sa)){
+#   print(paste(i, sites_sa$name[i]))
+#   if(sites_sa$name[i] %in% feature_sites){
+#     shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+#                                           elev = dtm,
+#                                           disp_curves = displacement_curves,
+#                                           sites = sites_sa,
+#                                           iso = isobases,
+#                                           expratio = expfit$estimate,
+#                                           siteelev = "mean",
+#                                           reso = 0.001,
+#                                           specified_elev = NA,
+#                                           sitelimit = FALSE,
+#                                           features = rcarb_sa)
+#   } else {
+#   shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+#                                         elev = dtm,
+#                                         disp_curves = displacement_curves,
+#                                         sites = sites_sa,
+#                                         iso = isobases,
+#                                         expratio = expfit$estimate,
+#                                         siteelev = "mean",
+#                                         reso = 0.001,
+#                                         specified_elev = NA)
+#   }
+# }
 
 # save(shorelinedates,
 #      file = here("analysis/data/derived_data/08data.RData"))
-
-load(here("analysis/data/derived_data/08data.RData"))
 
 sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
   filter(probability != 0)

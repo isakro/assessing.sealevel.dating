@@ -14,8 +14,10 @@ load(here("analysis/data/derived_data/01data.RData"))
 load(here("analysis/data/derived_data/02data.RData"))
 load(here("analysis/data/derived_data/06data.RData"))
 
-# Read in raster
-dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
+# This tries to the load the edited DTM. Due to the file sizes involved,
+# this is distributed as tiles which have to be merged by first
+# running 00dtm_prep.R
+dtm <- rast(here("analysis/data/derived_data/dtm10.tif"))
 
 # Example site (effectively stepping through the code from shoreline_date in
 # 04.functions.R)

@@ -43,21 +43,23 @@ brun_rep <- prevdates %>% filter(str_detect(site_name, 'Pauler|Bakke|Sky 1'))
 
 brunlanes <- full_join(brunlanes, brun_rep, by = c("name" = "site_name"))
 
-sdatesp <- list()
-for(i in 1:nrow(brunlanes)){
-  print(brunlanes$name[i])
-  sdatesp[[i]] <- shoreline_date(sitename = brunlanes$name[i],
-                                        elev = dtm,
-                                        disp_curves = displacement_curves,
-                                        sites = brunlanes,
-                                        iso = isobases,
-                                        expratio = expfit3$estimate,
-                                        siteelev = "min",
-                                        reso = 0.001,
-                                 specified_elev = brunlanes$min_elev[i])
-}
-
-bdates <- as_tibble(bind_rows(sdatesp))
+load(here("analysis/data/derived_data/09data.RData"))
+## Uncomment to rerun
+# sdatesp <- list()
+# for(i in 1:nrow(brunlanes)){
+#   print(brunlanes$name[i])
+#   sdatesp[[i]] <- shoreline_date(sitename = brunlanes$name[i],
+#                                         elev = dtm,
+#                                         disp_curves = displacement_curves,
+#                                         sites = brunlanes,
+#                                         iso = isobases,
+#                                         expratio = expfit3$estimate,
+#                                         siteelev = "min",
+#                                         reso = 0.001,
+#                                  specified_elev = brunlanes$min_elev[i])
+# }
+#
+# bdates <- as_tibble(bind_rows(sdatesp))
 
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
@@ -192,7 +194,7 @@ overview <- ggplot() +
 
 
 
-# Code below repurposed from shore_plot() in 04script.R
+# Code below is repurposed from shore_plot() in 04functions.R
 bboxgrid <- st_bbox(simsea)
 anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
 
@@ -283,28 +285,25 @@ sites_sl <- inner_join(sites_sl,
                        dplyr::select(psdates, site_name, min_elev, max_elev),
                        by = c("name" = "site_name"))
 
-sitdates <- list()
-for(i in 1:nrow(sites_sl)){
-  print(c(i, sites_sl$name[i]))
-
-  sitdates[[i]] <- shoreline_date(sitename = sites_sl$name[i],
-                                 elev = dtm,
-                                 disp_curves = displacement_curves,
-                                 sites = sites_sl,
-                                 iso = isobases,
-                                 expratio = expfit$estimate,
-                                 reso = 0.001,
-                                 specified_elev = (sites_sl$min_elev[i]+
-                                                 sites_sl$max_elev[i])/2)
-}
-
-bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
-  filter(probability != 0)
-
-# save(bdates, bdates2,
-#      file = here("analysis/data/derived_data/09data.RData"))
+load(here("analysis/data/derived_data/09data.RData"))
+# Uncomment to rerun
+# sitdates <- list()
+# for(i in 1:nrow(sites_sl)){
+#   print(c(i, sites_sl$name[i]))
 #
-# load(here("analysis/data/derived_data/09data.RData"))
+#   sitdates[[i]] <- shoreline_date(sitename = sites_sl$name[i],
+#                                  elev = dtm,
+#                                  disp_curves = displacement_curves,
+#                                  sites = sites_sl,
+#                                  iso = isobases,
+#                                  expratio = expfit$estimate,
+#                                  reso = 0.001,
+#                                  specified_elev = (sites_sl$min_elev[i]+
+#                                                  sites_sl$max_elev[i])/2)
+# }
+#
+# bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
+#   filter(probability != 0)
 
 # Find 95 % HDR for shoreline dates and median shoreline date
 # for ordering in the plot
