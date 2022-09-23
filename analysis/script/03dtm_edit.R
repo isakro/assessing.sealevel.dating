@@ -6,7 +6,7 @@ library(rgrass7)
 # new values. Polygon data with which to remove these features has been
 # created manually based on an inspection of satellite data and the DTM.
 
-# This path has to be set to local installation of GRASS
+# This path has to be set to the local installation of GRASS
 grasspath <- "/usr/lib/grass78"
 # Path to raster data. Stored locally for now
 rpath <- "/home/isak/phd/eaa_presentation/dtm10/"

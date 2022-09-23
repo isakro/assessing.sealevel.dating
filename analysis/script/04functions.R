@@ -337,7 +337,7 @@ model_phases <- function(sitedates, date_groups = NULL){
   return(list(model, rbind( prior, posterior)))
 }
 
-# Group dates best on whether or not they overlap on 99.7 %
+# Group dates based on whether or not they overlap at 99.7% prob
 group_dates <- function(data, sitename){
   siter <-  filter(data, site_name == sitename)
   ir <- IRanges(as.numeric(siter$sig_3_start_bc),
