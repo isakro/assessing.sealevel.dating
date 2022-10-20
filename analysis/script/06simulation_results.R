@@ -48,10 +48,6 @@ for(i in 1:length(results_list)){
 
 # Collapse list of lists into a single data frame
 distances <- results %>% bind_rows()
-# distances <-  distances$results
-
-# Lunaveien and Dybdalshei 2 are excluded
-# (see site evaluations in the supplementary material)
 
 # Negative values for Gunnarsrød 5 and Pjonkerød R1 are to be set to zero
 # (see site evaluations in the supplementary material)
@@ -405,3 +401,4 @@ ggsave(file = here("analysis/figures/results2.png"), grd,
 # Save results and exponential functions
 save(distances, expfit, expfit2, expfit3,
      file = here("analysis/data/derived_data/06data.RData"))
+

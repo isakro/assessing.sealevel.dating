@@ -1,7 +1,6 @@
 library(tidyverse)
 library(here)
 library(sf)
-library(cowplot)
 
 # Load radiocarbon and site data from the first script
 load(here("analysis/data/derived_data/01data.RData"))
@@ -52,15 +51,7 @@ arendal$name <- "Arendal"
 horten <-  curve_interval(xvals, skoppum_raw)
 horten$name <- "Horten"
 
-# # Transform to BCE/CE using Joe Roe's era package and make BCE negative
-# # to corresponds to oxcAAR later on. [This gave some issues with rounding
-# errors and has been solved differently below]
-# displacement_curves <- rbind(larvik, tvedestrand, arendal, horten)
-# displacement_curves$years <- yr(displacement_curves$years, "cal BP")
-# displacement_curves$years <- yr_transform(displacement_curves$years,
-#                              "BCE") * -1
-# xvals <- as.integer(yr_transform(yr(xvals, "cal BP"), "BCE") * -1)
-
+# # Transform to BCE/CE
 displacement_curves <- rbind(larvik, tvedestrand, arendal, horten)
 displacement_curves$years <- (displacement_curves$years - 1950) * -1
 xvals <- (xvals - 1950) * -1

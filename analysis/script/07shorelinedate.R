@@ -6,10 +6,10 @@ library(sf)
 library(hdrcde)
 
 # For reproducibility
-set.seed(321)
+set.seed(1)
 
 # Load required functions and prepared data
-source(here("analysis/script/04functions.R"))
+source(here("analysis/script/04analysis_functions.R"))
 load(here("analysis/data/derived_data/01data.RData"))
 load(here("analysis/data/derived_data/02data.RData"))
 load(here("analysis/data/derived_data/06data.RData"))

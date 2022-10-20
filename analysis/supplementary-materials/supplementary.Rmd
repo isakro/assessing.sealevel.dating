@@ -1083,7 +1083,7 @@ filter(rcarbon, site_name  == "Vallermyrene 1b") %>%
         booktabs = TRUE,  linesep = c(""), escape = FALSE)
 ```
 
-Vallermyrene 1b is the younger than Vallermyrene 1a (above), as indicated both by the radiocarbon date, typology and elevation [@reitan2014f]. The DTM did not require editing.
+Vallermyrene 1b is younger than Vallermyrene 1a (above), as indicated both by the radiocarbon date, typology and elevation [@reitan2014f]. The DTM did not require editing.
 
 ```{r vallermyrene2, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/vallermyrene2.png"))
@@ -1129,6 +1129,12 @@ filter(rcarbon, site_name  == "Vallermyrene 4b") %>%
 ```
 
 Vallermyrene 4b is slightly younger than Vallermyrene 4a (above). Typology and radiocarbon dates match [@eigeland2014]. The DTM was edited to remove the railway track running by the site and a gravel pit.
+
+## Model comparison
+
+This section provides some further elaboration on the choice of an exponential model to describe the vertical distance between sites and shoreline. The normal distribution has been fit when including the negative values. After this, two exponential models were fit to the distrbutions. One when forcing negative values to zero and one where these are made NA, to evaluate the relative impact of these different choices. As the differences are negligeble, the choice was made to use the first solution. This is also the to which the power law distribution has been fit. To be able to fit a power law distribution, 0.01 have been added to all values, including for the normal and exponential functions, to avoid having values of zero. All models are fit using maximum likelihood estimation. 
+
+Although it appears evident that the exponential model is the best fit simply from inspecting the, the models have also been compared using the Schwarz criterion, often also termed the Bayesian information criteria [BIC, see e.g. @timpson2021; @crema2019 for previous use in archaeology]. This evaluates the ability of the models to describe the data while also taking into account the number of parameters in the models to avoid over-fitting. 
 
 ## Numerical result of re-dating {-}
 

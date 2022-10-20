@@ -13,7 +13,7 @@ library(sf)
 library(topoDistance)
 library(cowplot)
 
-source(here("analysis/script/04functions.R"))
+source(here("analysis/script/04analysis_functions.R"))
 load(here("analysis/data/derived_data/01data.RData"))
 load(here("analysis/data/derived_data/02data.RData"))
 load(here("analysis/data/derived_data/06data.RData"))
