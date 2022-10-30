@@ -63,15 +63,18 @@ prevdates <- read.csv((here(
          end = end * -1) %>%
   dplyr::rename("site_name" = "name")
 
+# Load simulation results and model selection
+load(here("analysis/data/derived_data/06data.RData"))
+
 # Load results of re-dating previously shoreline dated sites
 load(here("analysis/data/derived_data/09data.RData"))
 ```
 
-## Introduction {-}
+## Contents 
 
-This document presents the sensitivity analysis performed for informing the number of simulation runs in the analysis of each site, the analysis of each individual site, and the results of re-dating previously shoreline dated sites. All underlying and derived data are available in the online repository for the paper at https://osf.io/7F9SU
+This document presents the sensitivity analysis performed for informing the number of simulation runs in the analysis of each site, the analysis of each individual site, the evaluation of different for models for characterising the results, and the results of re-dating previously shoreline dated sites. All underlying and derived data are available in the online repository for the paper at https://osf.io/7F9SU
 
-## Sensitivity analysis {-}
+## Sensitivity analysis
 
 The first figure shows the result of a test run for the site Hovland 5, where the simulations were run 5000 times to identify when the means for the different distance measures converged. This was used to inform the use of 1000 simulation runs for the subsequent analysis of the other sites, as the means appear to have stabilised sufficiently by this point. Hovland 5 was chosen because the site only has a single ^14^C-date, giving an uncertain age, and because it is located in an area of the landscape where the landscape results in quite large variability on the distance measures.
 
@@ -80,7 +83,7 @@ include_graphics(here("analysis/figures/sample_size.png"))
 
 ```
 
-## Site analyses {-}
+## Site analyses
 
 The presentation of simulation results for each individual site also has some additional notes pertaining to edits to the DTM, treatment of ^14^C-dates and other relevant information. The sites are presented in alphabetical order. 
 
@@ -1130,13 +1133,35 @@ filter(rcarbon, site_name  == "Vallermyrene 4b") %>%
 
 Vallermyrene 4b is slightly younger than Vallermyrene 4a (above). Typology and radiocarbon dates match [@eigeland2014]. The DTM was edited to remove the railway track running by the site and a gravel pit.
 
-## Model comparison
+## Model comparison and selection
 
-This section provides some further elaboration on the choice of an exponential model to describe the vertical distance between sites and shoreline. The normal distribution has been fit when including the negative values. After this, two exponential models were fit to the distrbutions. One when forcing negative values to zero and one where these are made NA, to evaluate the relative impact of these different choices. As the differences are negligeble, the choice was made to use the first solution. This is also the to which the power law distribution has been fit. To be able to fit a power law distribution, 0.01 have been added to all values, including for the normal and exponential functions, to avoid having values of zero. All models are fit using maximum likelihood estimation. 
+In the figure below a series of standard models have been fit to the simulation results older than 2500 BCE (presented with negative values set to zero in Figure 7A in the main text). The models were fit by means of maximum likelihood estimation. Before fitting all models, the values have been adjusted by adding a constant of 0.001 to avoid zero values for the logistic, log normal, power law and gamma distributions. The models have only been fit to the positive values. This was done both when removing the negative values and when forcing these to zero, before adjusting by 0.001. As the difference between these two solutions was negligible and as the assumption here is that the negative values in actuality reflect a distance of zero (see also main text), the result of employing the latter approach is reported on here. The performance of the models were then compared by means of the Akaike information criterion (AIC) and the Bayesian (or Schwarz) information criterion (BIC). The AIC and BIC evaluate the degree to which the models fit to the data, while penalising for the number of model parameters to avoid over-fitting [e.g @burnham2002; for applications in archaeology see e.g. @eve2014; @timpson2021]. As lower values point to a better model, it is evident from the results that the gamma distribution is the best candidate. The approach taken here could have benefited from a more sophisticated treatment of the zero-values, which is related to the fact that these are likely to be a mix of both exact zeros, the case when there is an actual intersection between sea and site, and, although probably to a far lesser extent, zeroes that result from the case when the distance between site and sea is below the detection limit due to the employed methods and the resolution of the spatial data [see e.g. @dunn2005; @helsel2005]. In conclusion, however, the gamma represents a reasonable first approximation.
 
-Although it appears evident that the exponential model is the best fit simply from inspecting the, the models have also been compared using the Schwarz criterion, often also termed the Bayesian information criteria [BIC, see e.g. @timpson2021; @crema2019 for previous use in archaeology]. This evaluates the ability of the models to describe the data while also taking into account the number of parameters in the models to avoid over-fitting. 
+```{r model_selection, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
+include_graphics(here("analysis/figures/model_comparison.png"))
+```
 
-## Numerical result of re-dating {-}
+``` {r}
+# Table with model paramters and BIC+AIC scores
+
+mcdf$parameters <- linebreak(mcdf$parameters)
+
+mcdf[,c(1,6, 3, 5, 4)] %>% 
+kable("latex", caption = "Model comparison using AIC and BIC. The models are listed in the order of performance.",
+         col.names = c("Model",
+                    "Parameters",
+                    "AIC",
+                    "BIC",
+                    "Log-liklihood"),
+        booktabs = TRUE, escape = FALSE,
+        longtable = TRUE, row.names = FALSE) %>% 
+        column_spec(2, width = "6cm") %>% 
+        kable_styling(latex_options = "striped")
+        # kableExtra::kable_styling(latex_options= c("scale_down"))
+
+```
+
+## Numerical result of re-dating
 
 ```{r}
 # Find 95% HDR for shoreline dates and reorder the sitesby median date 
@@ -1201,19 +1226,20 @@ redat <- left_join(tabdat, sitdat, by = c("site_name" = "name")) %>%
             gsub("$", "CE", start95)))) %>% 
   mutate(elev = paste0(min_elev, "\u2013", max_elev),
          repdate = paste0(start.x, "\u2013", end.x),
-         hdrdate = paste0(start95, "\u2013", end95)) %>% 
-  select(site_name, elev, repdate, hdrdate, reference)
+         hdrdate = paste0(start95, "\u2013", end95)) %>%
+  dplyr::select(site_name, elev, repdate, hdrdate, reference)
 
 redat[match(unique(redat$site_name), redat$site_name),] %>% 
    rowid_to_column("id") %>% 
-   kable(caption = "Shoreline dating previously shorline dated sites. The range of the 95\\% HDR is rounded off to the nearest 10 years to reduce spurious precision.",
-         col.names = c("", 
+   kable(caption = "The result of shoreline dating previously shorline dated sites using the method proposed here. The range of the 95\\% HDR is rounded to the nearest 10 years to reduce spurious precision.",
+         col.names = c("",
                      "Site",
-                    "Elevation",
+                    "Reported elevation",
                     "Reported date",
                     "95% HDR",
                     "Reference"),
-        booktabs = TRUE,  linesep = c(""), escape = TRUE, longtable = TRUE)
+        booktabs = TRUE,  linesep = c(""), escape = TRUE, longtable = TRUE) %>% 
+  kable_styling(font_size = 8, latex_options = "striped")
   
 ```
 

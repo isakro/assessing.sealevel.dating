@@ -18,11 +18,14 @@ load(here("analysis/data/derived_data/06data.RData"))
 # this is distributed as tiles which have to be merged by first
 # running 00dtm_prep.R
 dtm <- rast(here("analysis/data/derived_data/dtm10.tif"))
+dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
 
 # List all files except those starting with a number.
 # That is, all data files resulting from analysis in 05script.R
 datfiles <- grep("^[0-9]", list.files(here("analysis/data/derived_data")),
                  invert = TRUE, value = TRUE)
+# Exclude the temp directory
+datfiles <- datfiles[ !grepl("sitearea_temp", datfiles) ]
 
 # Create empty list to hold dat data
 posterior_list <- list()
@@ -56,8 +59,10 @@ sites_sa <- sites_sa %>%
 # (see supplementary material)
 feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
 
+
+# Load shoreline date results (uncomment below to rerun)
 load(here("analysis/data/derived_data/08data.RData"))
-# # Uncomment to rerun
+
 # shorelinedates <- list()
 # for(i in 1:nrow(sites_sa)){
 #   print(paste(i, sites_sa$name[i]))
@@ -67,7 +72,9 @@ load(here("analysis/data/derived_data/08data.RData"))
 #                                           disp_curves = displacement_curves,
 #                                           sites = sites_sa,
 #                                           iso = isobases,
-#                                           expratio = expfit$estimate,
+#                                           exponential = FALSE,
+#                                           modelfit = gammafit,
+#                                           # expratio = expfit$estimate,
 #                                           siteelev = "mean",
 #                                           reso = 0.001,
 #                                           specified_elev = NA,
@@ -79,19 +86,19 @@ load(here("analysis/data/derived_data/08data.RData"))
 #                                         disp_curves = displacement_curves,
 #                                         sites = sites_sa,
 #                                         iso = isobases,
-#                                         expratio = expfit$estimate,
+#                                         exponential = FALSE,
+#                                         modelfit = gammafit,
+#                                         # expratio = expfit$estimate,
 #                                         siteelev = "mean",
 #                                         reso = 0.001,
 #                                         specified_elev = NA)
 #   }
 # }
-
 # save(shorelinedates,
 #      file = here("analysis/data/derived_data/08data.RData"))
 
 sdates <- bind_rows(shorelinedates) %>% group_by(site_name) %>%
   filter(probability != 0)
-
 
 # Radiocarbon dates corresponding to site inventory.
 # First group
@@ -140,7 +147,7 @@ for(i in 1:length(unique(corshore$site_name))){
   groupdat$start <- segdat[seq(1, nrow(segdat), 2), "X95."]
   groupdat$end <- segdat[seq(2, nrow(segdat), 2), "X95."]
   groupdat$group <- seq(1:length(dat$hdr[c(TRUE, FALSE)]))
-  groupdat$year_median <- dat$mode
+  groupdat$year_median <- median(as.numeric(dat$mode))
 
   hdrdat <- rbind(hdrdat, groupdat)
 }

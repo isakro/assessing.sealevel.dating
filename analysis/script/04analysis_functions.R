@@ -627,6 +627,36 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs,
   #                       crs = st_crs(sitel))))
 }
 
+# Function to only simulate the sea without finding distances
+simulate_sea <- function(nsim, sitel, sitecurve, sitearea, posteriorprobs){
+
+  searasters <- list(length = nsim)
+
+  for(i in 1:nsim){
+    # Set up sampling frame from sum of posterior densities
+    samplingframe <- list(x = posteriorprobs[["dates"]],
+                          y = posteriorprobs[["probabilities"]])
+    # Draw single sample date
+    sdate <- with(samplingframe, sample(x, size = 1, prob = y))
+
+    # Find sealevel-range at sampled date
+    uppers <- approx(sitecurve[,"years"], sitecurve[,"upperelev"],
+                     xout = sdate)[["y"]]
+    lowers <- approx(sitecurve[,"years"], sitecurve[,"lowerelev"],
+                     xout = sdate)[["y"]]
+
+    sealevel <- sample(seq(lowers, uppers, 0.05), 1)
+
+    # Create polygon representing the elevation of the sea level
+    rclmat <- matrix(c(sealevel, Inf, NA, 0, sealevel, 1),
+                     ncol = 3, byrow = TRUE)
+    searasters[[i]] <- raster(terra::classify(sitearea, rclmat))
+  }
+  rs <- stack(searasters)
+  searaster <- calc(rs, sum, na.rm = TRUE)
+  return(searaster)
+}
+
 # Define function to count the number of times the sea is simulated as present
 # for all raster cells
 sea_overlaps <- function(sitearea, seapolygons){
@@ -1043,8 +1073,8 @@ shoreline_date <- function(sitename, elev = dtm,
                            disp_curves = displacement_curves,
                            sites = sites_sa,
                            iso = isobases,
-                           reso = 0.1,
-                           expratio, siteelev = "mean",
+                           reso = 0.1, exponential = TRUE,
+                           modelfit, siteelev = "mean",
                            specified_elev = NA,
                            sitelimit = TRUE,
                            features = NA){
@@ -1082,14 +1112,24 @@ shoreline_date <- function(sitename, elev = dtm,
     }
   }
 
+  if(exponential){
   inc <- seq(0, as.numeric(siteelev), reso)
-
   expdat <- data.frame(
     offset = inc,
-    px = pexp(inc, rate = expfit$estimate)) %>%
+    px = pexp(inc, rate = modelfit$estimate)) %>%
     mutate(probs = px - lag(px, default =  dplyr::first(px))) %>%
     tail(-1) %>%
     filter(px < 0.99999) # Probability cut-off
+  }else{
+  inc <- seq(0.001, as.numeric(siteelev), reso)
+  expdat <- data.frame(
+    offset = inc,
+    px = pgamma(inc, shape = modelfit$estimate[1],
+                     rate = modelfit$estimate[2])) %>%
+    mutate(probs = px - lag(px, default =  dplyr::first(px))) %>%
+    tail(-1) %>%
+    filter(px < 0.99999) # Probability cut-off
+  }
 
   dategrid <- data.frame(
     years = seq(-10000, 2000, 1),

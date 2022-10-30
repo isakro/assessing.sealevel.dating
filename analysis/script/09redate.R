@@ -45,21 +45,22 @@ brunlanes <- full_join(brunlanes, brun_rep, by = c("name" = "site_name"))
 
 load(here("analysis/data/derived_data/09data.RData"))
 ## Uncomment to rerun
-# sdatesp <- list()
-# for(i in 1:nrow(brunlanes)){
-#   print(brunlanes$name[i])
-#   sdatesp[[i]] <- shoreline_date(sitename = brunlanes$name[i],
-#                                         elev = dtm,
-#                                         disp_curves = displacement_curves,
-#                                         sites = brunlanes,
-#                                         iso = isobases,
-#                                         expratio = expfit3$estimate,
-#                                         siteelev = "min",
-#                                         reso = 0.001,
-#                                  specified_elev = brunlanes$min_elev[i])
-# }
-#
-# bdates <- as_tibble(bind_rows(sdatesp))
+sdatesp <- list()
+for(i in 1:nrow(brunlanes)){
+  print(brunlanes$name[i])
+  sdatesp[[i]] <- shoreline_date(sitename = brunlanes$name[i],
+                                        elev = dtm,
+                                        disp_curves = displacement_curves,
+                                        sites = brunlanes,
+                                        iso = isobases,
+                                        exponential = FALSE,
+                                        modelfit = gammafit,
+                                        siteelev = "min",
+                                        reso = 0.001,
+                                 specified_elev = brunlanes$min_elev[i])
+}
+
+bdates <- as_tibble(bind_rows(sdatesp))
 
 # Find 95 % probability range for shoreline dates and median shoreline date
 # for ordering in the plot
@@ -90,7 +91,8 @@ bdates <- bdates %>%  group_by(site_name) %>%
            probability != 0)
 
 # Lasse Jaksland's dates of the Brunlanes sites. He provided a maximum age,
-# and argued that the relative uncertainty would be around 50 years.
+# and argued that the uncertainty would be around 50 years when sites are seen
+# in relation to each other and 200 years when considered individually.
 jaksland <- brunlanes %>%
   mutate(end2 = start + 200)
 
@@ -145,11 +147,8 @@ samplingframe <- dplyr::filter(bdates, site_name == sitename) %>%
 samplingframe$rcarb_cor = "t"
 
 # Simulate sea-level and retrieve distances (uncomment to re-run)
-output <- sample_shoreline(1000, sitel, sitecurve, sitearea,
-                              posteriorprobs = samplingframe)
-# Generate grid with dtm resolution holding number of overlaps for each cell
-# (also takes quite some time to execute)
-simsea <- sea_overlaps(sitearea, output$seapol)
+simsea <- simulate_sea(nsim = 1000, sitel, sitecurve ,
+                        sitearea, posteriorprobs = samplingframe)
 
 # Create overview map for inset
 imap <- st_read(here('analysis/data/raw_data/naturalearth_countries.gpkg'))
@@ -191,16 +190,18 @@ overview <- ggplot() +
   scale_y_continuous(expand=c(0,0)) +
   labs(x = NULL, y = NULL)
 
-
-
-
-# Code below is repurposed from shore_plot() in 04functions.R
+# Code below is repurposed from shore_plot() in 04analysis_functions.R
 bboxgrid <- st_bbox(simsea)
 anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
 
 
 # Make 0 overlaps NA to remove colour using na.values in call to plot
-simsea <- mutate(simsea, overlaps = ifelse(simsea == 0,  NA, simsea))
+simsea[simsea == 0] <- NA
+# Make amenable to plotting
+seaspat <- as(simsea, "SpatialPixelsDataFrame")
+searasterdf <- as.data.frame(seaspat)
+colnames(searasterdf) <- c("value", "x", "y")
+
 
 # Make present day sea-level 0 (for hillshade)
 sitearea[sitearea <= 0] <- 0
@@ -241,7 +242,7 @@ bmap <- ggplot() +
   geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
   scale_fill_gradient(low = NA, high = NA, na.value = "white") +
   new_scale_fill() +
-  geom_sf(data = simsea, aes(alpha = overlaps), col = NA,
+  geom_raster(data = searasterdf, aes(x = x, y = y, alpha = value),
           fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff #"#dbe3f3"
   geom_sf(data = st_centroid(pauler), size = 1, shape = 21, fill = NA) +
   # geom_label_repel(data = site_coords, aes(x = X, y = Y, label = name),
@@ -285,25 +286,31 @@ sites_sl <- inner_join(sites_sl,
                        dplyr::select(psdates, site_name, min_elev, max_elev),
                        by = c("name" = "site_name"))
 
+# Uncomment the code below to rerun instead of loading precompiled results.
 load(here("analysis/data/derived_data/09data.RData"))
-# Uncomment to rerun
-# sitdates <- list()
-# for(i in 1:nrow(sites_sl)){
-#   print(c(i, sites_sl$name[i]))
-#
-#   sitdates[[i]] <- shoreline_date(sitename = sites_sl$name[i],
-#                                  elev = dtm,
-#                                  disp_curves = displacement_curves,
-#                                  sites = sites_sl,
-#                                  iso = isobases,
-#                                  expratio = expfit$estimate,
-#                                  reso = 0.001,
-#                                  specified_elev = (sites_sl$min_elev[i]+
-#                                                  sites_sl$max_elev[i])/2)
-# }
-#
-# bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
-#   filter(probability != 0)
+sitdates <- list()
+for(i in 1:nrow(sites_sl)){
+  print(c(i, sites_sl$name[i]))
+
+  sitdates[[i]] <- shoreline_date(sitename = sites_sl$name[i],
+                                 elev = dtm,
+                                 disp_curves = displacement_curves,
+                                 sites = sites_sl,
+                                 iso = isobases,
+                                 exponential = FALSE,
+                                 modelfit = gammafit,
+                                 # expratio = expfit$estimate,
+                                 reso = 0.001,
+                                 specified_elev = (sites_sl$min_elev[i]+
+                                                 sites_sl$max_elev[i])/2)
+}
+
+bdates2 <- bind_rows(sitdates) %>% group_by(site_name) %>%
+  filter(probability != 0)
+
+
+# save(bdates, bdates2, simsea,
+#      file = here("analysis/data/derived_data/09data.RData"))
 
 # Find 95 % HDR for shoreline dates and median shoreline date
 # for ordering in the plot

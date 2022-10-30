@@ -31,12 +31,16 @@ sitecurve <- interpolate_curve(years = xvals,
 sitecurve$name <- sitename
 siteelev <- terra::extract(dtm, vect(sitel), fun = mean)[2]
 
-inc <- seq(0, as.numeric(siteelev), 0.001)
+inc <- seq(0.001, as.numeric(siteelev), 0.001)
 
 expdat <- data.frame(
   offset = inc,
   # Cumulative exponential distribution function
-  px = pexp(inc, rate = expfit$estimate)) %>%
+  # px = pexp(inc, rate = expfit$estimate)) %>%
+  # px = plnorm(inc, meanlog = lognormfit$estimate[1],
+  #             sdlog = lognormfit$estimate[2]))  %>%
+  px = pgamma(inc, shape = gammafit$estimate[1],
+              rate = gammafit$estimate[2])) %>%
   # Probability for each elevation increment is given by subtracting the
   # previous cumulative probability
   mutate(probs = px - lag(px, default =  dplyr::first(px))) %>%
@@ -50,7 +54,7 @@ dategrid <- data.frame(
 for(i in 1:nrow(expdat)){
   adjusted_elev <- as.numeric(siteelev - expdat$offset[i])
   if(!(adjusted_elev > 0)) { # Do not allow sea-level to go below present
-    adjusted_elev <- 0.01
+    adjusted_elev <- 0.001
   }
   # Find lower date
   lowerd <- round(approx(sitecurve[,"lowerelev"],
@@ -109,18 +113,17 @@ ggplot() +
   theme_bw() +
   theme(legend.position = "None")
 
-# , breaks = c(0, 20, 40, as.numeric(siteelev), 80),
-# labels = c("0", "20", "40", expression(alpha), "80")
-
 #  For plotting purposes to close the geom_polygon on the y-axis
 expdatt <- rbind(c(0, 0, 0), expdat)
 
 # Code taken from oxcAAR to plot density to y-axis
 x_extent <- ggplot_build(plt)$layout$panel_scales_x[[1]]$range$range
-expdatt$probs_scaled <- expdatt$probs / max(expdatt$probs) *
-  diff(x_extent)/6 + x_extent[1]
+expdatt$probs_scaled <- expdatt$probs / max(expdatt$probs) * 1 *
+  diff(x_extent) + x_extent[1]
 
-dplt <- plt + geom_polygon(data = expdatt, aes(x =  probs_scaled,
+
+dplt <-
+plt + geom_polygon(data = expdatt, aes(x =  probs_scaled,
                                        y = as.numeric(siteelev) - offset),
                    fill = "#046c9a", alpha = 0.6) +
   geom_hline(yintercept = as.numeric(siteelev), linetype = "dashed",
