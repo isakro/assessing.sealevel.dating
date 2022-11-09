@@ -6,6 +6,9 @@ MAINTAINER Isak Roalkvam <isak.roalkvam@iakh.uio.no>
 
 COPY . /assessing.sealevel.dating
 
+RUN Rscript -e 'install.packages("BiocManager", repos="https://cloud.r-project.org")'
+RUN Rscript -e 'BiocManager::install("IRanges")'
+
 # go into the repo directory
 RUN . /etc/environment \
   # Install linux depedendencies here
