@@ -29,7 +29,6 @@ datfiles <- datfiles[ !grepl("sitearea_temp", datfiles) ]
 
 # Create empty list to hold dat data
 posterior_list <- list()
-
 # Loop over, load and assign them to the list
 for(i in 1:length(datfiles)){
   # Load date data
@@ -48,52 +47,52 @@ rdates <- rdates %>%  group_by(site_name, group) %>%
   # If there is a sum, exclude the rest
   filter(class == 'sum' | all(class != 'sum')) %>%
   ungroup() %>%
-  filter(class != "aprior")
+  filter(class != "aprior") %>%
+  filter(!(site_name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
 
 # Exclude sites not analysed
 # (see supplementary material for more on this)
 sites_sa <- sites_sa %>%
   filter(!(name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
 
-# Specify for which sites to not shoreline date the site limit
-# (see supplementary material)
+# Specify for which sites to not shoreline date the site limit but rather
+# use features (see supplementary material)
 feature_sites <- c("Langangen Vestgård 7", "Vallermyrene 2")
-
 
 # Load shoreline date results (uncomment below to rerun)
 load(here("analysis/data/derived_data/08data.RData"))
 
-# shorelinedates <- list()
-# for(i in 1:nrow(sites_sa)){
-#   print(paste(i, sites_sa$name[i]))
-#   if(sites_sa$name[i] %in% feature_sites){
-#     shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-#                                           elev = dtm,
-#                                           disp_curves = displacement_curves,
-#                                           sites = sites_sa,
-#                                           iso = isobases,
-#                                           exponential = FALSE,
-#                                           modelfit = gammafit,
-#                                           # expratio = expfit$estimate,
-#                                           siteelev = "mean",
-#                                           reso = 0.001,
-#                                           specified_elev = NA,
-#                                           sitelimit = FALSE,
-#                                           features = rcarb_sa)
-#   } else {
-#   shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
-#                                         elev = dtm,
-#                                         disp_curves = displacement_curves,
-#                                         sites = sites_sa,
-#                                         iso = isobases,
-#                                         exponential = FALSE,
-#                                         modelfit = gammafit,
-#                                         # expratio = expfit$estimate,
-#                                         siteelev = "mean",
-#                                         reso = 0.001,
-#                                         specified_elev = NA)
-#   }
-# }
+shorelinedates <- list()
+for(i in 1:nrow(sites_sa)){
+  print(paste(i, sites_sa$name[i]))
+  if(sites_sa$name[i] %in% feature_sites){
+    shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+                                          elev = dtm,
+                                          disp_curves = displacement_curves,
+                                          sites = sites_sa,
+                                          iso = isobases,
+                                          exponential = FALSE,
+                                          modelfit = gammafit,
+                                          # expratio = expfit$estimate,
+                                          siteelev = "mean",
+                                          reso = 0.001,
+                                          specified_elev = NA,
+                                          sitelimit = FALSE,
+                                          features = rcarb_sa)
+  } else {
+  shorelinedates[[i]] <- shoreline_date(sitename = sites_sa$name[i],
+                                        elev = dtm,
+                                        disp_curves = displacement_curves,
+                                        sites = sites_sa,
+                                        iso = isobases,
+                                        exponential = FALSE,
+                                        modelfit = gammafit,
+                                        # expratio = expfit$estimate,
+                                        siteelev = "mean",
+                                        reso = 0.001,
+                                        specified_elev = NA)
+  }
+}
 # save(shorelinedates,
 #      file = here("analysis/data/derived_data/08data.RData"))
 
@@ -116,8 +115,10 @@ corgroupsn <- rdates %>%
   group_by(site_name) %>%
   filter(group != min(group)) %>%
   mutate(group2 = ifelse(group == min(group), 2,
-                         ifelse(group == min(group)+1 , 3, 4))) %>%
+                         ifelse(group == min(group) + 1 , 3, 4))) %>%
   filter(n() != sum(is.na(name)))
+
+corgroupsn %>% group_by(site_name) %>% distinct(group)
 
 # Struggled a bit with aes() for geom_ridgeline, so instead
 # of aes(col = group2), all three remaining groups are separated here
@@ -188,8 +189,7 @@ shrplt <- ggplot(data = hdrdat,
                                       y = site_name), size = 0.5, col = "black",
                  position = position_dodge(width = 0.3, preserve = 'single'),
                  inherit.aes = FALSE) +
-  labs(x = "BCE/CE", y = "", title = paste("\U03BB =",
-                                  as.numeric(round(expfit$estimate, 3)))) +
+  labs(x = "BCE/CE", y = "") +
   scale_x_continuous(breaks = c(seq(-10000, -4000, 2000), -2500, 0, 2000)) +
   theme_bw()
 
@@ -244,7 +244,7 @@ hdr_func <- function(x) {
 }
 
 # Create base for age difference plot
-# Use shorline date data to the get the ordering correct first
+# Use shoreline date data to the get the ordering correct first
 agedfplt <- ggplot(data = hdrdat,
        aes(x = year_median, y = reorder(site_name, -year_median))) +
   geom_segment(data = hdrdat, aes(x = start, xend = end,
@@ -349,79 +349,26 @@ difplt <- splt +  agedfplt2 + agedfplt3 + agedfplt4 + plot_layout(nrow = 1)
 ggsave(file = here("analysis/figures/shoredate2.png"), difplt,
        width = 200, height = 200, units = "mm")
 
+# Retrieve non-correlating dates as well, for reporting in the main text
+posterior_list <- list()
 
-# # Example site for development
-# sitename <- "Dybdalshei 1" #
-# sitel <- filter(sites_sa, name == sitename)
-#
-# sitecurve <- interpolate_curve(years = xvals,
-#                                target = sitel,
-#                                dispdat = displacement_curves,
-#                                isodat = isobases)
-# sitecurve$name <- sitename
-#
-# siteelev <- terra::extract(dtm, vect(sitel), fun = min)[2]
-#
-# # Exponential decay: y = a(1-b)x
-# # b =  decay factor (identified ratio)
-# # a = original amount before decay (1 here)
-# # x = time (distance here)
-#
-# inc <- seq(0, 80, 0.1)
-#
-# expdat <- data.frame(
-#   offset = inc,
-#   px = pexp(inc, rate = expfit$estimate)) %>%
-#   mutate(probs = px - lag(px, default =  dplyr::first(px))) %>%
-#   tail(-1) %>%
-#   filter(px < 0.99999) # Probability cut-off
-#
-# dategrid <- data.frame(
-#   years = seq(-10000, 2000, 1),
-#   probability = 0)
-#
-# for(i in 1:nrow(expdat)){
-#   adjusted_elev <- as.numeric(siteelev - expdat$offset[i])
-#   if(!(adjusted_elev > 0)) {
-#     adjusted_elev <- 0.01
-#   }
-#   # Find lower date, subtracting offset (defaults to 0)
-#   lowerd <- round(approx(sitecurve[,"lowerelev"],
-#                           xvals, xout = adjusted_elev)[['y']])
-#
-#   # Find upper date, subtracting offset (defaults to 0)
-#   upperd <- round(approx(sitecurve[,"upperelev"],
-#                           xvals, xout = adjusted_elev)[['y']])
-#
-#   # Find youngest and oldest date
-#   earliest <- min(c(lowerd, upperd))
-#   latest <- max(c(lowerd, upperd))
-#
-#   print(c(earliest, latest))
-#
-#   # Add probability to each year in range
-#   if(!is.na(latest) && !is.na(earliest)){
-#
-#     year_range <- seq(earliest, latest, 1)
-#     prob <- 1/length(year_range)*expdat$probs[i]
-#
-#     dategrid[dategrid$years %in% year_range, "probability"] <-
-#       dategrid[dategrid$years %in% year_range, "probability"] + prob
-#   }
-# }
-#
-# system.time(dategrid <- shoreline_date("Dybdalshei 1",
-#             expratio = expfit$estimate, res = 0.001))
-#
-# dategrid %>%
-# ggplot() +
-#   ggridges::geom_ridgeline(aes(x = years, y = 0,
-#               height = cumsum(probability)),
-#   colour = "black", fill = "grey") +
-#   theme_bw()
-#
-# dategrid %>%
-#   ggplot() +
-#   ggridges::geom_ridgeline(aes(x = years, y = 0, height = probability),
-#                            colour = "black", fill = "grey") +
-#   theme_bw()
+for(i in 1:length(datfiles)){
+  # Load date data
+  load(file.path(here("analysis/data/derived_data", datfiles[i])))
+  posterior_list[[i]] <- output[!(names(output) %in%
+                                    c("", "sitel", "sitecurve"))]$datedat %>%
+    # Make sure site name is included on all rows (sums have NA)
+    mutate(site_name = unique(na.omit(site_name)))
+}
+
+# Unpack list of lists
+ardates <- posterior_list %>% bind_rows()
+ardates <- ardates %>%  group_by(site_name, group) %>%
+  # If there is a sum, exclude the rest
+  filter(class == 'sum' | all(class != 'sum')) %>%
+  ungroup() %>%
+  filter(class != "aprior") %>%
+  filter(!(site_name %in% c("Dybdalshei 2", "Lunaveien", "Frebergsvik C")))
+
+save(rdates, ardates,
+     file = here("analysis/data/derived_data/08posterior_rcarbon.RData"))

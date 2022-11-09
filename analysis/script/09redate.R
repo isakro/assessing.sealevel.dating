@@ -117,8 +117,7 @@ dateplot <- ggplot(data = hdrdat, aes(x = year_median,
                                       y = name), size = 0.75, col = "red",
                  position = position_dodge(width = 0.5, preserve = 'single'),
                  inherit.aes = FALSE) +
-  labs(y = "", x = "BCE", title = paste("\U03BB =",
-                          as.numeric(round(expfit3$estimate, 3)))) +
+  labs(y = "", x = "BCE") +
   xlim(c(-10000, -7000)) +
   theme_bw()
 
@@ -363,10 +362,10 @@ redateplt <- ggplot(data = hdrdat, aes(x = year_median, y = site_name)) +
                size = 1, col = "red", alpha = 1) +
   geom_point(data = psdates2, aes(x = start), col = "red",
              size = 1, alpha = 1) +
-  labs(x = "BCE/CE", y = "", title = paste("\U03BB =",
-                    as.numeric(round(expfit$estimate, 3)))) +
+  labs(x = "BCE/CE", y = "") +
   scale_x_continuous(breaks = c(seq(-10000, -4000, 2000), -2000, 0, 2000) ) +
   theme_bw()
 
 ggsave(file = here("analysis/figures/redate.png"), redateplt,
        width = 180, height = 250, units = "mm")
+

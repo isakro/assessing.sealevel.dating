@@ -18,8 +18,15 @@ library(AICcmodavg)
 
 # List all files except those starting with a number.
 # That is, all data files resulting from analysis in 05script.R
-datfiles <- grep("^[0-9]", list.files(here("analysis/data/derived_data")),
-     invert = TRUE, value = TRUE)
+datfiles <- grep("^[0-9]", list.files(here("analysis/data/derived_data"),
+                                      include.dirs = FALSE), invert = TRUE,
+                 value = TRUE)
+
+# Exclude directories
+datfiles <-setdiff(grep("^[0-9]", list.files(here("analysis/data/derived_data"),
+                                  include.dirs = FALSE), invert = TRUE,
+             value = TRUE), list.dirs(here("analysis/data/derived_data"),
+                                      recursive = FALSE, full.names = FALSE))
 
 # Create empty list to hold results
 results_list <- list()
@@ -27,6 +34,7 @@ results_list <- list()
 # Loop over, load results and assign them to the list
 for(i in 1:length(datfiles)){
   # Load results
+  print(paste(i, datfiles[i]))
   load(file.path(here("analysis/data/derived_data", datfiles[i])))
   results_list[[i]] <- output[!(names(output) %in%
                              c("datedat", "sitel", "sitecurve"))]
@@ -39,6 +47,7 @@ agr <- c("Nordby 1", "Kvastad A2", "Nauen A")
 # (Probably a smoother purrr solution to do all of this?)
 results <- list()
 for(i in 1:length(results_list)){
+  print(i)
   dat <- results_list[[i]]
   tmp <- list()
   for(j in 1:length(dat)){
@@ -55,6 +64,10 @@ for(i in 1:length(results_list)){
 
 # Collapse list of lists into a single data frame
 distances <- results %>% bind_rows()
+
+# Exclude Lunaveien and Dybdalshei 4 (see supplementary meterial)
+distances <- distances %>%
+  filter(!(sitename %in% c("Lunaveien", "Dybdalshei 2")))
 
 ##### Visualisation of distance measures across time ########
 
@@ -239,7 +252,7 @@ vertdistna$vertdist <- vertdistna$vertdist + 0.001
 expfit <- fitdistr(vertdist$vertdist, "exponential")
 expdat <- data.frame(
   x = vertdist$vertdist,
-  px = dexp(vertdist$vertdist, rate = expfit2$estimate))
+  px = dexp(vertdist$vertdist, rate = expfit$estimate))
 
 # Fit log-normal function to only positive values
 lognormfit <- fitdistr(vertdist$vertdist, "log-normal")
@@ -264,12 +277,6 @@ gammadat <- data.frame(
   x = vertdist$vertdist,
   px = dgamma(vertdist$vertdist, shape = gammafit$estimate[1],
               rate = gammafit$estimate[2]))
-
-gammafit2 <- fitdistr(vertdist2$vertdist, "gamma")
-gammadat2 <- data.frame(
-  x = vertdist2$vertdist,
-  px = dgamma(vertdist2$vertdist, shape = gammafit2$estimate[1],
-              rate = gammafit2$estimate[2]))
 
 # Fit logistic distrbution to only positive values
 logisticfit <- fitdistr(vertdist$vertdist, "logistic")
@@ -337,7 +344,8 @@ mcdf$parameters <- c(paste0("Shape ($\\alpha$) = ",
                       "\nSD of the logarithm ($\\sigma$) = ",
                             round(lognormfit$estimate[2], 3)),
                      paste0("Exponent ($k$) = ", round(pl$pars, 3)),
-                     paste0("Rate ($\\lambda$) = ", round(expfit$estimate[1], 3)),
+                     paste0("Rate ($\\lambda$) = ",
+                            round(expfit$estimate[1], 3)),
                      paste0("Location ($\\mu$) = ",
                             round(logisticfit$estimate[1], 3),
                             "\nScale ($\\sigma$) = ",

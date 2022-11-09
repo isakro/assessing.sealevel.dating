@@ -1135,7 +1135,7 @@ Vallermyrene 4b is slightly younger than Vallermyrene 4a (above). Typology and r
 
 ## Model comparison and selection
 
-In the figure below a series of standard models have been fit to the simulation results older than 2500 BCE (presented with negative values set to zero in Figure 7A in the main text). The models were fit by means of maximum likelihood estimation. Before fitting all models, the values have been adjusted by adding a constant of 0.001 to avoid zero values for the logistic, log normal, power law and gamma distributions. The models have only been fit to the positive values. This was done both when removing the negative values and when forcing these to zero, before adjusting by 0.001. As the difference between these two solutions was negligible and as the assumption here is that the negative values in actuality reflect a distance of zero (see also main text), the result of employing the latter approach is reported on here. The performance of the models were then compared by means of the Akaike information criterion (AIC) and the Bayesian (or Schwarz) information criterion (BIC). The AIC and BIC evaluate the degree to which the models fit to the data, while penalising for the number of model parameters to avoid over-fitting [e.g @burnham2002; for applications in archaeology see e.g. @eve2014; @timpson2021]. As lower values point to a better model, it is evident from the results that the gamma distribution is the best candidate. The approach taken here could have benefited from a more sophisticated treatment of the zero-values, which is related to the fact that these are likely to be a mix of both exact zeros, the case when there is an actual intersection between sea and site, and, although probably to a far lesser extent, zeroes that result from the case when the distance between site and sea is below the detection limit due to the employed methods and the resolution of the spatial data [see e.g. @dunn2005; @helsel2005]. In conclusion, however, the gamma represents a reasonable first approximation.
+Visualisation of the raw simulation results for vertical distances older than 2500 BCE, as well as the models fit for Table 1 in the main text. The table is also reproduced below. Note that the models have been fit when forcing negative values to zero and adding a constant of 0.001 to avoid zeroes. The data is presented with negative values set to zero in Figure 7A in the main text. 
 
 ```{r model_selection, echo = FALSE, out.width = "500px", regfloat=TRUE, warning=FALSE}
 include_graphics(here("analysis/figures/model_comparison.png"))
@@ -1146,13 +1146,12 @@ include_graphics(here("analysis/figures/model_comparison.png"))
 
 mcdf$parameters <- linebreak(mcdf$parameters)
 
-mcdf[,c(1,6, 3, 5, 4)] %>% 
-kable("latex", caption = "Model comparison using AIC and BIC. The models are listed in the order of performance.",
+mcdf[,c(1,6, 3, 5)] %>% 
+kable("latex", caption = "Same as Table 1. in the main text. Model comparison using AIC and BIC. The models are listed in the order of performance.",
          col.names = c("Model",
                     "Parameters",
                     "AIC",
-                    "BIC",
-                    "Log-liklihood"),
+                    "BIC"),
         booktabs = TRUE, escape = FALSE,
         longtable = TRUE, row.names = FALSE) %>% 
         column_spec(2, width = "6cm") %>% 
@@ -1161,6 +1160,7 @@ kable("latex", caption = "Model comparison using AIC and BIC. The models are lis
 
 ```
 
+\pagebreak
 ## Numerical result of re-dating
 
 ```{r}
