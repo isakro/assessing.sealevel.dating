@@ -737,10 +737,13 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
   bboxraster <- st_bbox(locationraster)
   anc <- as.numeric(c(bboxraster$ymin, bboxraster$xmax))
 
+  lraster <- raster(locationraster)
+  crs(lraster) <- st_crs(locationraster)$proj4string
+
   # Create hillshade
   # For some reason the terra version returned pathchy hillshade
-  slope <- raster::terrain(raster(locationraster), 'slope')
-  aspect <- raster::terrain(raster(locationraster), 'aspect')
+  slope <- raster::terrain(lraster, 'slope')
+  aspect <- raster::terrain(lraster, 'aspect')
   hill <- raster::hillShade(slope, aspect, 40, 270)
 
   # Now make sea-level NA
@@ -841,10 +844,13 @@ shore_plot <- function(locationraster, overlapgrid, sitelimit, dist,
   bboxraster <- st_bbox(locationraster)
   anc <- as.numeric(c(bboxraster$ymin, bboxraster$xmax))
 
+  lraster <- raster(locationraster)
+  crs(lraster) <- st_crs(locationraster)$proj4string
+
   # Create hillshade
   # For some reason the terra version returned pathchy hillshade
-  slope <- raster::terrain(raster(locationraster), 'slope')
-  aspect <- raster::terrain(raster(locationraster), 'aspect')
+  slope <- raster::terrain(lraster, 'slope')
+  aspect <- raster::terrain(lraster, 'aspect')
   hill <- raster::hillShade(slope, aspect, 40, 270)
 
   # Now make sea-level NA

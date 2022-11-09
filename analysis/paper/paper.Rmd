@@ -502,8 +502,11 @@ hordist <- st_length(hordistl)
 # For some reason the terra version returned pathchy hillshade (probably due 
 # to the defaults - I didn't bother experimenting too much as this is simply for
 # the purposes of visualisation).
-slope <- raster::terrain(raster(sitearea), 'slope')
-aspect <- raster::terrain(raster(sitearea), 'aspect')
+sraster <- raster(sitearea)
+crs(sraster) <- st_crs(sitearea)$proj4string
+
+slope <- raster::terrain(sraster, 'slope')
+aspect <- raster::terrain(sraster, 'aspect')
 hill <- raster::hillShade(slope, aspect, 40, 270)
 
 # Make the raster amenable for plotting with ggplot (as.data.frame with terra

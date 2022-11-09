@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  9 NOV 2022 18:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.7.10)  9 NOV 2022 23:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1233,8 +1233,8 @@ Overfull \hbox (32.12819pt too wide) in paragraph at lines 245--246
  [][] 
  []
 
-[9] [10 <../figures/example_map.png (PNG copy)>] [11 <../figures/example_sim_ma
-p.png (PNG copy)>] [12 <../figures/example_sim_result.png (PNG copy)>]
+[9] [10 <../figures/example_map.png>] [11 <../figures/example_sim_map.png>] [12
+ <../figures/example_sim_result.png>]
 <../figures/results.png, id=114, 711.1368pt x 569.0058pt>
 File: ../figures/results.png Graphic file (type png)
 <use ../figures/results.png>
@@ -2881,9 +2881,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 1151--1155
  []
 
 
-Underfull \hbox (badness 1221) in paragraph at lines 1159--1159
+Underfull \hbox (badness 1377) in paragraph at lines 1159--1159
 []\T1/lmr/m/n/10 (+20) Directly mod-elling pop-u-la-tion dy-nam-ics in the Sout
-h Amer-i-can Arid Di-ag-o-nal us-ing 14C
+h Amer-i-can Arid Di-ag-o-nal us-ing $[]$C
  []
 
 
@@ -2994,7 +2994,7 @@ ts/type1/public/lm/lmr9.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb>
 /public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy6.pfb></usr/s
 hare/texmf/fonts/type1/public/lm/lmsy7.pfb></usr/share/texmf/fonts/type1/public
 /lm/lmsy9.pfb>
-Output written on paper.pdf (36 pages, 5626166 bytes).
+Output written on paper.pdf (36 pages, 5765153 bytes).
 PDF statistics:
  662 PDF objects out of 1000 (max. 8388607)
  585 compressed objects within 6 object streams
