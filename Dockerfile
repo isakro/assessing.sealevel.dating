@@ -6,6 +6,8 @@ MAINTAINER Isak Roalkvam <isak.roalkvam@iakh.uio.no>
 
 COPY . /assessing.sealevel.dating
 
+RUN Rscript -e 'source("http://bioconductor.org/biocLite.R")' -e 'biocLite("IRanges")'
+
 # go into the repo directory
 RUN . /etc/environment \
   # Install linux depedendencies here

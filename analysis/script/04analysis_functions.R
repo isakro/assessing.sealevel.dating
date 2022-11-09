@@ -398,42 +398,6 @@ interpolate_curve <- function(years, target, dispdat, isodat){
     return(values)
 }
 
-# Function to identify and load the correct raster if it is split up into
-#  multiple tiles (not in use).
-load_raster <- function(dtmfolder, sitelimit) {
-
-  # Number of raster files in total
-  nrasts <- length(list.files(dtmfolder))
-
-  # Empty data frame to hold raster data
-  rasterexts <- data.frame(matrix(ncol = 5, nrow = nrasts))
-  names(rasterexts) <- c("xmin", "xmax", "ymin", "ymax", "path")
-
-  # Loop over and retrieve raster info using the package vapour() without
-  # actually loading the raster
-  for (i in 1:nrasts){
-    # Path to the current raster
-    path <- here(list.files(dtmfolder, full.names = TRUE)[i])
-
-    # Retrieve raster extent
-    rextent <- vapour_raster_info(path)$extent
-
-    # Populate row in the data frame
-    rasterexts[i,] <- c(rextent[1], rextent[2], rextent[3], rextent[4], path)
-  }
-
-  sitebbox <- st_bbox(sitelimit)
-
-  # Identify correct raster
-  craster <- rasterexts %>% filter(xmin < sitebbox$xmin &
-                                     xmax > sitebbox$xmax &
-                                     ymin < sitebbox$ymin &
-                                     ymax > sitebbox$ymax)
-
-  # Return the correct raster
-  return(rast(craster$path))
-}
-
 # Function for creating a bounding box polygon around a feature,
 # the size of which can be adjusted. Used for plotting purposes
 # and ease of raster handling.
