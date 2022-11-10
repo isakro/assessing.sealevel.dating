@@ -15,9 +15,10 @@ RUN . /etc/environment \
   # e.g. need this for ggforce::geom_sina
   && sudo apt-get update \
   && sudo apt-get install libudunits2-dev -y \
-  && sudo apt-get install libsqlite3-dev -y \
+  && sudo apt-get install libproj.so.15 -y \
   # build this compendium package
   && R -e "devtools::install('/assessing.sealevel.dating', dep=TRUE)" \
   # render the manuscript into a docx, you'll need to edit this if you've
   # customised the location and name of your main Rmd file
   && R -e "rmarkdown::render('/assessing.sealevel.dating/analysis/paper/paper.Rmd')"
+
