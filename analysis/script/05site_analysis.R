@@ -9,7 +9,6 @@ library(terra)
 library(raster)
 library(oxcAAR)
 library(topoDistance)
-library(BiocManager)
 library(IRanges)
 quickSetupOxcal()
 
@@ -19,7 +18,7 @@ quickSetupOxcal()
 
 # If that fails, try:
 # install.packages("BiocManager")
-
+# BiocManager::install("IRanges")
 
 # For reproducibility
 set.seed(123)
