@@ -4,18 +4,19 @@
 # assessing.sealevel.dating
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/isakro/assessing.sealevel.dating/master?urlpath=rstudio)
+[![R-CMD-check](https://github.com/isakro/assessing.sealevel.dating/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/isakro/assessing.sealevel.dating/actions/workflows/R-CMD-check.yml)
 
 <!-- This repository contains the data and code for our paper: -->
 <!-- > Authors, (YYYY). _assessing.sealevel.dating_. Name of journal/book <https://doi.org/xxx/xxx> -->
 <!-- The pre-print is online here: -->
-<!-- > Authors, (YYYY). _assessing.sealevel.dating_. Name of journal/book, Accessed 24 Sep 2022. Online at <https://doi.org/xxx/xxx> -->
+<!-- > Authors, (YYYY). _assessing.sealevel.dating_. Name of journal/book, Accessed 11 Nov 2022. Online at <https://doi.org/xxx/xxx> -->
 
 ### How to cite
 
 Please cite this compendium as:
 
 > Roalkvam, I (2022). *Compendium of R code and data for
-> assessing.sealevel.dating*. Accessed 24 Sep 2022. Online at
+> assessing.sealevel.dating*. Accessed 11 Nov 2022. Online at
 > <https://doi.org/10.17605/OSF.IO/7F9SU>
 
 ## Contents
