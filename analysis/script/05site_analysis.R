@@ -37,7 +37,7 @@ bmap <- st_read(here("analysis/data/raw_data/naturalearth_countries.gpkg"))
 # This tries to the load the edited DTM. Due to the file sizes involved,
 # this is distributed as tiles which have to be merged by first
 # running 00dtm_prep.R
-dtm <- rast(here("analysis/data/derived_data/dtm10.tif"))
+dtm <- rast(here("analysis/data/derived_data/dtm/dtm10.tif"))
 
 # Path to directory to hold smaller site area rasters
 siterpath <- here("analysis/data/derived_data/sitearea_temp")

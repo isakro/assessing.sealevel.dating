@@ -29,8 +29,10 @@ prevdates <- read.csv((here(
          end = end * -1) %>%
   dplyr::rename("site_name" = "name")
 
-# Read in raster
-dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
+# This tries to the load the edited DTM. Due to the file sizes involved,
+# this is distributed as tiles which have to be merged by first
+# running 00dtm_prep.R
+dtm <- rast(here("analysis/data/derived_data/dtm/dtm10.tif"))
 
 # Retrieve the Pauler sites
 brunlanes <- sitespol %>%

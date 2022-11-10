@@ -17,8 +17,7 @@ load(here("analysis/data/derived_data/06data.RData"))
 # This tries to the load the edited DTM. Due to the file sizes involved,
 # this is distributed as tiles which have to be merged by first
 # running 00dtm_prep.R
-dtm <- rast(here("analysis/data/derived_data/dtm10.tif"))
-dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10.tif")
+dtm <- rast(here("analysis/data/derived_data/dtm/dtm10.tif"))
 
 # List all files except those starting with a number.
 # That is, all data files resulting from analysis in 05script.R
