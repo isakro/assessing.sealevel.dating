@@ -17,6 +17,7 @@ Title <- "assessing.sealevel.dating"
 # assessing.sealevel.dating
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/isakro/assessing.sealevel.dating/master?urlpath=rstudio)
+[![R-CMD-check](https://github.com/isakro/assessing.sealevel.dating/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/isakro/assessing.sealevel.dating/actions/workflows/R-CMD-check.yml)
 
 <!-- This repository contains the data and code for our paper: -->
 
