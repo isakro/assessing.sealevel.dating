@@ -552,8 +552,9 @@ anot <- ggplot() +
   annotate("text", x = 0,  y = 0, label = dist_label,
            hjust = 0.5, size = 7)
 
-simplot <- (datsamp + elevsamp) / 
+simplot <- (datsamp + elevsamp) /
   (seasamp + anot) + plot_annotation(tag_levels = 'A')
+
 
 ggsave(file = here("analysis/figures/example_sim_map.png"), plot = simplot, 
        width = 300, height = 76 + (76 * 2),
@@ -613,8 +614,6 @@ dat2 <- ggplot(probsdat2) +
   scale_fill_manual(
       values = as.character(ggthemes_data$colorblind[2, 2]))
 
-
-
 # Plot of date group 2
 
 # Map of simulated sea-levels, date group 2
@@ -626,7 +625,7 @@ simsea_plot2 <- shore_plot(sitearea, output[[2]]$simsea, sitel, 150,
 simdist_plot2 <- distance_plot(output[[2]]$results)
 
 simresultplot <- (dat1 + simsea_plot1 + simdist_plot1) /
-(dat2 + simsea_plot2 + simdist_plot2) 
+(dat2 + simsea_plot2 + simdist_plot2)
 
 ggsave(file = here("analysis/figures/example_sim_result.png"),
        plot = simresultplot,  width = 250, height = 76 + (76 * 2),

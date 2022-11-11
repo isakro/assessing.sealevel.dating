@@ -420,7 +420,9 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs,
                       "year", "rcarb_cor", "sitename")
   results$rcarb_cor <- unique(na.omit(posteriorprobs$rcarb_cor))
   results$sitename <- unique(sitel$name)
-  seapolygons <- list(length = samps)
+
+  # seapolygons <- list(length = samps)
+  searasters <- list(length = samps)
 
   # If topographic paths are to be retrieved
   if(paths == TRUE){
@@ -449,7 +451,8 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs,
     classarea <- terra::classify(sitearea, rclmat)
     seapoly <- st_combine(st_as_sf(terra::as.polygons(classarea)))
 
-    seapolygons[[i]] <- seapoly
+    # seapolygons[[i]] <- seapoly
+    searasters[[i]] <- raster::raster(classarea)
 
     # If these are at the same coordinate (i.e. the polygons are overlapping),
     # return all values as 0
@@ -563,17 +566,23 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs,
   }
   }
 
+  rs <- stack(searasters)
+  searaster <- calc(rs, sum, na.rm = TRUE)
+
+  #seapolygons
   if(paths == TRUE){
     return(list(
       results = results,
-      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
-                        crs = st_crs(sitel)),
+      searaster = searaster,
+      # seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
+      #                   crs = st_crs(sitel)),
       topopaths = topopaths))
   } else {
     return(list(
       results = results,
-      seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
-                        crs = st_crs(sitel))))
+      searaster = searaster))
+      # seapol = st_as_sf(st_sfc(do.call(rbind, searaster)),
+      #                   crs = st_crs(sitel))))
   }
   # # If there are no topopaths at all, do not try to return these
   # if(any(!(summary(topopaths)[,2]) %in% c("-none-", "sf"))){
@@ -703,11 +712,11 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
     output[[i]] <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
                                posteriorprobs)
 
-    # Generate grid with dtm resolution holding number of overlaps for each cell
-    # (also takes quite some time to execute)
-    simsea <- sea_overlaps(sitearea, output[[i]]$seapol)
+    # # Generate grid with dtm resolution holding number of overlaps for each cell
+    # # (also takes quite some time to execute)
+    # simsea <- sea_overlaps(sitearea, output[[i]]$seapol)
 
-    output[[i]]$simsea <- simsea
+    output[[i]]$simsea <- output[[i]]$searaster
   }
 
   output$datedat <- datedat
@@ -825,17 +834,22 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
 }
 
 # Define function to plot site relative to simulated sea-levels
-shore_plot <- function(locationraster, overlapgrid, sitelimit, dist,
+shore_plot <- function(locationraster, searaster, sitelimit, dist,
                        date_groups, s_tdist, s_xpos, s_ypos, s_bheight,
                        s_tsize) {
 
-  bboxgrid <- st_bbox(overlapgrid)
+  bboxgrid <- st_bbox(searaster)
   anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
 
 
-  # Make 0 overlaps NA to remove colour using na.values in call to plot
-  overlapgrid <- mutate(overlapgrid, overlaps = ifelse(overlaps == 0,
-                                                       NA, overlaps))
+  # # Make 0 overlaps NA to remove colour using na.values in call to plot
+  # overlapgrid <- mutate(overlapgrid, overlaps = ifelse(overlaps == 0,
+  #                                                      NA, overlaps))
+
+  searaster[searaster == 0] <- NA
+  seaspat <- as(searaster, "SpatialPixelsDataFrame")
+  searasterdf <- as.data.frame(seaspat)
+  colnames(searasterdf) <- c("value", "x", "y")
 
   # Make present day sea-level 0 (for hillshade)
   locationraster[locationraster <= 0] <- 0
@@ -873,8 +887,10 @@ shore_plot <- function(locationraster, overlapgrid, sitelimit, dist,
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
     scale_fill_gradient(low = NA, high = NA, na.value = "white") +
     new_scale_fill() +
-    geom_sf(data = overlapgrid, aes(alpha = overlaps), col = NA,
-            fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff
+    # geom_sf(data = overlapgrid, aes(alpha = overlaps), col = NA,
+    #         fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff
+    geom_raster(data = searasterdf, aes(x = x, y = y, alpha = value),
+                fill = "#dbe3f3") +
     geom_sf(data = sitelimit, colour = "red", fill = NA) +
     scale_alpha_continuous(range = c(0.01, 1), na.value = 0) +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
