@@ -800,7 +800,8 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
 }
 
 overview_plot <- function(background_map, sitelimit, sites, isobases,
-                          os_tdist, os_xpos, os_ypos, os_bheight, os_tsize) {
+                          os_tdist, os_xpos, os_ypos, os_bheight, os_tsize,
+                          detailed_map = NA) {
   bboxsites <- st_bbox(sites)
   bboxsites[1] <- bboxsites[1] - 15000
   bboxsites[3] <- bboxsites[3] + 15000
@@ -808,11 +809,18 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
   bboxsites[4] <- bboxsites[4] + 5000
   bboxsitespoly <- st_as_sf(st_as_sfc(bboxsites))
 
-  bound_reproj <- st_transform(bboxsitespoly, st_crs(background_map))
-  bmap2 <- background_map %>%
-    filter(st_intersects(., bound_reproj, sparse = FALSE))
-  bmap_reproj <- st_transform(bmap2, st_crs(sites))
 
+  if(!(any(is.na(detailed_map)))){
+    bound_reproj <- st_transform(bboxsitespoly, st_crs(detailed_map))
+    bmap2 <- detailed_map %>%
+      filter(st_intersects(., bound_reproj, sparse = FALSE))
+  }else{
+    bound_reproj <- st_transform(bboxsitespoly, st_crs(background_map))
+    bmap2 <- background_map %>%
+      filter(st_intersects(., bound_reproj, sparse = FALSE))
+  }
+
+  bmap_reproj <- st_transform(bmap2, st_crs(sites))
   anc <- as.numeric(c(bboxsites$ymin, bboxsites$xmax))
 
   ggplot() +
@@ -1068,7 +1076,9 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
     }
 }
 
-# Shoreline date, using exponential function for elevation offset
+# Shoreline date. Defaults to using exponential, as this was used originally.
+# However, the dates performed for the paper are done with exponential set to
+# FALSE as the gamma was later identified as the better fit.
 shoreline_date <- function(sitename, elev = dtm,
                            disp_curves = displacement_curves,
                            sites = sites_sa,
