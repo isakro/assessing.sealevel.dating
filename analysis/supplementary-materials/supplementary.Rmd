@@ -1147,7 +1147,7 @@ include_graphics(here("analysis/figures/model_comparison.png"))
 mcdf$parameters <- linebreak(mcdf$parameters)
 
 mcdf[,c(1,6, 3, 5)] %>% 
-kable("latex", caption = "Same as Table 1. in the main text. Model comparison using AIC and BIC. The models are listed in the order of performance.",
+kable("latex", caption = "Same as Table 1 in the main text. Model comparison using AIC and BIC. The models are listed in the order of performance.",
          col.names = c("Model",
                     "Parameters",
                     "AIC",

@@ -413,7 +413,7 @@ bboxpoly <- function(feature, xy_adjustment) {
 # radiocarbon probability density function, site limit, and adjusted
 # displacement curve
 sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs,
-                             paths = FALSE){
+                             paths = FALSE, searasterpath, grouping = NULL){
 
   results <- data.frame(matrix(ncol = 6, nrow = samps))
   names(results) <- c("vertdist", "hordist", "topodist",
@@ -568,19 +568,26 @@ sample_shoreline <- function(samps, sitel, sitecurve, sitearea, posteriorprobs,
 
   rs <- stack(searasters)
   searaster <- calc(rs, sum, na.rm = TRUE)
+  crs(searaster) <- st_crs(sitel)$proj4string
+
+  writeRaster(searaster, file.path(searasterpath,
+                                  paste0(str_replace_all(str_replace_all(
+                                    unique(sitel$name)," ", "_"),
+                                                     "/", "_"), grouping,
+                                    ".tif")),
+              overwrite = TRUE)
+
 
   #seapolygons
   if(paths == TRUE){
     return(list(
       results = results,
-      searaster = searaster,
       # seapol = st_as_sf(st_sfc(do.call(rbind, seapolygons)),
       #                   crs = st_crs(sitel)),
       topopaths = topopaths))
   } else {
     return(list(
-      results = results,
-      searaster = searaster))
+      results = results))
       # seapol = st_as_sf(st_sfc(do.call(rbind, searaster)),
       #                   crs = st_crs(sitel))))
   }
@@ -647,7 +654,8 @@ sea_overlaps <- function(sitearea, seapolygons){
 # Function that combines all of the above
 apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
                             isobases, nsamp = 1000, loc_bbox, siterpath,
-                            rcarbcor_true = FALSE, sitelimit = TRUE){
+                            searasterpath, rcarbcor_true = FALSE,
+                            sitelimit = TRUE){
 
   # Retrieve site features
   siter <- filter(rcarb_sa, site_name == sitename)
@@ -709,25 +717,24 @@ apply_functions <- function(sitename, date_groups, dtm, displacement_curves,
     }
 
     # Simulate sea-level and retrieve distances (takes time)
-    output[[i]] <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
-                               posteriorprobs)
-
+      output[[i]] <- sample_shoreline(samps = nsamp, sitel, sitecurve, sitearea,
+                               posteriorprobs, searasterpath = searasterpath,
+                               grouping = i)
     # # Generate grid with dtm resolution holding number of overlaps for each cell
     # # (also takes quite some time to execute)
     # simsea <- sea_overlaps(sitearea, output[[i]]$seapol)
 
-    output[[i]]$simsea <- output[[i]]$searaster
+    # output[[i]]$searaster <- output[[i]]$searaster
   }
 
   output$datedat <- datedat
   output$sitel <- sitel
   output$sitecurve <- sitecurve
 
-  # Store raster (replacing spaces and dashes in the file name)
   writeRaster(sitearea, file.path(siterpath,
-                        paste0(str_replace(str_replace(sitename, " ", "_"),
-                                           "/", "_"), ".tif")),
-              overwrite = TRUE)
+                                  paste0(str_replace(str_replace(sitename,
+                                         " ", "_"), "/", "_"),
+                                         ".tif")), overwrite = TRUE)
 
   # Return results
   return(output)
@@ -776,7 +783,7 @@ site_plot <- function(locationraster, sitelimit, dist, date_groups,
     new_scale_fill() +
     geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
     scale_fill_gradient(low = NA, high = NA, na.value = "white") +
-    geom_sf(data = sitelimit, fill = NA,
+    geom_sf(data = sitelimit, linewidth = 0.5, fill = NA,
             colour = "red") +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
                    transform = FALSE, st.size = s_tsize, height = s_bheight,
@@ -834,9 +841,15 @@ overview_plot <- function(background_map, sitelimit, sites, isobases,
 }
 
 # Define function to plot site relative to simulated sea-levels
-shore_plot <- function(locationraster, searaster, sitelimit, dist,
+shore_plot <- function(locationraster, sitelimit, dist,
                        date_groups, s_tdist, s_xpos, s_ypos, s_bheight,
-                       s_tsize) {
+                       s_tsize, grouping = NULL, searasterpath) {
+
+  # Read in stored raster
+  searaster <- raster(file.path(searasterpath,
+                                paste0(str_replace_all(str_replace_all(
+                                  unique(sitelimit$name)," ", "_"),
+                                  "/", "_"), grouping, ".tif")))
 
   bboxgrid <- st_bbox(searaster)
   anc <- as.numeric(c(bboxgrid$ymin, bboxgrid$xmax))
@@ -891,7 +904,7 @@ shore_plot <- function(locationraster, searaster, sitelimit, dist,
     #         fill = "#dbe3f3") + ##B6D0E2 ##bfe6ff
     geom_raster(data = searasterdf, aes(x = x, y = y, alpha = value),
                 fill = "#dbe3f3") +
-    geom_sf(data = sitelimit, colour = "red", fill = NA) +
+    geom_sf(data = sitelimit, linewidth = 0.5, colour = "red", fill = NA) +
     scale_alpha_continuous(range = c(0.01, 1), na.value = 0) +
     ggsn::scalebar(data = sitelimit, dist = dist, dist_unit = "m",
                    transform = FALSE, st.size = s_tsize, height = s_bheight,
@@ -998,7 +1011,8 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
                          date_groups, scale_dist, s_tdist = 0.5, s_xpos = 175,
                          s_ypos = 85,  s_bheight = 0.3, s_tsize = 3,
                          os_tdist = 0.03, os_xpos = 20000, os_ypos = 8000,
-                         os_bheight = 0.02, os_tsize = 3, adjust_widths = NA){
+                         os_bheight = 0.02, os_tsize = 3, adjust_widths = NA,
+                         searasterpath){
 
   # Create list to hold all plots
   plots <- list()
@@ -1019,8 +1033,8 @@ plot_results <- function(sitename, sitelimit, datedata, sitearea,
 
       # Map of simulated sea-levels
       plots[[paste0("seaplot_", i)]] <- shore_plot(sitearea,
-        simulation_output[[i]]$simsea, sitelimit, scale_dist, date_groups,
-        s_tdist, s_xpos, s_ypos, s_bheight, s_tsize)
+        sitelimit, scale_dist, date_groups,
+        s_tdist, s_xpos, s_ypos, s_bheight, s_tsize, i, searasterpath)
 
       # Boxplot of distances from site to sea
       plots[[paste0("distplot_", i)]] <- distance_plot(
