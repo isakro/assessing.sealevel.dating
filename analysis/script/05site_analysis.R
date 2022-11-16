@@ -31,9 +31,6 @@ load(here("analysis/data/derived_data/02data.RData"))
 # Load background map
 bmap <- st_read(here("analysis/data/raw_data/naturalearth_countries.gpkg"))
 
-# # Specify path to raster data (currently stored locally)
-dtm <- rast("/home/isak/phd/eaa_presentation/dtm10/dtm10_32.tif")
-
 # This tries to the load the edited DTM. Due to the file sizes involved,
 # this is distributed as tiles which have to be merged by first
 # running 00dtm_prep.R
