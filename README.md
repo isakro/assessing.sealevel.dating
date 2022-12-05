@@ -6,12 +6,17 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/isakro/assessing.sealevel.dating/master?urlpath=rstudio)
 [![R-CMD-check](https://github.com/isakro/assessing.sealevel.dating/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/isakro/assessing.sealevel.dating/actions/workflows/R-CMD-check.yml)
 
-<!-- This repository contains the data and code for our paper: -->
-<!-- > Authors, (YYYY). _assessing.sealevel.dating_. Name of journal/book <https://doi.org/xxx/xxx> -->
-<!-- The pre-print is online here: -->
-<!-- > Authors, (YYYY). _assessing.sealevel.dating_. Name of journal/book, Accessed 11 Nov 2022. Online at <https://doi.org/xxx/xxx> -->
+This repository contains the data and code for the open access paper:
 
-### How to cite
+> Roalkvam, Isak <a href="https://orcid.org/0000-0001-6974-1374">
+> <img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="16" height="16" /></a>
+> (2023). A simulation-based assessment of the relation between Stone Age sites and relative sea-level change along the Norwegian Skagerrak coast. >*Quaternary Science Reviews*
+> <https://doi.org/10.1016/j.quascirev.2022.107880>
+
+Pre-print is online here:
+
+> Roalkvam, Isak (2023). *A simulation-based assessment of the relation between Stone Age sites and relative sea-level change along the Norwegian Skagerrak > coast*. 
+> Online at <https://doi.org/10.31235/osf.io/3x7ju>
 
 Please cite this compendium as:
 
