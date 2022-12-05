@@ -35,6 +35,7 @@ keywords: |
   Shoreline dating; Stone Age; Settlement patterns; Scandinavia; Relative sea-level change
 nocite: | 
   @telford2004
+  @fossum2017a
 ---
 
 <!--- Page numbers in margin to avoid conflict with figure captions --->
@@ -197,7 +198,7 @@ The archaeological data compiled for the analysis consists of excavated Stone Ag
 
 Three of the sites have been associated with agriculture, either directly or in the form building structures. The first is Nordby 1 at which the ^14^C-dates are associated with a Late Neolithic long-house [@gjerpe2008b]. The Middle Neolithic phase at Kvastad A2 [@stokke2018b] and Late Neolithic phase at Nauen A [@persson2008] are both directly related to farming activities. Both of these sites also have radiocarbon dates and lithic inventory associated with Mesolithic forager activities. Following from the expected deviance from the settlement patterns that are to characterise forager sites, these agricultural phases are highlighted in the analysis below. Finally, @nielsen2021b has recently suggested that Early and Middle Neolithic features from the otherwise younger sites Bratsberg [@wenn2012] and Larønningen [@roberg2012] could be related to early agricultural activity in the Oslo fjord region. Due to the uncertain and somewhat speculative nature of this suggestion, these are omitted here.
 
-The elevation data used for the analysis is a digital terrain model (DTM) freely available from the Norwegian Mapping Authority [@mapping2018, https://hoydedata.no]. The 10m resolution DTM was used rather than the higher-resolution 1m version, both because this resulted in considerably less processing time and because the higher resolution elevation model is more vulnerable to smaller-scale modern disturbances. The 10m resolution DTM of the study area is a down-sampled version of the 1m version and has a height accuracy with a systematic error of 0.1m [@mapping2018]. All data and R programming code [@rcoreteam2021] required to run the analyses, as well as the derived data are freely available in a version-controlled repository at <https://osf.io/7f9su/>, organised as a research compendium following Marwick [@marwick2018; -@Marwick2017].
+The elevation data used for the analysis is a digital terrain model (DTM) freely available from the Norwegian Mapping Authority [@mapping2018, https://hoydedata.no]. The 10m resolution DTM was used rather than the higher-resolution 1m version, both because this resulted in considerably less processing time and because the higher resolution elevation model is more vulnerable to smaller-scale modern disturbances. The 10m resolution DTM of the study area is a down-sampled version of the 1m version and has a height accuracy with a systematic error of 0.1m [@mapping2018]. All data and R programming code [@rcoreteam2021] required to run the analyses, as well as the derived data are freely available in a version-controlled repository at <https://doi.org/10.17605/osf.io/7f9su>, organised as a research compendium following Marwick [@marwick2018; -@Marwick2017].
 
 ```{r map-iso,  fig.cap = paste("A) Location of the study area and the distribution of the ", nrow(sites_sa), " analysed sites relative to the isobases of the displacement curves. The isobases have a direction of 327$^{\\circ}$ (Romundset et al. 2018, although see Sørensen et al. 2014), B) Displacement curves. Note the increasing steepness of the curves towards the north-east."), fig.height = 13, fig.width = 12, regfloat=TRUE}
 # To make sure labelling ends up the same every knit.
@@ -797,7 +798,7 @@ p(E - D) = \frac{1}{\sigma ^ {\alpha}\Gamma(\alpha)}(E - D) ^ {\alpha - 1}{e} ^ 
   (\#eq:gamma)
 \end{equation}
 
-where $\alpha$ is the shape and $\sigma$ the rate of the distribution, and $\Gamma(\alpha)$ denotes the gamma function. This can then be coupled with the trajectory of relative sea-level change to find the corresponding calendar date $T$ for the occupation of the site. This is defined by a discrete uniform probability mass function ($Ud$) over the range between the lower $T_{l}$ and upper $T_{u}$ bounds of the displacement curve that has been interpolated to the site location: 
+where $\alpha$ is the shape and $\sigma$ the scale of the distribution, and $\Gamma(\alpha)$ denotes the gamma function. This can then be coupled with the trajectory of relative sea-level change to find the corresponding calendar date $T$ for the occupation of the site. This is defined by a discrete uniform probability mass function ($Ud$) over the range between the lower $T_{l}$ and upper $T_{u}$ bounds of the displacement curve that has been interpolated to the site location: 
 
 \begin{equation}
 p(T | E - D) = Ud[T_{l | E - D}, T_{u | E - D}]	
